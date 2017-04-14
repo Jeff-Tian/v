@@ -68,7 +68,7 @@ class App extends Component {
                 let height = width * img.height / img.width;
                 context.drawImage(img, 0, 0, img.width, img.height, c.center.x + vCenter.x - width / 2, c.center.y + vCenter.y - height / 2, width, height);
             };
-            img.src = 'http://localhost:16016/v/v.png';
+            img.src = 'http://v.pa-pa.me/v/v.png';
         }
 
         this.onPhotoSelected = function (target) {
