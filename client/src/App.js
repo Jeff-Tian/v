@@ -85,14 +85,25 @@ class App extends Component {
             });
         }
 
+        let canvas = null;
+        let context = null;
         this.onPhotoSelected = function (target) {
-            let canvas = target.refs['photo-canvas'];
-            let context = canvas.getContext('2d');
-            let self = this;
+            canvas = target.refs['photo-canvas'];
+            context = canvas.getContext('2d');
 
             readImage(target.refs['photo-file'], context, canvas, function (c) {
                 drawV(context, canvas, c, convertToPng);
             });
+        };
+
+        this.clear = function () {
+            self.setState({
+                imgSrc: ''
+            });
+
+            if (context) {
+                context.clearRect(0, 0, canvas.width, canvas.height);
+            }
         };
     }
 
@@ -112,22 +123,25 @@ class App extends Component {
                 <div className="ui container">
                     <form name="photoForm" className="ui form">
                         <div className="field">
-                            <button type="reset" onClick={}>清除</button>
+                            <button type="reset" onClick={this.clear}>清除</button>
                         </div>
-                        <div className="hidden-input mask">
-                            <input type="file" name="photo" onChange={() => this.onPhotoSelected(this)} ref="photo-file"
-                                   accept=".png,.gif,.jpeg,.jpg"/>
-                        </div>
-                        <div className="before-upload mask">
-                            <h1>点击此处选择图片</h1>
-                        </div>
-                        <div className="image mask" style={this.state.imgSrc ? {} : {display: 'none'}}>
-                            <img src={this.state.imgSrc} alt="v"
-                                 style={{width: '100%', height: '100%', background: 'white'}}/>
-                        </div>
+                        <div className="field" style={{position: 'relative'}}>
+                            <div className="hidden-input mask">
+                                <input type="file" name="photo" onChange={() => this.onPhotoSelected(this)}
+                                       ref="photo-file"
+                                       accept=".png,.gif,.jpeg,.jpg"/>
+                            </div>
+                            <div className="before-upload mask">
+                                <h1>点击此处选择图片</h1>
+                            </div>
+                            <div className="image mask" style={this.state.imgSrc ? {} : {display: 'none'}}>
+                                <img src={this.state.imgSrc} alt="v"
+                                     style={{width: '100%', height: '100%', background: 'white'}}/>
+                            </div>
 
-                        <canvas id="photo-canvas" ref="photo-canvas"
-                                style={{'width': '100%', 'height': 'auto', border: 'solid 1px black'}}/>
+                            <canvas id="photo-canvas" ref="photo-canvas"
+                                    style={{'width': '100%', 'height': 'auto', border: 'solid 1px black'}}/>
+                        </div>
                     </form>
                 </div>
             </div>
