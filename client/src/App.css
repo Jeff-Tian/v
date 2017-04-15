@@ -1,24 +1,60 @@
 .App {
-  text-align: center;
+    text-align: center;
+    font-family: '微软雅黑', 'Microsoft YaHei';
 }
 
 .App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 80px;
+    animation: App-logo-spin infinite 20s linear;
+    height: 40px;
 }
 
 .App-header {
-  background-color: #222;
-  height: 150px;
-  padding: 20px;
-  color: white;
+    background-color: #222;
+    height: 100px;
+    padding: 20px;
+    color: white;
 }
 
 .App-intro {
-  font-size: large;
+    font-size: large;
 }
 
 @keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.mask {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.hidden-input input {
+    width: 100%;
+    height: 100%;
+    padding-left: 1000px;
+}
+
+.before-upload {
+    font-size: large;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    z-index: -1;
+}
+
+.before-upload h1 {
+    width: 100%;
 }

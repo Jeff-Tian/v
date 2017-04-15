@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
-import logo from './logo.svg';
+// import logo from './logo.svg';
+import logo from '../public/v/v.png';
+import v from '../public/v/v.png';
 import './semantic-ui/semantic.min.css';
 import './App.css';
 
@@ -57,7 +59,7 @@ class App extends Component {
             }
         }
 
-        function drawV(context, canvas, c) {
+        function drawV(context, canvas, c, callback) {
             const img = new Image();
             img.onload = function () {
                 let vCenter = {
@@ -67,16 +69,29 @@ class App extends Component {
                 let width = 2 * c.radius / 3.82;
                 let height = width * img.height / img.width;
                 context.drawImage(img, 0, 0, img.width, img.height, c.center.x + vCenter.x - width / 2, c.center.y + vCenter.y - height / 2, width, height);
+
+                if (typeof callback === 'function') {
+                    callback(canvas);
+                }
             };
-            img.src = 'http://v.pa-pa.me/v/v.png';
+            img.src = v;
+        }
+
+        let self = this;
+
+        function convertToPng(canvas) {
+            self.setState({
+                imgSrc: canvas.toDataURL('image/png')
+            });
         }
 
         this.onPhotoSelected = function (target) {
             let canvas = target.refs['photo-canvas'];
             let context = canvas.getContext('2d');
+            let self = this;
 
             readImage(target.refs['photo-file'], context, canvas, function (c) {
-                drawV(context, canvas, c);
+                drawV(context, canvas, c, convertToPng);
             });
         };
     }
@@ -91,16 +106,29 @@ class App extends Component {
                     </div>
                 </div>
                 <p className="App-intro">
-                    To get started, edit <code>src/App.js</code> and save to reload.
+                    上传图片，自动加V
                 </p>
 
                 <div className="ui container">
                     <form name="photoForm" className="ui form">
-                        <input type="file" name="photo" onChange={() => this.onPhotoSelected(this)} ref="photo-file"
-                               accept=".png,.gif,.jpeg,.jpg"/>
+                        <div className="field">
+                            <button type="reset" onClick={}>清除</button>
+                        </div>
+                        <div className="hidden-input mask">
+                            <input type="file" name="photo" onChange={() => this.onPhotoSelected(this)} ref="photo-file"
+                                   accept=".png,.gif,.jpeg,.jpg"/>
+                        </div>
+                        <div className="before-upload mask">
+                            <h1>点击此处选择图片</h1>
+                        </div>
+                        <div className="image mask" style={this.state.imgSrc ? {} : {display: 'none'}}>
+                            <img src={this.state.imgSrc} alt="v"
+                                 style={{width: '100%', height: '100%', background: 'white'}}/>
+                        </div>
+
+                        <canvas id="photo-canvas" ref="photo-canvas"
+                                style={{'width': '100%', 'height': 'auto', border: 'solid 1px black'}}/>
                     </form>
-                    <canvas id="photo-canvas" ref="photo-canvas"
-                            style={{'width': '100%', 'height': 'auto', border: 'solid 1px black'}}/>
                 </div>
             </div>
         );
