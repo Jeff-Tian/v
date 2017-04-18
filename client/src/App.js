@@ -84,7 +84,7 @@ class App extends Component {
                 let qrCenter = c.center;
                 let width = 2 * c.radius / 6.18;
                 let height = width * img.height / img.width;
-                context.drawImage(img, 0, 0, img.width, img.height, qrCenter.x - width/2, qrCenter.y - height/2, width, height);
+                context.drawImage(img, 0, 0, img.width, img.height, qrCenter.x - width / 2, qrCenter.y - height / 2, width, height);
 
                 if (typeof callback === 'function') {
                     callback(canvas);
@@ -103,8 +103,10 @@ class App extends Component {
 
         let canvas = null;
         let context = null;
+        let photoFile = null;
         this.onPhotoSelected = function (target) {
             canvas = target.refs['photo-canvas'];
+            photoFile = target.refs['photo-file'];
             context = canvas.getContext('2d');
 
             readImage(target.refs['photo-file'], context, canvas, function (c) {
@@ -121,6 +123,10 @@ class App extends Component {
 
             if (context) {
                 context.clearRect(0, 0, canvas.width, canvas.height);
+            }
+
+            if (photoFile) {
+                photoFile.value = null;
             }
         };
     }
