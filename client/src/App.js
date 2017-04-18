@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 // import logo from './logo.svg';
 import logo from '../public/v/v.png';
+import qr from '../public/v/v-qr.png';
 import v from '../public/v/v.png';
 import './semantic-ui/semantic.min.css';
 import './App.css';
@@ -77,6 +78,21 @@ class App extends Component {
             img.src = v;
         }
 
+        function drawQR(context, canvas, c, callback) {
+            const img = new Image();
+            img.onload = function () {
+                let qrCenter = c.center;
+                let width = 2 * c.radius / 6.18;
+                let height = width * img.height / img.width;
+                context.drawImage(img, 0, 0, img.width, img.height, qrCenter.x - width/2, qrCenter.y - height/2, width, height);
+
+                if (typeof callback === 'function') {
+                    callback(canvas);
+                }
+            };
+            img.src = qr;
+        }
+
         let self = this;
 
         function convertToPng(canvas) {
@@ -92,7 +108,9 @@ class App extends Component {
             context = canvas.getContext('2d');
 
             readImage(target.refs['photo-file'], context, canvas, function (c) {
-                drawV(context, canvas, c, convertToPng);
+                drawV(context, canvas, c, function (canvas) {
+                    drawQR(context, canvas, c, convertToPng);
+                });
             });
         };
 
@@ -123,7 +141,12 @@ class App extends Component {
                 <div className="ui container">
                     <form name="photoForm" className="ui form">
                         <div className="field">
-                            <button type="reset" onClick={this.clear}>清除</button>
+                            {
+                                this.state.imgSrc ?
+                                    <button type="reset" className="ui button" onClick={this.clear}>清除</button>
+                                    : ''
+                            }
+
                         </div>
                         <div className="field" style={{position: 'relative'}}>
                             <div className="hidden-input mask">
