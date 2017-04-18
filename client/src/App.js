@@ -33,6 +33,9 @@ class App extends Component {
             };
         }
 
+        let minWidth = 400;
+        let minHeight = 400;
+
         function readImage(target, context, canvas, callback) {
             if (target.files && target.files[0]) {
                 let fr = new FileReader();
@@ -41,10 +44,21 @@ class App extends Component {
                     const img = new Image();
                     img.onload = function () {
                         // context.imageSmoothingEnabled = false;
-                        canvas.width = img.width;
-                        canvas.height = img.height;
+                        // canvas.width = img.width;
+                        if (img.height >= minHeight && img.width >= minWidth) {
+                            canvas.width = img.width;
+                            canvas.height = img.height;
+                        } else {
+                            canvas.height = canvas.width * img.height / img.width;
+                        }
+
                         context.save();
                         let c = drawInscribedCircle(context, canvas);
+
+                        if (img.height < minHeight || img.width < minWidth) {
+                            context.scale(canvas.width / img.width, canvas.height / img.height);
+                        }
+
                         context.clip();
                         context.drawImage(img, 0, 0, img.width, img.height, 0, 0, img.width, img.height);
                         context.restore();
@@ -82,7 +96,11 @@ class App extends Component {
             const img = new Image();
             img.onload = function () {
                 let qrCenter = c.center;
+                // let width = Math.max(2 * c.radius / 6.18, 97);
                 let width = 2 * c.radius / 6.18;
+                // let ratio = canvas.width / canvas.height;
+                // canvas.height = Math.max(canvas.height, 600);
+                // canvas.width = canvas.height * ratio;
                 let height = width * img.height / img.width;
                 context.drawImage(img, 0, 0, img.width, img.height, qrCenter.x - width / 2, qrCenter.y - height / 2, width, height);
 
