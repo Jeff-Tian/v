@@ -1,0 +1,12 @@
+CACHE MANIFEST
+
+#version: 1.5
+
+CACHE:
+/static/js/bundle.js
+
+NETWORK:
+
+
+FALLBACK:
+
