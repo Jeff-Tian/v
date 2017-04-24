@@ -13,6 +13,7 @@ if (typeof window !== 'undefined' && window.jQuery && typeof jQuery !== 'undefin
     console.log('the window = ', window);
     console.log('jQuery = ', jQuery);
     require('./semantic-ui/semantic.min.js');
+    require('./hammer/hammer.min');
 }
 
 class App extends Component {
@@ -24,6 +25,14 @@ class App extends Component {
         };
 
         function drawInscribedCircle(context, canvas) {
+            if (canvas.width > canvas.height) {
+                maxXRange = canvas.width - canvas.height;
+                maxYRange = 0;
+            } else {
+                maxYRange = canvas.height - canvas.width;
+                maxXRange = 0;
+            }
+
             let center = {
                 x: canvas.width / 2,
                 y: canvas.height / 2
@@ -44,6 +53,10 @@ class App extends Component {
 
         let minWidth = 400;
         let minHeight = 400;
+        let canvasOffsetX = 0;
+        let canvasOffsetY = 0;
+        let maxXRange = 0;
+        let maxYRange = 0;
 
         function readImage(target, context, canvas, callback) {
             if (target.files && target.files[0]) {
@@ -52,8 +65,6 @@ class App extends Component {
                 fr.onload = function (e) {
                     const img = new Image();
                     img.onload = function () {
-                        // context.imageSmoothingEnabled = false;
-                        // canvas.width = img.width;
                         if (img.height >= minHeight && img.width >= minWidth) {
                             canvas.width = img.width;
                             canvas.height = img.height;
@@ -69,7 +80,10 @@ class App extends Component {
                         }
 
                         context.clip();
-                        context.drawImage(img, 0, 0, img.width, img.height, 0, 0, img.width, img.height);
+                        context.drawImage(img, 0, 0, img.width, img.height, canvasOffsetX, canvasOffsetY, img.width, img.height);
+                        window.drawImage = function (x, y, w, h, cx, cy, cw, ch) {
+                            context.drawImage(img, x, y, w, h, cx, cy, cw, ch);
+                        };
                         context.restore();
 
                         if (typeof callback === 'function') {
@@ -141,15 +155,37 @@ class App extends Component {
             photoFile = target.refs['photo-file'];
             context = canvas.getContext('2d');
 
-            readImage(target.refs['photo-file'], context, canvas, function (c) {
-                drawV(context, canvas, c, function (canvas) {
-                    drawQR(context, canvas, c);
-                    $getModal()
-                        .modal('setting', 'closable', false)
-                        .modal('show');
-                });
-            });
+            redraw(context, canvas);
+
+            listenGestures();
         };
+
+        function listenGestures() {
+            let myCanvas = document.getElementById('photo-canvas');
+            let mc = new Hammer(myCanvas);
+            mc.on('pan', function (event) {
+                canvasOffsetX += event.deltaX;
+                if (canvasOffsetX > maxXRange / 2) {
+                    canvasOffsetX = maxXRange / 2;
+                }
+
+                if (canvasOffsetX < -maxXRange / 2) {
+                    canvasOffsetX = -maxXRange / 2;
+                }
+
+                canvasOffsetY += event.deltaY;
+                if (canvasOffsetY > maxYRange / 2) {
+                    canvasOffsetY = maxYRange / 2;
+                }
+
+                if (canvasOffsetY < -maxYRange / 2) {
+                    canvasOffsetY = -maxYRange / 2;
+                }
+
+                // readImage(photoFile, context, canvas);
+                redraw(context, canvas);
+            });
+        }
 
         this.clear = function () {
             self.setState({
@@ -163,11 +199,37 @@ class App extends Component {
             if (photoFile) {
                 photoFile.value = null;
             }
+
+            canvasOffsetX = 0;
+            canvasOffsetY = 0;
         };
 
         this.generateImage = function () {
             convertToPng(canvas);
             $getModal().modal('hide');
+        };
+
+        this.onTouchStart = function (proxy, event) {
+        };
+
+        this.onTouchMove = function () {
+        };
+
+        this.onTouchEnd = function () {
+        };
+
+        this.onTouchCancel = function () {
+        };
+
+        function redraw(context, canvas) {
+            readImage(photoFile, context, canvas, function (c) {
+                drawV(context, canvas, c, function (canvas) {
+                    drawQR(context, canvas, c);
+                    $getModal()
+                        .modal('setting', 'closable', false)
+                        .modal('show');
+                });
+            });
         }
     }
 
@@ -217,7 +279,10 @@ class App extends Component {
                 <div className="ui fullscreen modal canvas">
                     <div className="image content">
                         <canvas id="photo-canvas" ref="photo-canvas"
-                                style={{'width': '100%', 'height': 'auto', border: 'solid 1px black'}}/>
+                                style={{'width': '100%', 'height': 'auto', border: 'solid 1px black'}}
+                                onTouchStart={this.onTouchStart} onTouchMove={this.onTouchMove}
+                                onTouchEnd={this.onTouchEnd}
+                                onTouchCancel={this.onTouchCancel}/>
                     </div>
                     <div className="actions">
                         <div className="ui black deny button" onClick={this.clear}>重来</div>
