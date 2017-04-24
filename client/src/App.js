@@ -5,6 +5,15 @@ import qr from '../public/v/v-qr.png';
 import v from '../public/v/v.png';
 import './semantic-ui/semantic.min.css';
 import './App.css';
+import $ from 'jquery';
+window.jQuery = $;
+console.log('window = ', window);
+console.log('window jquery = ', jQuery);
+if (typeof window !== 'undefined' && window.jQuery && typeof jQuery !== 'undefined') {
+    console.log('the window = ', window);
+    console.log('jQuery = ', jQuery);
+    require('./semantic-ui/semantic.min.js');
+}
 
 class App extends Component {
     constructor() {
@@ -122,6 +131,11 @@ class App extends Component {
         let canvas = null;
         let context = null;
         let photoFile = null;
+
+        function $getModal() {
+            return $('.ui.modal.canvas');
+        }
+
         this.onPhotoSelected = function (target) {
             canvas = target.refs['photo-canvas'];
             photoFile = target.refs['photo-file'];
@@ -129,7 +143,10 @@ class App extends Component {
 
             readImage(target.refs['photo-file'], context, canvas, function (c) {
                 drawV(context, canvas, c, function (canvas) {
-                    drawQR(context, canvas, c, convertToPng);
+                    drawQR(context, canvas, c);
+                    $getModal()
+                        .modal('setting', 'closable', false)
+                        .modal('show');
                 });
             });
         };
@@ -147,6 +164,11 @@ class App extends Component {
                 photoFile.value = null;
             }
         };
+
+        this.generateImage = function () {
+            convertToPng(canvas);
+            $getModal().modal('hide');
+        }
     }
 
     render() {
@@ -167,12 +189,14 @@ class App extends Component {
                         <div className="field">
                             {
                                 this.state.imgSrc ?
-                                    <button type="reset" className="ui button" onClick={this.clear}>清除</button>
+                                    <button type="reset" className="ui black deny button" onClick={this.clear}>
+                                        清除</button>
                                     : ''
                             }
 
                         </div>
-                        <div className="field" style={{position: 'relative'}}>
+                        <div className="field"
+                             style={{position: 'relative', border: 'solid 1px black', minHeight: '150px'}}>
                             <div className="hidden-input mask">
                                 <input type="file" name="photo" onChange={() => this.onPhotoSelected(this)}
                                        ref="photo-file"
@@ -181,15 +205,27 @@ class App extends Component {
                             <div className="before-upload mask">
                                 <h1>点击此处选择图片</h1>
                             </div>
-                            <div className="image mask" style={this.state.imgSrc ? {} : {display: 'none'}}>
+                            <a className="image mask" style={this.state.imgSrc ? {} : {display: 'none'}} target="_blank"
+                               href={this.state.imgSrc}>
                                 <img src={this.state.imgSrc} alt="v"
                                      style={{width: '100%', height: '100%', background: 'white'}}/>
-                            </div>
-
-                            <canvas id="photo-canvas" ref="photo-canvas"
-                                    style={{'width': '100%', 'height': 'auto', border: 'solid 1px black'}}/>
+                            </a>
                         </div>
                     </form>
+                </div>
+
+                <div className="ui fullscreen modal canvas">
+                    <div className="image content">
+                        <canvas id="photo-canvas" ref="photo-canvas"
+                                style={{'width': '100%', 'height': 'auto', border: 'solid 1px black'}}/>
+                    </div>
+                    <div className="actions">
+                        <div className="ui black deny button" onClick={this.clear}>重来</div>
+                        <div className="ui positive right labeled icon button" onClick={this.generateImage}>
+                            确定
+                            <i className="checkmark icon"/>
+                        </div>
+                    </div>
                 </div>
             </div>
         );

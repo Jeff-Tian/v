@@ -39,6 +39,10 @@
     overflow: hidden;
 }
 
+.image.mask {
+    position: relative;
+}
+
 .hidden-input input {
     width: 100%;
     height: 100%;
