@@ -49,6 +49,15 @@ function publicRouter(app, router, render) {
         maxage: 1000 * 60 * 60 * 24 * 360
     })));
 
+    app.use(mount('/node_modules', serveStatic('client/node_modules', {
+        gzip: true,
+        maxage: 1000 * 60 * 60 * 24 * 360
+    })));
+    app.use(mount('/src', serveStatic('client/src', {
+        gzip: true,
+        maxage: 1000 * 60 * 60 * 24 * 360
+    })));
+
     router
         .get('/sign-in', renderIndexResponse)
     ;

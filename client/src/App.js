@@ -5,16 +5,6 @@ import qr from '../public/v/v-qr.png';
 import v from '../public/v/v.png';
 import './semantic-ui/semantic.min.css';
 import './App.css';
-import $ from 'jquery';
-window.jQuery = $;
-console.log('window = ', window);
-console.log('window jquery = ', jQuery);
-if (typeof window !== 'undefined' && window.jQuery && typeof jQuery !== 'undefined') {
-    console.log('the window = ', window);
-    console.log('jQuery = ', jQuery);
-    require('./semantic-ui/semantic.min.js');
-    require('./hammer/hammer.min');
-}
 
 class App extends Component {
     constructor() {
@@ -24,6 +14,9 @@ class App extends Component {
             imgSrc: ''
         };
 
+        let maxXRange = 0;
+        let maxYRange = 0;
+        
         function drawInscribedCircle(context, canvas) {
             if (canvas.width > canvas.height) {
                 maxXRange = canvas.width - canvas.height;
@@ -55,8 +48,6 @@ class App extends Component {
         let minHeight = 400;
         let canvasOffsetX = 0;
         let canvasOffsetY = 0;
-        let maxXRange = 0;
-        let maxYRange = 0;
 
         function readImage(target, context, canvas, callback) {
             if (target.files && target.files[0]) {
@@ -147,6 +138,8 @@ class App extends Component {
         let photoFile = null;
 
         function $getModal() {
+            let $ = window.jQuery;
+
             return $('.ui.modal.canvas');
         }
 
@@ -162,7 +155,7 @@ class App extends Component {
 
         function listenGestures() {
             let myCanvas = document.getElementById('photo-canvas');
-            let mc = new Hammer(myCanvas);
+            let mc = new window.Hammer(myCanvas);
             mc.on('pan', function (event) {
                 canvasOffsetX += event.deltaX;
                 if (canvasOffsetX > maxXRange / 2) {
