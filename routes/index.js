@@ -44,11 +44,6 @@ function secure(app, router, render) {
 }
 
 function publicRouter(app, router, render) {
-    app.use(mount('/static', serveStatic('client/build/static', {
-        gzip: true,
-        maxage: 1000 * 60 * 60 * 24 * 360
-    })));
-
     app.use(mount('/node_modules', serveStatic('client/node_modules', {
         gzip: true,
         maxage: 1000 * 60 * 60 * 24 * 360

@@ -62,3 +62,18 @@
 .before-upload h1 {
     width: 100%;
 }
+
+#the-image-wrapper {
+    position: relative;
+}
+
+#the-image-wrapper .image-mask {
+    content: ' ';
+    position: absolute;
+    width: 100%;
+    border: solid 1px red;
+}
+
+#the-image {
+    position: absolute;
+}

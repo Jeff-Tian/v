@@ -11,12 +11,19 @@ class App extends Component {
         super();
 
         this.state = {
-            imgSrc: ''
+            imgSrc: '',
+            selectedImageSrc: '',
+
+            theImageStyle: {
+                top: 0,
+                left: 0
+            }
         };
 
+        let self = this;
         let maxXRange = 0;
         let maxYRange = 0;
-        
+
         function drawInscribedCircle(context, canvas) {
             if (canvas.width > canvas.height) {
                 maxXRange = canvas.width - canvas.height;
@@ -49,6 +56,18 @@ class App extends Component {
         let canvasOffsetX = 0;
         let canvasOffsetY = 0;
 
+        function readImageFromFile(target, callback) {
+            if (target.files && target.files[0]) {
+                let fr = new FileReader();
+                fr.onload = function (e) {
+                    if (typeof callback === 'function') {
+                        callback(e.target.result);
+                    }
+                };
+                fr.readAsDataURL(target.files[0]);
+            }
+        }
+
         function readImage(target, context, canvas, callback) {
             if (target.files && target.files[0]) {
                 let fr = new FileReader();
@@ -59,8 +78,21 @@ class App extends Component {
                         if (img.height >= minHeight && img.width >= minWidth) {
                             canvas.width = img.width;
                             canvas.height = img.height;
+
+                            self.setState({
+                                theImageStyle: {
+                                    width: '100%',
+                                    height: 'auto'
+                                }
+                            });
                         } else {
                             canvas.height = canvas.width * img.height / img.width;
+                            self.setState({
+                                theImageStyle: {
+                                    width: '100%',
+                                    height: 'auto'
+                                }
+                            });
                         }
 
                         context.save();
@@ -125,8 +157,6 @@ class App extends Component {
             img.src = qr;
         }
 
-        let self = this;
-
         function convertToPng(canvas) {
             self.setState({
                 imgSrc: canvas.toDataURL('image/png')
@@ -148,13 +178,19 @@ class App extends Component {
             photoFile = target.refs['photo-file'];
             context = canvas.getContext('2d');
 
-            redraw(context, canvas);
+            readImageFromFile(photoFile, function (image) {
+                self.setState({
+                    selectedImageSrc: image
+                });
 
-            listenGestures();
+                redraw(context, canvas);
+
+                listenGestures();
+            });
         };
 
         function listenGestures() {
-            let myCanvas = document.getElementById('photo-canvas');
+            let myCanvas = document.getElementById('the-image');
             let mc = new window.Hammer(myCanvas);
             mc.on('pan', function (event) {
                 canvasOffsetX += event.deltaX;
@@ -175,8 +211,15 @@ class App extends Component {
                     canvasOffsetY = -maxYRange / 2;
                 }
 
+                self.setState({
+                    theImageStyle: {
+                        top: canvasOffsetY,
+                        left: canvasOffsetX
+                    }
+                });
+
                 // readImage(photoFile, context, canvas);
-                redraw(context, canvas);
+                // redraw(context, canvas);
             });
         }
 
@@ -214,7 +257,7 @@ class App extends Component {
         this.onTouchCancel = function () {
         };
 
-        function redraw(context, canvas) {
+        function redraw(context, canvas, callback) {
             readImage(photoFile, context, canvas, function (c) {
                 drawV(context, canvas, c, function (canvas) {
                     drawQR(context, canvas, c);
@@ -271,12 +314,26 @@ class App extends Component {
 
                 <div className="ui fullscreen modal canvas">
                     <div className="image content">
+                        <div id="the-image-wrapper">
+                            <img className="image-mask" src={this.state.selectedImageSrc} alt="v"/>
+                            <img id="the-image" ref="image" src={this.state.selectedImageSrc} alt="v"
+                                 style={Object.assign({
+                                     maxWidth: '100%',
+                                     height: 'auto',
+                                     display: 'none'
+                                 }, this.state.theImageStyle)}/>
+                        </div>
                         <canvas id="photo-canvas" ref="photo-canvas"
-                                style={{'width': '100%', 'height': 'auto', border: 'solid 1px black'}}
+                                style={{
+                                    'width': '100%',
+                                    'height': 'auto',
+                                    border: 'solid 1px black',
+                                    visibility: 'hidden'
+                                }}
                                 onTouchStart={this.onTouchStart} onTouchMove={this.onTouchMove}
                                 onTouchEnd={this.onTouchEnd}
                                 onTouchCancel={this.onTouchCancel}/>
-                    </div>
+                    </div>`
                     <div className="actions">
                         <div className="ui black deny button" onClick={this.clear}>重来</div>
                         <div className="ui positive right labeled icon button" onClick={this.generateImage}>
