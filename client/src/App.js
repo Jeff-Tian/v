@@ -17,6 +17,18 @@ class App extends Component {
             theImageStyle: {
                 top: 0,
                 left: 0
+            },
+
+            theImageCropStyle: {
+                top: 0,
+                left: 0,
+                width: '100px',
+                height: '100px'
+            },
+
+            theCroppingImageStyle: {
+                width: '100%',
+                height: 'auto'
             }
         };
 
@@ -183,7 +195,32 @@ class App extends Component {
                     selectedImageSrc: image
                 });
 
-                redraw(context, canvas);
+                redraw(context, canvas, function () {
+                    let imageMask = document.getElementById('the-image-mask');
+                    let diameter = Math.min(imageMask.offsetWidth, imageMask.offsetHeight);
+
+                    let theImageCropStyle = {
+                        width: diameter + 'px',
+                        height: diameter + 'px'
+                    };
+
+                    if (imageMask.offsetWidth > imageMask.offsetHeight && imageMask.offsetWidth > diameter) {
+                        theImageCropStyle.left = ((imageMask.offsetWidth - diameter) / 2) + 'px';
+                    }
+
+                    if (imageMask.offsetHeight > imageMask.offsetWidth && imageMask.offsetHeight > diameter) {
+                        theImageCropStyle.top = ((imageMask.offsetHeight - diameter) / 2) + 'px';
+                    }
+
+                    self.setState({
+                        theImageCropStyle: theImageCropStyle,
+                        theCroppingImageStyle: {
+                            width: imageMask.offsetWidth + 'px',
+                            height: imageMask.offsetHeight + 'px'
+                        }
+                    });
+
+                });
 
                 listenGestures();
             });
@@ -264,6 +301,10 @@ class App extends Component {
                     $getModal()
                         .modal('setting', 'closable', false)
                         .modal('show');
+
+                    if (typeof callback === 'function') {
+                        callback();
+                    }
                 });
             });
         }
@@ -315,7 +356,11 @@ class App extends Component {
                 <div className="ui fullscreen modal canvas">
                     <div className="image content">
                         <div id="the-image-wrapper">
-                            <img className="image-mask" src={this.state.selectedImageSrc} alt="v"/>
+                            <img id="the-image-mask" className="image-mask" src={this.state.selectedImageSrc} alt="v"/>
+                            <div className="image-crop" style={this.state.theImageCropStyle}>
+                                <img src={this.state.selectedImageSrc} alt="v"
+                                     style={this.state.theCroppingImageStyle}/>
+                            </div>
                             <img id="the-image" ref="image" src={this.state.selectedImageSrc} alt="v"
                                  style={Object.assign({
                                      maxWidth: '100%',
@@ -333,7 +378,8 @@ class App extends Component {
                                 onTouchStart={this.onTouchStart} onTouchMove={this.onTouchMove}
                                 onTouchEnd={this.onTouchEnd}
                                 onTouchCancel={this.onTouchCancel}/>
-                    </div>`
+                    </div>
+                    `
                     <div className="actions">
                         <div className="ui black deny button" onClick={this.clear}>重来</div>
                         <div className="ui positive right labeled icon button" onClick={this.generateImage}>

@@ -68,10 +68,21 @@
 }
 
 #the-image-wrapper .image-mask {
-    content: ' ';
     position: absolute;
     width: 100%;
     border: solid 1px red;
+    opacity: 0.2;
+    background-color: black;
+}
+
+#the-image-wrapper .image-crop {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    display: block;
+    border: solid 2px blue;
+    overflow: hidden;
+    border-radius: 50%;
 }
 
 #the-image {
