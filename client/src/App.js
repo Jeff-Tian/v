@@ -28,7 +28,8 @@ class App extends Component {
 
             theCroppingImageStyle: {
                 width: '100%',
-                height: 'auto'
+                height: 'auto',
+                position: 'absolute'
             }
         };
 
@@ -214,10 +215,10 @@ class App extends Component {
 
                     self.setState({
                         theImageCropStyle: theImageCropStyle,
-                        theCroppingImageStyle: {
+                        theCroppingImageStyle: Object.assign({}, self.state.theCroppingImageStyle, {
                             width: imageMask.offsetWidth + 'px',
                             height: imageMask.offsetHeight + 'px'
-                        }
+                        })
                     });
 
                 });
@@ -227,7 +228,7 @@ class App extends Component {
         };
 
         function listenGestures() {
-            let myCanvas = document.getElementById('the-image');
+            let myCanvas = document.getElementById('image-crop');
             let mc = new window.Hammer(myCanvas);
             mc.on('pan', function (event) {
                 canvasOffsetX += event.deltaX;
@@ -249,10 +250,14 @@ class App extends Component {
                 }
 
                 self.setState({
-                    theImageStyle: {
+                    theImageStyle: Object.assign({}, self.state.theImageStyle, {
                         top: canvasOffsetY,
                         left: canvasOffsetX
-                    }
+                    }),
+                    theCroppingImageStyle: Object.assign({}, self.state.theCroppingImageStyle, {
+                        top: -canvasOffsetY,
+                        left: -canvasOffsetX
+                    })
                 });
 
                 // readImage(photoFile, context, canvas);
@@ -357,7 +362,7 @@ class App extends Component {
                     <div className="image content">
                         <div id="the-image-wrapper">
                             <img id="the-image-mask" className="image-mask" src={this.state.selectedImageSrc} alt="v"/>
-                            <div className="image-crop" style={this.state.theImageCropStyle}>
+                            <div className="image-crop" id="image-crop" style={this.state.theImageCropStyle}>
                                 <img src={this.state.selectedImageSrc} alt="v"
                                      style={this.state.theCroppingImageStyle}/>
                             </div>
