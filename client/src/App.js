@@ -30,6 +30,11 @@ class App extends Component {
                 width: '100%',
                 height: 'auto',
                 position: 'absolute'
+            },
+
+            theImageMaskStyle: {
+                top: 0,
+                left: 0
             }
         };
 
@@ -257,6 +262,10 @@ class App extends Component {
                     theCroppingImageStyle: Object.assign({}, self.state.theCroppingImageStyle, {
                         top: -canvasOffsetY,
                         left: -canvasOffsetX
+                    }),
+                    theImageMaskStyle: Object.assign({}, self.state.theImageMaskStyle, {
+                        top: -canvasOffsetY + parseFloat(self.state.theImageCropStyle.top),
+                        left: -canvasOffsetX + parseFloat(self.state.theImageCropStyle.left)
                     })
                 });
 
@@ -361,7 +370,8 @@ class App extends Component {
                 <div className="ui fullscreen modal canvas">
                     <div className="image content">
                         <div id="the-image-wrapper">
-                            <img id="the-image-mask" className="image-mask" src={this.state.selectedImageSrc} alt="v"/>
+                            <img id="the-image-mask" className="image-mask" src={this.state.selectedImageSrc} alt="v"
+                                 style={this.state.theImageMaskStyle}/>
                             <div className="image-crop" id="image-crop" style={this.state.theImageCropStyle}>
                                 <img src={this.state.selectedImageSrc} alt="v"
                                      style={this.state.theCroppingImageStyle}/>
