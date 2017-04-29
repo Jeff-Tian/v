@@ -3,6 +3,8 @@ import React, {Component} from 'react';
 import logo from '../public/v/v.png';
 import qr from '../public/v/v-qr.png';
 import v from '../public/v/v.png';
+import vDecorator from './image-decorators/v.js';
+import qrDecorator from './image-decorators/qr';
 import './semantic-ui/semantic.min.css';
 import './App.css';
 
@@ -44,10 +46,10 @@ class App extends Component {
 
         function drawInscribedCircle(context, canvas) {
             if (canvas.width > canvas.height) {
-                maxXRange = canvas.width - canvas.height;
+                maxXRange = (canvas.width - canvas.height) / 2;
                 maxYRange = 0;
             } else {
-                maxYRange = canvas.height - canvas.width;
+                maxYRange = (canvas.height - canvas.width) / 2;
                 maxXRange = 0;
             }
 
@@ -138,43 +140,6 @@ class App extends Component {
             }
         }
 
-        function drawV(context, canvas, c, callback) {
-            const img = new Image();
-            img.onload = function () {
-                let vCenter = {
-                    x: c.radius / Math.sqrt(2),
-                    y: c.radius / Math.sqrt(2)
-                };
-                let width = 2 * c.radius / 3.82;
-                let height = width * img.height / img.width;
-                context.drawImage(img, 0, 0, img.width, img.height, c.center.x + vCenter.x - width / 2, c.center.y + vCenter.y - height / 2, width, height);
-
-                if (typeof callback === 'function') {
-                    callback(canvas);
-                }
-            };
-            img.src = v;
-        }
-
-        function drawQR(context, canvas, c, callback) {
-            const img = new Image();
-            img.onload = function () {
-                let qrCenter = c.center;
-                // let width = Math.max(2 * c.radius / 6.18, 97);
-                let width = 2 * c.radius / 6.18;
-                // let ratio = canvas.width / canvas.height;
-                // canvas.height = Math.max(canvas.height, 600);
-                // canvas.width = canvas.height * ratio;
-                let height = width * img.height / img.width;
-                context.drawImage(img, 0, 0, img.width, img.height, qrCenter.x - width / 2, qrCenter.y - height / 2, width, height);
-
-                if (typeof callback === 'function') {
-                    callback(canvas);
-                }
-            };
-            img.src = qr;
-        }
-
         function convertToPng(canvas) {
             self.setState({
                 imgSrc: canvas.toDataURL('image/png')
@@ -211,18 +176,27 @@ class App extends Component {
                     };
 
                     if (imageMask.offsetWidth > imageMask.offsetHeight && imageMask.offsetWidth > diameter) {
-                        theImageCropStyle.left = ((imageMask.offsetWidth - diameter) / 2) + 'px';
+                        maxXRange = (imageMask.offsetWidth - diameter) / 2;
+                    } else {
+                        maxXRange = 0;
                     }
+                    theImageCropStyle.left = maxXRange + 'px';
 
                     if (imageMask.offsetHeight > imageMask.offsetWidth && imageMask.offsetHeight > diameter) {
-                        theImageCropStyle.top = ((imageMask.offsetHeight - diameter) / 2) + 'px';
+                        maxYRange = (imageMask.offsetHeight - diameter) / 2;
+                        console.log('maxYRange = ', maxYRange);
+                    } else {
+                        maxYRange = 0;
                     }
+                    theImageCropStyle.top = maxYRange + 'px';
 
                     self.setState({
                         theImageCropStyle: theImageCropStyle,
                         theCroppingImageStyle: Object.assign({}, self.state.theCroppingImageStyle, {
                             width: imageMask.offsetWidth + 'px',
-                            height: imageMask.offsetHeight + 'px'
+                            height: imageMask.offsetHeight + 'px',
+                            left: -maxXRange,
+                            top: -maxYRange
                         })
                     });
 
@@ -237,21 +211,21 @@ class App extends Component {
             let mc = new window.Hammer(myCanvas);
             mc.on('pan', function (event) {
                 canvasOffsetX += event.deltaX;
-                if (canvasOffsetX > maxXRange / 2) {
-                    canvasOffsetX = maxXRange / 2;
+                if (canvasOffsetX > maxXRange) {
+                    canvasOffsetX = maxXRange;
                 }
 
-                if (canvasOffsetX < -maxXRange / 2) {
-                    canvasOffsetX = -maxXRange / 2;
+                if (canvasOffsetX < -maxXRange) {
+                    canvasOffsetX = -maxXRange;
                 }
 
                 canvasOffsetY += event.deltaY;
-                if (canvasOffsetY > maxYRange / 2) {
-                    canvasOffsetY = maxYRange / 2;
+                if (canvasOffsetY > maxYRange) {
+                    canvasOffsetY = maxYRange;
                 }
 
-                if (canvasOffsetY < -maxYRange / 2) {
-                    canvasOffsetY = -maxYRange / 2;
+                if (canvasOffsetY < -maxYRange) {
+                    canvasOffsetY = -maxYRange;
                 }
 
                 self.setState({
@@ -292,8 +266,11 @@ class App extends Component {
         };
 
         this.generateImage = function () {
-            convertToPng(canvas);
-            $getModal().modal('hide');
+            redraw(context, canvas, function () {
+                convertToPng(canvas);
+
+                $getModal().modal('hide');
+            });
         };
 
         this.onTouchStart = function (proxy, event) {
@@ -310,12 +287,11 @@ class App extends Component {
 
         function redraw(context, canvas, callback) {
             readImage(photoFile, context, canvas, function (c) {
-                drawV(context, canvas, c, function (canvas) {
-                    drawQR(context, canvas, c);
+                vDecorator.decorate(canvas, context, c, v, function (canvas) {
+                    qrDecorator.decorate(canvas, context, c, qr, callback);
                     $getModal()
                         .modal('setting', 'closable', false)
                         .modal('show');
-
                     if (typeof callback === 'function') {
                         callback();
                     }
