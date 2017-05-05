@@ -7,6 +7,16 @@ import vDecorator from './image-decorators/v.js';
 import qrDecorator from './image-decorators/qr';
 import './semantic-ui/semantic.min.css';
 import './App.css';
+import shape from './image-decorators/shape';
+import fs from './fs/fs';
+
+let maxXRange = 0;
+let maxYRange = 0;
+
+let minWidth = 400;
+let minHeight = 400;
+let canvasOffsetX = 0;
+let canvasOffsetY = 0;
 
 class App extends Component {
     constructor() {
@@ -41,103 +51,17 @@ class App extends Component {
         };
 
         let self = this;
-        let maxXRange = 0;
-        let maxYRange = 0;
 
-        function drawInscribedCircle(context, canvas) {
-            if (canvas.width > canvas.height) {
-                maxXRange = (canvas.width - canvas.height) / 2;
-                maxYRange = 0;
-            } else {
-                maxYRange = (canvas.height - canvas.width) / 2;
-                maxXRange = 0;
-            }
+        function cropImage(image, context, canvas, callback) {
+            const img = new Image();
+            img.onload = function () {
+                let c = self.cropImage(img, minHeight, minWidth, canvas, context, canvasOffsetX, canvasOffsetY);
 
-            let center = {
-                x: canvas.width / 2,
-                y: canvas.height / 2
+                if (typeof callback === 'function') {
+                    callback(c);
+                }
             };
-
-            let radius = Math.min(center.x, center.y);
-
-            context.beginPath();
-            context.arc(center.x, center.y, radius, 0, Math.PI * 2, false);
-            context.stroke();
-            context.closePath();
-
-            return {
-                center: center,
-                radius: radius
-            };
-        }
-
-        let minWidth = 400;
-        let minHeight = 400;
-        let canvasOffsetX = 0;
-        let canvasOffsetY = 0;
-
-        function readImageFromFile(target, callback) {
-            if (target.files && target.files[0]) {
-                let fr = new FileReader();
-                fr.onload = function (e) {
-                    if (typeof callback === 'function') {
-                        callback(e.target.result);
-                    }
-                };
-                fr.readAsDataURL(target.files[0]);
-            }
-        }
-
-        function readImage(target, context, canvas, callback) {
-            if (target.files && target.files[0]) {
-                let fr = new FileReader();
-
-                fr.onload = function (e) {
-                    const img = new Image();
-                    img.onload = function () {
-                        if (img.height >= minHeight && img.width >= minWidth) {
-                            canvas.width = img.width;
-                            canvas.height = img.height;
-
-                            self.setState({
-                                theImageStyle: {
-                                    width: '100%',
-                                    height: 'auto'
-                                }
-                            });
-                        } else {
-                            canvas.height = canvas.width * img.height / img.width;
-                            self.setState({
-                                theImageStyle: {
-                                    width: '100%',
-                                    height: 'auto'
-                                }
-                            });
-                        }
-
-                        context.save();
-                        let c = drawInscribedCircle(context, canvas);
-
-                        if (img.height < minHeight || img.width < minWidth) {
-                            context.scale(canvas.width / img.width, canvas.height / img.height);
-                        }
-
-                        context.clip();
-                        context.drawImage(img, 0, 0, img.width, img.height, canvasOffsetX, canvasOffsetY, img.width, img.height);
-                        window.drawImage = function (x, y, w, h, cx, cy, cw, ch) {
-                            context.drawImage(img, x, y, w, h, cx, cy, cw, ch);
-                        };
-                        context.restore();
-
-                        if (typeof callback === 'function') {
-                            callback(c);
-                        }
-                    };
-                    img.src = e.target.result;
-                };
-
-                fr.readAsDataURL(target.files[0]);
-            }
+            img.src = image;
         }
 
         function convertToPng(canvas) {
@@ -161,47 +85,13 @@ class App extends Component {
             photoFile = target.refs['photo-file'];
             context = canvas.getContext('2d');
 
-            readImageFromFile(photoFile, function (image) {
+            fs.readImageFromFile(photoFile, function (image) {
                 self.setState({
                     selectedImageSrc: image
                 });
-
-                redraw(context, canvas, function () {
-                    let imageMask = document.getElementById('the-image-mask');
-                    let diameter = Math.min(imageMask.offsetWidth, imageMask.offsetHeight);
-
-                    let theImageCropStyle = {
-                        width: diameter + 'px',
-                        height: diameter + 'px'
-                    };
-
-                    if (imageMask.offsetWidth > imageMask.offsetHeight && imageMask.offsetWidth > diameter) {
-                        maxXRange = (imageMask.offsetWidth - diameter) / 2;
-                    } else {
-                        maxXRange = 0;
-                    }
-                    theImageCropStyle.left = maxXRange + 'px';
-
-                    if (imageMask.offsetHeight > imageMask.offsetWidth && imageMask.offsetHeight > diameter) {
-                        maxYRange = (imageMask.offsetHeight - diameter) / 2;
-                        console.log('maxYRange = ', maxYRange);
-                    } else {
-                        maxYRange = 0;
-                    }
-                    theImageCropStyle.top = maxYRange + 'px';
-
-                    self.setState({
-                        theImageCropStyle: theImageCropStyle,
-                        theCroppingImageStyle: Object.assign({}, self.state.theCroppingImageStyle, {
-                            width: imageMask.offsetWidth + 'px',
-                            height: imageMask.offsetHeight + 'px',
-                            left: -maxXRange,
-                            top: -maxYRange
-                        })
-                    });
-
+                cropAndDrawVAndQR(image, context, canvas, function () {
+                    self.setCropperStyles();
                 });
-
                 listenGestures();
             });
         };
@@ -266,27 +156,15 @@ class App extends Component {
         };
 
         this.generateImage = function () {
-            redraw(context, canvas, function () {
+            cropAndDrawVAndQR(document.getElementById('the-image-mask').src, context, canvas, function () {
                 convertToPng(canvas);
 
                 $getModal().modal('hide');
             });
         };
 
-        this.onTouchStart = function (proxy, event) {
-        };
-
-        this.onTouchMove = function () {
-        };
-
-        this.onTouchEnd = function () {
-        };
-
-        this.onTouchCancel = function () {
-        };
-
-        function redraw(context, canvas, callback) {
-            readImage(photoFile, context, canvas, function (c) {
+        function cropAndDrawVAndQR(image, context, canvas, callback) {
+            cropImage(image, context, canvas, function (c) {
                 vDecorator.decorate(canvas, context, c, v, function (canvas) {
                     qrDecorator.decorate(canvas, context, c, qr, callback);
                     $getModal()
@@ -296,6 +174,90 @@ class App extends Component {
                         callback();
                     }
                 });
+            });
+        }
+    }
+
+    setCropperStyles() {
+        let imageMask = document.getElementById('the-image-mask');
+        let diameter = Math.min(imageMask.offsetWidth, imageMask.offsetHeight);
+        let theImageCropStyle = {
+            width: diameter + 'px',
+            height: diameter + 'px'
+        };
+        if (imageMask.offsetWidth > imageMask.offsetHeight && imageMask.offsetWidth > diameter) {
+            maxXRange = (imageMask.offsetWidth - diameter) / 2;
+        } else {
+            maxXRange = 0;
+        }
+        theImageCropStyle.left = maxXRange + 'px';
+        if (imageMask.offsetHeight > imageMask.offsetWidth && imageMask.offsetHeight > diameter) {
+            maxYRange = (imageMask.offsetHeight - diameter) / 2;
+            console.log('maxYRange = ', maxYRange);
+        } else {
+            maxYRange = 0;
+        }
+        theImageCropStyle.top = maxYRange + 'px';
+        this.setState({
+            theImageCropStyle: theImageCropStyle,
+            theCroppingImageStyle: Object.assign({}, this.state.theCroppingImageStyle, {
+                width: imageMask.offsetWidth + 'px',
+                height: imageMask.offsetHeight + 'px',
+                left: -maxXRange,
+                top: -maxYRange
+            })
+        });
+    }
+
+    cropImage(img, minHeight, minWidth, canvas, context, canvasOffsetX, canvasOffsetY) {
+
+        function drawInscribedCircle(context, canvas) {
+            if (canvas.width > canvas.height) {
+                maxXRange = (canvas.width - canvas.height) / 2;
+                maxYRange = 0;
+            } else {
+                maxYRange = (canvas.height - canvas.width) / 2;
+                maxXRange = 0;
+            }
+
+            return shape.drawInscribedCircle(canvas, context);
+        }
+
+        this.adjustImageStyles(img, minHeight, minWidth, canvas, this);
+
+        context.save();
+        let c = drawInscribedCircle(context, canvas);
+        this.scaleCanvas(img, minHeight, minWidth, context, canvas);
+        context.clip();
+        context.drawImage(img, 0, 0, img.width, img.height, canvasOffsetX, canvasOffsetY, img.width, img.height);
+        context.restore();
+        return c;
+    }
+
+    scaleCanvas(img, minHeight, minWidth, context, canvas) {
+        if (img.height < minHeight || img.width < minWidth) {
+            context.scale(canvas.width / img.width, canvas.height / img.height);
+        }
+    }
+
+    adjustImageStyles(img, minHeight, minWidth, canvas, self) {
+        if (img.height >= minHeight && img.width >= minWidth) {
+            canvas.width = img.width;
+            canvas.height = img.height;
+
+            self.setState({
+                theImageStyle: {
+                    width: '100%',
+                    height: 'auto'
+                }
+            });
+        } else {
+            canvas.height = canvas.width * img.height / img.width;
+            self.setState({
+                theImageStyle: {
+                    width: '100%',
+                    height: 'auto'
+                }
             });
         }
     }
