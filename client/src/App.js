@@ -17,6 +17,9 @@ let minWidth = 400;
 let minHeight = 400;
 let canvasOffsetX = 0;
 let canvasOffsetY = 0;
+let self = null;
+
+let dragData = {};
 
 class App extends Component {
     constructor() {
@@ -50,7 +53,7 @@ class App extends Component {
             }
         };
 
-        let self = this;
+        self = this;
 
         function cropImage(image, context, canvas, callback) {
             const img = new Image();
@@ -88,55 +91,8 @@ class App extends Component {
                     App.showModal();
                     self.setCropperStyles();
                 };
-
-                // cropAndDrawVAndQR(image, context, canvas, function () {
-                //     self.setCropperStyles();
-                // });
-                listenGestures();
             });
         };
-
-        function listenGestures() {
-            let myCanvas = document.getElementById('image-crop');
-            let mc = new window.Hammer(myCanvas);
-            mc.on('pan', function (event) {
-                canvasOffsetX += event.deltaX;
-                if (canvasOffsetX > maxXRange) {
-                    canvasOffsetX = maxXRange;
-                }
-
-                if (canvasOffsetX < -maxXRange) {
-                    canvasOffsetX = -maxXRange;
-                }
-
-                canvasOffsetY += event.deltaY;
-                if (canvasOffsetY > maxYRange) {
-                    canvasOffsetY = maxYRange;
-                }
-
-                if (canvasOffsetY < -maxYRange) {
-                    canvasOffsetY = -maxYRange;
-                }
-
-                self.setState({
-                    theImageStyle: Object.assign({}, self.state.theImageStyle, {
-                        top: canvasOffsetY,
-                        left: canvasOffsetX
-                    }),
-                    theCroppingImageStyle: Object.assign({}, self.state.theCroppingImageStyle, {
-                        top: -canvasOffsetY,
-                        left: -canvasOffsetX
-                    }),
-                    theImageMaskStyle: Object.assign({}, self.state.theImageMaskStyle, {
-                        top: -canvasOffsetY + parseFloat(self.state.theImageCropStyle.top),
-                        left: -canvasOffsetX + parseFloat(self.state.theImageCropStyle.left)
-                    })
-                });
-
-                // readImage(photoFile, context, canvas);
-                // redraw(context, canvas);
-            });
-        }
 
         this.clear = function () {
             self.setState({
@@ -174,6 +130,43 @@ class App extends Component {
                 });
             });
         }
+    }
+
+    updateImagePosition(dragData) {
+        let event = {deltaX: dragData.delta.x, deltaY: dragData.delta.y};
+
+        canvasOffsetX += event.deltaX;
+        if (canvasOffsetX > maxXRange) {
+            canvasOffsetX = maxXRange;
+        }
+
+        if (canvasOffsetX < -maxXRange) {
+            canvasOffsetX = -maxXRange;
+        }
+
+        canvasOffsetY += event.deltaY;
+        if (canvasOffsetY > maxYRange) {
+            canvasOffsetY = maxYRange;
+        }
+
+        if (canvasOffsetY < -maxYRange) {
+            canvasOffsetY = -maxYRange;
+        }
+
+        self.setState({
+            theImageStyle: Object.assign({}, self.state.theImageStyle, {
+                top: canvasOffsetY,
+                left: canvasOffsetX
+            }),
+            theCroppingImageStyle: Object.assign({}, self.state.theCroppingImageStyle, {
+                top: -canvasOffsetY,
+                left: -canvasOffsetX
+            }),
+            theImageMaskStyle: Object.assign({}, self.state.theImageMaskStyle, {
+                top: -canvasOffsetY + parseFloat(self.state.theImageCropStyle.top),
+                left: -canvasOffsetX + parseFloat(self.state.theImageCropStyle.left)
+            })
+        });
     }
 
     static hideModal() {
@@ -275,6 +268,28 @@ class App extends Component {
         }
     }
 
+    onDragStart(e) {
+        dragData = {start: {x: e.clientX, y: e.clientY}, delta: {x: 0, y: 0}};
+    }
+
+    onDrag(e) {
+        dragData.delta.x = e.clientX - dragData.start.x;
+        dragData.delta.y = e.clientY - dragData.start.y;
+
+        self.updateImagePosition(dragData);
+    }
+
+    onDragEnd(e) {
+        dragData.delta.x = e.clientX - dragData.start.x;
+        dragData.delta.y = e.clientY - dragData.start.y;
+
+        self.updateImagePosition(dragData);
+    }
+
+    onDragExit(e) {
+
+    }
+
     render() {
 
         return (
@@ -325,7 +340,9 @@ class App extends Component {
                                  style={this.state.theImageMaskStyle}/>
                             <div className="image-crop" id="image-crop" style={this.state.theImageCropStyle}>
                                 <img src={this.state.selectedImageSrc} alt="v"
-                                     style={this.state.theCroppingImageStyle}/>
+                                     style={this.state.theCroppingImageStyle} draggable={true}
+                                     onDragStart={this.onDragStart} onDrag={this.onDrag} onDragEnd={this.onDragEnd}
+                                     onDragExit={this.onDragExit}/>
                             </div>
                             <img id="the-image" ref="image" src={this.state.selectedImageSrc} alt="v"
                                  style={Object.assign({
