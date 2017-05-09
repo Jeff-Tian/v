@@ -135,7 +135,7 @@ class App extends Component {
     updateImagePosition(dragData) {
         let event = {deltaX: dragData.delta.x, deltaY: dragData.delta.y};
 
-        canvasOffsetX += event.deltaX;
+        canvasOffsetX = event.deltaX;
         if (canvasOffsetX > maxXRange) {
             canvasOffsetX = maxXRange;
         }
@@ -144,7 +144,7 @@ class App extends Component {
             canvasOffsetX = -maxXRange;
         }
 
-        canvasOffsetY += event.deltaY;
+        canvasOffsetY = event.deltaY;
         if (canvasOffsetY > maxYRange) {
             canvasOffsetY = maxYRange;
         }
@@ -159,12 +159,12 @@ class App extends Component {
                 left: canvasOffsetX
             }),
             theCroppingImageStyle: Object.assign({}, self.state.theCroppingImageStyle, {
-                top: -canvasOffsetY,
-                left: -canvasOffsetX
+                top: parseFloat(dragData.theCroppingImageStyle.top) + canvasOffsetY,
+                left: parseFloat(dragData.theCroppingImageStyle.left) + canvasOffsetX
             }),
             theImageMaskStyle: Object.assign({}, self.state.theImageMaskStyle, {
-                top: -canvasOffsetY + parseFloat(self.state.theImageCropStyle.top),
-                left: -canvasOffsetX + parseFloat(self.state.theImageCropStyle.left)
+                top: canvasOffsetY + parseFloat(dragData.theImageMaskStyle.top),
+                left: canvasOffsetX + parseFloat(dragData.theImageMaskStyle.left)
             })
         });
     }
@@ -269,12 +269,20 @@ class App extends Component {
     }
 
     onDragStart(e) {
-        dragData = {start: {x: e.clientX, y: e.clientY}, delta: {x: 0, y: 0}};
+        dragData = {
+            start: {x: e.clientX, y: e.clientY},
+            delta: {x: 0, y: 0},
+            theCroppingImageStyle: self.state.theCroppingImageStyle,
+            theImageCropStyle: self.state.theImageCropStyle,
+            theImageMaskStyle: self.state.theImageMaskStyle
+        };
     }
 
     onDrag(e) {
         dragData.delta.x = e.clientX - dragData.start.x;
         dragData.delta.y = e.clientY - dragData.start.y;
+        console.log(dragData);
+        console.log(e.clientX, e.clientY);
 
         self.updateImagePosition(dragData);
     }
@@ -338,11 +346,12 @@ class App extends Component {
                         <div id="the-image-wrapper">
                             <img id="the-image-mask" className="image-mask" src={this.state.selectedImageSrc} alt="v"
                                  style={this.state.theImageMaskStyle}/>
-                            <div className="image-crop" id="image-crop" style={this.state.theImageCropStyle}>
+                            <div className="image-crop" id="image-crop" style={this.state.theImageCropStyle}
+                                 draggable={true}
+                                 onDragStart={this.onDragStart} onDrag={this.onDrag} onDragEnd={this.onDragEnd}
+                                 onDragExit={this.onDragExit}>
                                 <img src={this.state.selectedImageSrc} alt="v"
-                                     style={this.state.theCroppingImageStyle} draggable={true}
-                                     onDragStart={this.onDragStart} onDrag={this.onDrag} onDragEnd={this.onDragEnd}
-                                     onDragExit={this.onDragExit}/>
+                                     style={this.state.theCroppingImageStyle}/>
                             </div>
                             <img id="the-image" ref="image" src={this.state.selectedImageSrc} alt="v"
                                  style={Object.assign({
