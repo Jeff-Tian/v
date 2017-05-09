@@ -128,36 +128,42 @@ class App extends Component {
     }
 
     updateImagePosition(dragData) {
-        let event = {deltaX: dragData.delta.x, deltaY: dragData.delta.y};
+        self.setState({
+            theCroppingImageStyle: Object.assign({}, self.state.theCroppingImageStyle, {
+                top: parseFloat(dragData.theCroppingImageStyle.top) + dragData.delta.y,
+                left: parseFloat(dragData.theCroppingImageStyle.left) + dragData.delta.x
+            }),
+            theImageMaskStyle: Object.assign({}, self.state.theImageMaskStyle, {
+                top: dragData.delta.y + parseFloat(dragData.theImageMaskStyle.top),
+                left: dragData.delta.x + parseFloat(dragData.theImageMaskStyle.left)
+            })
+        });
+    }
 
-        canvasOffsetX = event.deltaX;
+    restrictDrag(dragData) {
+        canvasOffsetX += dragData.delta.x;
         if (canvasOffsetX > maxXRange) {
+            dragData.delta.x -= canvasOffsetX - maxXRange;
             canvasOffsetX = maxXRange;
         }
 
         if (canvasOffsetX < -maxXRange) {
+            dragData.delta.x -= canvasOffsetX + maxXRange;
             canvasOffsetX = -maxXRange;
         }
 
-        canvasOffsetY = event.deltaY;
+        canvasOffsetY += dragData.delta.y;
         if (canvasOffsetY > maxYRange) {
+            dragData.delta.y -= canvasOffsetY - maxYRange;
             canvasOffsetY = maxYRange;
         }
 
         if (canvasOffsetY < -maxYRange) {
+            dragData.delta.y -= canvasOffsetY + maxYRange;
             canvasOffsetY = -maxYRange;
         }
 
-        self.setState({
-            theCroppingImageStyle: Object.assign({}, self.state.theCroppingImageStyle, {
-                top: parseFloat(dragData.theCroppingImageStyle.top) + canvasOffsetY,
-                left: parseFloat(dragData.theCroppingImageStyle.left) + canvasOffsetX
-            }),
-            theImageMaskStyle: Object.assign({}, self.state.theImageMaskStyle, {
-                top: canvasOffsetY + parseFloat(dragData.theImageMaskStyle.top),
-                left: canvasOffsetX + parseFloat(dragData.theImageMaskStyle.left)
-            })
-        });
+        self.updateImagePosition(dragData);
     }
 
     static hideModal() {
@@ -274,7 +280,7 @@ class App extends Component {
 
         self.updateImagePosition(dragData);
 
-        return false;
+        self.restrictDrag(dragData);
     }
 
     onDragExit(e) {
@@ -290,7 +296,7 @@ class App extends Component {
     }
 
     onTouchEnd(e) {
-        // self.onDragEnd(e.touches[0]);
+        self.restrictDrag(dragData);
     }
 
     render() {
