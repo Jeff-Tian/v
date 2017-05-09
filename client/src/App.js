@@ -9,7 +9,6 @@ import './semantic-ui/semantic.min.css';
 import './App.css';
 import shape from './image-decorators/shape';
 import fs from './fs/fs';
-import ReactTouchPosition from './ReactTouchPosition/ReactTouchPosition';
 
 let maxXRange = 0;
 let maxYRange = 0;
