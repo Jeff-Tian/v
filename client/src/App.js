@@ -9,6 +9,7 @@ import './semantic-ui/semantic.min.css';
 import './App.css';
 import shape from './image-decorators/shape';
 import fs from './fs/fs';
+import ReactTouchPosition from './ReactTouchPosition/ReactTouchPosition';
 
 let maxXRange = 0;
 let maxYRange = 0;
@@ -276,15 +277,18 @@ class App extends Component {
             theImageCropStyle: self.state.theImageCropStyle,
             theImageMaskStyle: self.state.theImageMaskStyle
         };
+
+        return false;
     }
 
     onDrag(e) {
         dragData.delta.x = e.clientX - dragData.start.x;
         dragData.delta.y = e.clientY - dragData.start.y;
-        console.log(dragData);
-        console.log(e.clientX, e.clientY);
 
         self.updateImagePosition(dragData);
+
+        return false;
+
     }
 
     onDragEnd(e) {
@@ -292,10 +296,24 @@ class App extends Component {
         dragData.delta.y = e.clientY - dragData.start.y;
 
         self.updateImagePosition(dragData);
+
+        return false;
     }
 
     onDragExit(e) {
+        return false;
+    }
 
+    onTouchStart(e) {
+        self.onDragStart(e.touches[0]);
+    }
+
+    onTouchMove(e) {
+        self.onDrag(e.touches[0]);
+    }
+
+    onTouchEnd(e) {
+        // self.onDragEnd(e.touches[0]);
     }
 
     render() {
@@ -347,9 +365,10 @@ class App extends Component {
                             <img id="the-image-mask" className="image-mask" src={this.state.selectedImageSrc} alt="v"
                                  style={this.state.theImageMaskStyle}/>
                             <div className="image-crop" id="image-crop" style={this.state.theImageCropStyle}
-                                 draggable={true}
+                                 draggable={false}
                                  onDragStart={this.onDragStart} onDrag={this.onDrag} onDragEnd={this.onDragEnd}
-                                 onDragExit={this.onDragExit}>
+                                 onDragExit={this.onDragExit} onTouchStart={this.onTouchStart}
+                                 onTouchMove={this.onTouchMove} onTouchEnd={this.onTouchEnd}>
                                 <img src={this.state.selectedImageSrc} alt="v"
                                      style={this.state.theCroppingImageStyle}/>
                             </div>
