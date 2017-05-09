@@ -29,11 +29,6 @@ class App extends Component {
             imgSrc: '',
             selectedImageSrc: '',
 
-            theImageStyle: {
-                top: 0,
-                left: 0
-            },
-
             theImageCropStyle: {
                 top: 0,
                 left: 0,
@@ -154,10 +149,6 @@ class App extends Component {
         }
 
         self.setState({
-            theImageStyle: Object.assign({}, self.state.theImageStyle, {
-                top: canvasOffsetY,
-                left: canvasOffsetX
-            }),
             theCroppingImageStyle: Object.assign({}, self.state.theCroppingImageStyle, {
                 top: parseFloat(dragData.theCroppingImageStyle.top) + canvasOffsetY,
                 left: parseFloat(dragData.theCroppingImageStyle.left) + canvasOffsetX
@@ -250,21 +241,8 @@ class App extends Component {
         if (img.height >= minHeight && img.width >= minWidth) {
             canvas.width = img.width;
             canvas.height = img.height;
-
-            self.setState({
-                theImageStyle: {
-                    width: '100%',
-                    height: 'auto'
-                }
-            });
         } else {
             canvas.height = canvas.width * img.height / img.width;
-            self.setState({
-                theImageStyle: {
-                    width: '100%',
-                    height: 'auto'
-                }
-            });
         }
     }
 
@@ -377,7 +355,7 @@ class App extends Component {
                                      height: 'auto',
                                      display: 'block',
                                      visibility: 'hidden'
-                                 }, this.state.theImageStyle)}/>
+                                 }, {})}/>
                         </div>
                         <canvas id="photo-canvas" ref="photo-canvas"
                                 style={{
