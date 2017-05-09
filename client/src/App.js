@@ -74,12 +74,6 @@ class App extends Component {
         let context = null;
         let photoFile = null;
 
-        function $getModal() {
-            let $ = window.jQuery;
-
-            return $('.ui.modal.canvas');
-        }
-
         this.onPhotoSelected = function (target) {
             canvas = target.refs['photo-canvas'];
             photoFile = target.refs['photo-file'];
@@ -89,9 +83,15 @@ class App extends Component {
                 self.setState({
                     selectedImageSrc: image
                 });
-                cropAndDrawVAndQR(image, context, canvas, function () {
+
+                document.getElementById('the-image').onload = function () {
+                    App.showModal();
                     self.setCropperStyles();
-                });
+                };
+
+                // cropAndDrawVAndQR(image, context, canvas, function () {
+                //     self.setCropperStyles();
+                // });
                 listenGestures();
             });
         };
@@ -159,7 +159,7 @@ class App extends Component {
             cropAndDrawVAndQR(document.getElementById('the-image-mask').src, context, canvas, function () {
                 convertToPng(canvas);
 
-                $getModal().modal('hide');
+                App.hideModal();
             });
         };
 
@@ -167,15 +167,28 @@ class App extends Component {
             cropImage(image, context, canvas, function (c) {
                 vDecorator.decorate(canvas, context, c, v, function (canvas) {
                     qrDecorator.decorate(canvas, context, c, qr, callback);
-                    $getModal()
-                        .modal('setting', 'closable', false)
-                        .modal('show');
+                    App.showModal();
                     if (typeof callback === 'function') {
                         callback();
                     }
                 });
             });
         }
+    }
+
+    static hideModal() {
+        App.$getModal().modal('hide');
+    }
+
+    static $getModal() {
+        let $ = window.jQuery;
+        return $('.ui.modal.canvas');
+    }
+
+    static showModal() {
+        App.$getModal()
+            .modal('setting', 'closable', false)
+            .modal('show');
     }
 
     setCropperStyles() {
@@ -318,7 +331,8 @@ class App extends Component {
                                  style={Object.assign({
                                      maxWidth: '100%',
                                      height: 'auto',
-                                     display: 'none'
+                                     display: 'block',
+                                     visibility: 'hidden'
                                  }, this.state.theImageStyle)}/>
                         </div>
                         <canvas id="photo-canvas" ref="photo-canvas"
@@ -326,13 +340,13 @@ class App extends Component {
                                     'width': '100%',
                                     'height': 'auto',
                                     border: 'solid 1px black',
-                                    visibility: 'hidden'
+                                    visibility: 'hidden',
+                                    display: 'none'
                                 }}
                                 onTouchStart={this.onTouchStart} onTouchMove={this.onTouchMove}
                                 onTouchEnd={this.onTouchEnd}
                                 onTouchCancel={this.onTouchCancel}/>
                     </div>
-                    `
                     <div className="actions">
                         <div className="ui black deny button" onClick={this.clear}>重来</div>
                         <div className="ui positive right labeled icon button" onClick={this.generateImage}>
