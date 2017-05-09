@@ -25,28 +25,7 @@ class App extends Component {
     constructor() {
         super();
 
-        this.state = {
-            imgSrc: '',
-            selectedImageSrc: '',
-
-            theImageCropStyle: {
-                top: 0,
-                left: 0,
-                width: '100px',
-                height: '100px'
-            },
-
-            theCroppingImageStyle: {
-                width: '100%',
-                height: 'auto',
-                position: 'absolute'
-            },
-
-            theImageMaskStyle: {
-                top: 0,
-                left: 0
-            }
-        };
+        this.state = this.resetStyles();
 
         self = this;
 
@@ -90,9 +69,7 @@ class App extends Component {
         };
 
         this.clear = function () {
-            self.setState({
-                imgSrc: ''
-            });
+            self.setState(self.resetStyles());
 
             if (context) {
                 context.clearRect(0, 0, canvas.width, canvas.height);
@@ -125,6 +102,31 @@ class App extends Component {
                 });
             });
         }
+    }
+
+    resetStyles() {
+        return {
+            imgSrc: '',
+            selectedImageSrc: '',
+
+            theImageCropStyle: {
+                top: 0,
+                left: 0,
+                width: '100px',
+                height: '100px'
+            },
+
+            theCroppingImageStyle: {
+                width: '100%',
+                height: 'auto',
+                position: 'absolute'
+            },
+
+            theImageMaskStyle: {
+                top: 0,
+                left: 0
+            }
+        };
     }
 
     updateImagePosition(dragData) {
