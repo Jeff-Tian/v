@@ -198,7 +198,6 @@ class App extends Component {
         theImageCropStyle.left = maxXRange + 'px';
         if (imageMask.offsetHeight > imageMask.offsetWidth && imageMask.offsetHeight > diameter) {
             maxYRange = (imageMask.offsetHeight - diameter) / 2;
-            console.log('maxYRange = ', maxYRange);
         } else {
             maxYRange = 0;
         }
@@ -252,6 +251,17 @@ class App extends Component {
         } else {
             canvas.height = canvas.width * img.height / img.width;
         }
+    }
+
+    rotateLeft(e) {
+        self.setState({
+            theCroppingImageStyle: Object.assign({}, self.state.theCroppingImageStyle, {
+                transform: 'rotate(-90deg)'
+            }),
+            theImageMaskStyle: Object.assign({}, self.state.theImageMaskStyle, {
+                transform: 'rotate(-90deg)'
+            })
+        });
     }
 
     onDragStart(e) {
@@ -378,6 +388,7 @@ class App extends Component {
                                 onTouchCancel={this.onTouchCancel}/>
                     </div>
                     <div className="actions">
+                        <div className="ui black undo button" onClick={this.rotateLeft}>向左旋转</div>
                         <div className="ui black deny button" onClick={this.clear}>重来</div>
                         <div className="ui positive right labeled icon button" onClick={this.generateImage}>
                             确定
