@@ -16,7 +16,7 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>上传图片自动加V - 啪啪出品</title>
+    <title>啪啪加  - 上传图片自动加 V</title>
 </head>
 <body>
 <div id="root"></div>
@@ -32,5 +32,19 @@
   To begin the development, run `npm start`.
   To create a production bundle, use `npm run build`.
 -->
+<script type="text/javascript">
+    applicationCache.addEventListener('updateready', function (e) {
+        if (applicationCache.status === applicationCache.UPDATEREADY) {
+            if (confirm('惊现新版本，点击确认更新吧！')) {
+                applicationCache.swapCache();
+                window.location.reload();
+            }
+        }
+    }, false);
+    applicationCache.addEventListener('obsolete', function(e){
+        applicationCache.swapCache();
+        window.location.reload();
+    });
+</script>
 </body>
 </html>

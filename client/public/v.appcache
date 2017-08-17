@@ -1,12 +1,13 @@
 CACHE MANIFEST
 
-#version: 1.8
+#version: 1.9
 
 CACHE:
-
+/node_modules/jquery/dist/jquery.min.js
+/src/semantic-ui/semantic.min.js
 
 NETWORK:
 *
 
 FALLBACK:
-
+/ /favicon.ico
