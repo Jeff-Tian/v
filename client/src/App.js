@@ -18,6 +18,7 @@ let minHeight = 400;
 let canvasOffsetX = 0;
 let canvasOffsetY = 0;
 let self = null;
+let rotated = 0;
 
 let dragData = {};
 
@@ -69,6 +70,7 @@ class App extends Component {
         };
 
         this.clear = function () {
+            rotated = 0;
             self.setState(self.resetStyles());
 
             if (context) {
@@ -144,6 +146,30 @@ class App extends Component {
 
     restrictDrag(dragData) {
         canvasOffsetX += dragData.delta.x;
+        canvasOffsetY += dragData.delta.y;
+
+        console.log('restrict drag with (mx, my): ', maxXRange, maxYRange);
+
+        if (rotated === 0) {
+            this.restrict(dragData);
+        }
+
+        if (rotated === -90) {
+            this.restrictLeftRotated(dragData);
+        }
+
+        if (rotated === -180) {
+            this.restrict(dragData);
+        }
+
+        if (rotated === -270) {
+            this.restrict(dragData);
+        }
+
+        self.updateImagePosition(dragData);
+    }
+
+    restrict(dragData) {
         if (canvasOffsetX > maxXRange) {
             dragData.delta.x -= canvasOffsetX - maxXRange;
             canvasOffsetX = maxXRange;
@@ -153,8 +179,6 @@ class App extends Component {
             dragData.delta.x -= canvasOffsetX + maxXRange;
             canvasOffsetX = -maxXRange;
         }
-
-        canvasOffsetY += dragData.delta.y;
         if (canvasOffsetY > maxYRange) {
             dragData.delta.y -= canvasOffsetY - maxYRange;
             canvasOffsetY = maxYRange;
@@ -164,8 +188,29 @@ class App extends Component {
             dragData.delta.y -= canvasOffsetY + maxYRange;
             canvasOffsetY = -maxYRange;
         }
+    }
 
-        self.updateImagePosition(dragData);
+    restrictLeftRotated(dragData) {
+        console.log('cox, coy = ', canvasOffsetX, canvasOffsetY);
+        if (canvasOffsetX > maxYRange) {
+            dragData.delta.x -= canvasOffsetX - maxYRange;
+            canvasOffsetX = maxYRange;
+        }
+
+        if (canvasOffsetX < -maxYRange) {
+            dragData.delta.x -= canvasOffsetX + maxYRange;
+            canvasOffsetX = -maxYRange;
+        }
+
+        if (canvasOffsetY > maxXRange) {
+            dragData.delta.y -= canvasOffsetY - maxXRange;
+            canvasOffsetY = maxXRange;
+        }
+
+        if (canvasOffsetY < -maxXRange) {
+            dragData.delta.y -= canvasOffsetY + maxXRange;
+            canvasOffsetY = -maxXRange;
+        }
     }
 
     static hideModal() {
@@ -192,6 +237,7 @@ class App extends Component {
         };
         if (imageMask.offsetWidth > imageMask.offsetHeight && imageMask.offsetWidth > diameter) {
             maxXRange = (imageMask.offsetWidth - diameter) / 2;
+            console.log('maxXrange = ', maxXRange);
         } else {
             maxXRange = 0;
         }
@@ -213,11 +259,57 @@ class App extends Component {
         });
     }
 
+    rotateImage(context, canvas) {
+        context.translate(canvas.width / 2, canvas.height / 2);
+        context.rotate(rotated * Math.PI / 180);
+    }
+
+    getCanvasOffsetX(img) {
+        if (rotated === 0) {
+            return canvasOffsetX - img.width / 2;
+        }
+
+        if (rotated === -90) {
+            return canvasOffsetY - img.width / 2;
+        }
+
+        if (rotated === -180) {
+            return -canvasOffsetX - img.width / 2;
+        }
+
+        if (rotated === -270) {
+            return -canvasOffsetY - img.width / 2;
+        }
+
+        return canvasOffsetX;
+    }
+
+    getCanvasOffsetY(img) {
+        if (rotated === 0) {
+            return canvasOffsetY - img.height / 2;
+        }
+
+        if (rotated === -90) {
+            return canvasOffsetX - img.height / 2;
+        }
+
+        if (rotated === -180) {
+            return -canvasOffsetY - img.height / 2;
+        }
+
+        if (rotated === -270) {
+            return -canvasOffsetX - img.height / 2;
+        }
+
+        return canvasOffsetY;
+    }
+
     cropImage(img, minHeight, minWidth, canvas, context, canvasOffsetX, canvasOffsetY) {
 
         function drawInscribedCircle(context, canvas) {
             if (canvas.width > canvas.height) {
                 maxXRange = (canvas.width - canvas.height) / 2;
+                console.lo0g('maxXRnage = ', maxXRange);
                 maxYRange = 0;
             } else {
                 maxYRange = (canvas.height - canvas.width) / 2;
@@ -233,7 +325,8 @@ class App extends Component {
         let c = drawInscribedCircle(context, canvas);
         this.scaleCanvas(img, minHeight, minWidth, context, canvas);
         context.clip();
-        context.drawImage(img, 0, 0, img.width, img.height, canvasOffsetX, canvasOffsetY, img.width, img.height);
+        this.rotateImage(context, canvas);
+        context.drawImage(img, 0, 0, img.width, img.height, this.getCanvasOffsetX(img), this.getCanvasOffsetY(img), img.width, img.height);
         context.restore();
         return c;
     }
@@ -254,14 +347,22 @@ class App extends Component {
     }
 
     rotateLeft(e) {
+        rotated -= 90;
+        console.log(rotated);
+        if (rotated === -360) {
+            rotated = 0;
+        }
+
         self.setState({
             theCroppingImageStyle: Object.assign({}, self.state.theCroppingImageStyle, {
-                transform: 'rotate(-90deg)'
+                transform: 'rotate(' + rotated + 'deg)'
             }),
             theImageMaskStyle: Object.assign({}, self.state.theImageMaskStyle, {
-                transform: 'rotate(-90deg)'
+                transform: 'rotate(' + rotated + 'deg)'
             })
         });
+
+        // todo: simulate a user drag to properly restrict it
     }
 
     onDragStart(e) {
@@ -272,6 +373,8 @@ class App extends Component {
             theImageCropStyle: self.state.theImageCropStyle,
             theImageMaskStyle: self.state.theImageMaskStyle
         };
+
+        console.log('dragging start, ', dragData);
 
         return false;
     }
