@@ -491,11 +491,19 @@ class App extends Component {
                                 onTouchCancel={this.onTouchCancel}/>
                     </div>
                     <div className="actions">
-                        <div className="ui black undo button" onClick={this.rotateLeft}>向左旋转</div>
-                        <div className="ui black deny button" onClick={this.clear}>重来</div>
-                        <div className="ui positive right labeled icon button" onClick={this.generateImage}>
-                            确定
-                            <i className="checkmark icon"/>
+                        <div className="ui violet left icon button" onClick={this.rotateLeft} style={{float: 'left'}}>
+                            <i className="undo icon" />
+                            向左旋转
+                        </div>
+                        <div className="ui buttons">
+                            <div className="ui black deny button" onClick={this.clear}>
+                                重来
+                            </div>
+                            <div className="or"></div>
+                            <div className="ui positive right labeled icon button" onClick={this.generateImage}>
+                                确定
+                                <i className="checkmark icon"/>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -505,3 +513,4 @@ class App extends Component {
 }
 
 export default App;
+
