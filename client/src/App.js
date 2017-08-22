@@ -11,6 +11,7 @@ import './semantic-ui/semantic.min.css';
 import './App.css';
 import shape from './image-decorators/shape';
 import fs from './fs/fs';
+import classNames from 'classnames';
 
 let maxXRange = 0;
 let maxYRange = 0;
@@ -55,6 +56,7 @@ class App extends Component {
         let photoFile = null;
 
         this.onPhotoSelected = function (target) {
+            self.state.loading = true;
             canvas = target.refs['photo-canvas'];
             photoFile = target.refs['photo-file'];
             context = canvas.getContext('2d');
@@ -67,6 +69,7 @@ class App extends Component {
                 document.getElementById('the-image').onload = function () {
                     App.showModal();
                     self.setCropperStyles();
+                    self.state.loading = false;
                 };
             });
         };
@@ -88,10 +91,12 @@ class App extends Component {
         };
 
         this.generateImage = function () {
+            self.state.loading = true;
             cropAndDrawVAndQR(document.getElementById('the-image-mask').src, context, canvas, function () {
                 convertToPng(canvas);
 
                 App.hideModal();
+                self.state.loading = false;
             });
         };
 
@@ -311,7 +316,6 @@ class App extends Component {
         function drawInscribedCircle(context, canvas) {
             if (canvas.width > canvas.height) {
                 maxXRange = (canvas.width - canvas.height) / 2;
-                console.lo0g('maxXRnage = ', maxXRange);
                 maxYRange = 0;
             } else {
                 maxYRange = (canvas.height - canvas.width) / 2;
@@ -421,233 +425,100 @@ class App extends Component {
     onTouchEnd(e) {
         self.restrictDrag(dragData);
     }
-
     render() {
 
-        return ( <
-            div className = "App" >
-            <
-            div className = "App-header" >
-            <
-            div className = "ui container" >
-            <
-            img src = {
-                logo
-            }
-            className = "App-logo"
-            alt = "logo" / >
-            <
-            /div> < /
-            div > <
-            p className = "App-intro" >
-            上传图片， 自动加V <
-            /p>
+        return (
+            <div className="App">
+                <div className="App-header">
+                    <div className="ui container">
+                        <img src={logo} className="App-logo" alt="logo"/>
+                    </div>
+                </div>
+                <p className="App-intro">
+                    上传图片，自动加V
+                </p>
 
-            <
-            div className = "ui container" >
-            <
-            form name = "photoForm"
-            className = "ui form" >
-            <
-            div className = "field" > {
-                this.state.imgSrc ?
-                <
-                button type = "reset"
-                className = "ui black deny button"
-                onClick = {
-                    this.clear
-                } >
-                清除 < /button> :
-                ''
-            }
+                <div className="ui container">
+                    <form name="photoForm" className={classNames({'ui': true, 'form': true, loading: this.state.loading})}>
+                        <div className="field">
+                            {
+                                this.state.imgSrc ?
+                                    <button type="reset" className="ui black deny button" onClick={this.clear}>
+                                        清除</button>
+                                    : ''
+                            }
 
-            <
-            /div> <
-            div className = "field"
-            style = {
-                {
-                    position: 'relative',
-                    border: 'solid 1px black',
-                    minHeight: '150px'
-                }
-            } >
-            <
-            div className = "hidden-input mask" >
-            <
-            input type = "file"
-            name = "photo"
-            onChange = {
-                () => this.onPhotoSelected(this)
-            }
-            ref = "photo-file"
-            accept = ".png,.gif,.jpeg,.jpg" / >
-            <
-            /div> <
-            div className = "before-upload mask" >
-            <
-            h1 > 点击此处选择图片 < /h1> < /
-            div > <
-            a className = "image mask"
-            style = {
-                this.state.imgSrc ? {} : {
-                    display: 'none'
-                }
-            }
-            target = "_blank"
-            href = {
-                this.state.imgSrc
-            } >
-            <
-            img src = {
-                this.state.imgSrc
-            }
-            alt = "v"
-            style = {
-                {
-                    width: '100%',
-                    height: '100%',
-                    background: 'white'
-                }
-            }
-            /> < /
-            a > <
-            /div> < /
-            form > <
-            /div>
+                        </div>
+                        <div className="field"
+                             style={{position: 'relative', border: 'solid 1px black', minHeight: '150px'}}>
+                            <div className="hidden-input mask">
+                                <input type="file" name="photo" onChange={() => this.onPhotoSelected(this)}
+                                       ref="photo-file"
+                                       accept="image/*" capture="camera"/>
+                            </div>
+                            <div className="before-upload mask">
+                                <h1>点击此处选择图片</h1>
+                            </div>
+                            <a className="image mask" style={this.state.imgSrc ? {} : {display: 'none'}} target="_blank"
+                               href={this.state.imgSrc}>
+                                <img src={this.state.imgSrc} alt="v"
+                                     style={{width: '100%', height: '100%', background: 'white'}}/>
+                            </a>
+                        </div>
+                    </form>
+                </div>
 
-            <
-            div className = "ui fullscreen modal canvas" >
-            <
-            div className = "image content" >
-            <
-            div id = "the-image-wrapper" >
-            <
-            img id = "the-image-mask"
-            className = "image-mask"
-            src = {
-                this.state.selectedImageSrc
-            }
-            alt = "v"
-            style = {
-                this.state.theImageMaskStyle
-            }
-            /> <
-            div className = "image-crop"
-            id = "image-crop"
-            style = {
-                this.state.theImageCropStyle
-            }
-            draggable = {
-                false
-            }
-            onDragStart = {
-                this.onDragStart
-            }
-            onDrag = {
-                this.onDrag
-            }
-            onDragEnd = {
-                this.onDragEnd
-            }
-            onDragExit = {
-                this.onDragExit
-            }
-            onTouchStart = {
-                this.onTouchStart
-            }
-            onTouchMove = {
-                this.onTouchMove
-            }
-            onTouchEnd = {
-                this.onTouchEnd
-            } >
-            <
-            img src = {
-                this.state.selectedImageSrc
-            }
-            alt = "v"
-            style = {
-                this.state.theCroppingImageStyle
-            }
-            /> < /
-            div > <
-            img id = "the-image"
-            ref = "image"
-            src = {
-                this.state.selectedImageSrc
-            }
-            alt = "v"
-            style = {
-                Object.assign({
-                    maxWidth: '100%',
-                    height: 'auto',
-                    display: 'block',
-                    visibility: 'hidden'
-                }, {})
-            }
-            /> < /
-            div > <
-            canvas id = "photo-canvas"
-            ref = "photo-canvas"
-            style = {
-                {
-                    'width': '100%',
-                    'height': 'auto',
-                    border: 'solid 1px black',
-                    visibility: 'hidden',
-                    display: 'none'
-                }
-            }
-            onTouchStart = {
-                this.onTouchStart
-            }
-            onTouchMove = {
-                this.onTouchMove
-            }
-            onTouchEnd = {
-                this.onTouchEnd
-            }
-            onTouchCancel = {
-                this.onTouchCancel
-            }
-            /> < /
-            div > <
-            div className = "actions" >
-            <
-            div className = "ui violet left icon button"
-            onClick = {
-                this.rotateLeft
-            }
-            style = {
-                {
-                    float: 'left'
-                }
-            } >
-            <
-            i className = "undo icon" / >
-            向左旋转 <
-            /div> <
-            div className = "ui buttons" >
-            <
-            div className = "ui black deny button"
-            onClick = {
-                this.clear
-            } >
-            重来 <
-            /div> <
-            div className = "or" > < /div> <
-            div className = "ui positive right labeled icon button"
-            onClick = {
-                this.generateImage
-            } >
-            确定 <
-            i className = "checkmark icon" / >
-            <
-            /div> < /
-            div > <
-            /div> < /
-            div > <
-            /div>
+                <div className="ui fullscreen modal canvas">
+                    <div className="image content">
+                        <div id="the-image-wrapper">
+                            <img id="the-image-mask" className="image-mask" src={this.state.selectedImageSrc} alt="v"
+                                 style={this.state.theImageMaskStyle}/>
+                            <div className="image-crop" id="image-crop" style={this.state.theImageCropStyle}
+                                 draggable={false}
+                                 onDragStart={this.onDragStart} onDrag={this.onDrag} onDragEnd={this.onDragEnd}
+                                 onDragExit={this.onDragExit} onTouchStart={this.onTouchStart}
+                                 onTouchMove={this.onTouchMove} onTouchEnd={this.onTouchEnd}>
+                                <img src={this.state.selectedImageSrc} alt="v"
+                                     style={this.state.theCroppingImageStyle}/>
+                            </div>
+                            <img id="the-image" ref="image" src={this.state.selectedImageSrc} alt="v"
+                                 style={Object.assign({
+                                     maxWidth: '100%',
+                                     height: 'auto',
+                                     display: 'block',
+                                     visibility: 'hidden'
+                                 }, {})}/>
+                        </div>
+                        <canvas id="photo-canvas" ref="photo-canvas"
+                                style={{
+                                    'width': '100%',
+                                    'height': 'auto',
+                                    border: 'solid 1px black',
+                                    visibility: 'hidden',
+                                    display: 'none'
+                                }}
+                                onTouchStart={this.onTouchStart} onTouchMove={this.onTouchMove}
+                                onTouchEnd={this.onTouchEnd}
+                                onTouchCancel={this.onTouchCancel}/>
+                    </div>
+                    <div className="actions">
+                        <div className="ui violet left icon button" onClick={this.rotateLeft} style={{float: 'left'}}>
+                            <i className="undo icon"/>
+                            向左旋转
+                        </div>
+                        <div className="ui buttons">
+                            <div className="ui black deny button" onClick={this.clear}>
+                                重来
+                            </div>
+                            <div className="or"></div>
+                            <div className="ui positive right labeled icon button" onClick={this.generateImage}>
+                                确定
+                                <i className="checkmark icon"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         );
     }
 }
