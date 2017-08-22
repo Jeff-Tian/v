@@ -454,7 +454,7 @@ class App extends Component {
                             <div className="hidden-input mask">
                                 <input type="file" name="photo" onChange={() => this.onPhotoSelected(this)}
                                        ref="photo-file"
-                                       accept="image/*" capture="camera"/>
+                                       accept="image/*" />
                             </div>
                             <div className="before-upload mask">
                                 <h1>点击此处选择图片</h1>
