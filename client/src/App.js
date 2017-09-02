@@ -25,6 +25,40 @@ let rotated = 0;
 
 let dragData = {};
 
+
+function convertToJpeg(canvas, context) {
+    let startX = 0;
+    let startY = 0;
+    let width = canvas.width;
+    let height = canvas.height;
+    let sideLength = Math.min(canvas.width, canvas.height);
+
+    if (width > height) {
+        startX = (width - height) / 2;
+        width = height;
+    }
+
+    if (height > width) {
+        startY = (height - width) / 2;
+        height = width;
+    }
+
+    let imageData = context.getImageData(startX, startY, width, height);
+    let cvs = document.createElement('canvas');
+    cvs.setAttribute('width', sideLength);
+    cvs.setAttribute('height', sideLength);
+    let ctx = cvs.getContext('2d');
+    ctx.width = sideLength;
+    ctx.height = sideLength;
+    ctx.putImageData(imageData, 0, 0, 0, 0, canvas.width, canvas.height);
+
+    self.setState({
+        imgSrc: cvs.toDataURL('image/jpeg', 0.5)
+    });
+
+    return self.state.imgSrc;
+}
+
 class App extends Component {
     constructor() {
         super();
@@ -75,6 +109,10 @@ class App extends Component {
         };
 
         this.clear = function () {
+            if (!confirm('真的要清除重来吗？')) {
+                return;
+            }
+
             rotated = 0;
             self.setState(self.resetStyles());
 
@@ -93,11 +131,22 @@ class App extends Component {
         this.generateImage = function () {
             self.state.loading = true;
             cropAndDrawVAndQR(document.getElementById('the-image-mask').src, context, canvas, function () {
-                convertToPng(canvas);
+                convertToJpeg(canvas, context);
 
                 App.hideModal();
                 self.state.loading = false;
             });
+        };
+
+        this.download = function () {
+            self.setState({loading: true});
+            alert('请长按下面图片，直到出现弹出菜单，选择保存即可。');
+            let a = document.createElement('a');
+            a.href = convertToJpeg(canvas, context);
+            a.download = 'papa.jpg';
+            document.body.appendChild(a);
+            a.click();
+            self.setState({loading: false});
         };
 
         function cropAndDrawVAndQR(image, context, canvas, callback) {
@@ -198,7 +247,6 @@ class App extends Component {
     }
 
     restrictLeftRotated(dragData) {
-        console.log('cox, coy = ', canvasOffsetX, canvasOffsetY);
         if (canvasOffsetX > maxYRange) {
             dragData.delta.x -= canvasOffsetX - maxYRange;
             canvasOffsetX = maxYRange;
@@ -322,6 +370,17 @@ class App extends Component {
                 maxXRange = 0;
             }
 
+            function drawWhiteBackground() {
+                context.save();
+                let fillStyle = context.fillStyle;
+                context.fillStyle = '#ffffff';
+                context.fillRect(0, 0, canvas.width, canvas.height);
+                context.fillStyle = fillStyle;
+                context.restore();
+            }
+
+            drawWhiteBackground();
+
             return shape.drawInscribedCircle(canvas, context);
         }
 
@@ -426,14 +485,6 @@ class App extends Component {
         self.restrictDrag(dragData);
     }
 
-    download() {
-        var a = document.createElement('a');
-        a.href = document.getElementById('photo-canvas').toDataURL('image/png');
-        a.download = 'papa.png';
-        document.body.appendChild(a);
-        a.click();
-    }
-
     render() {
 
         return (
@@ -454,7 +505,12 @@ class App extends Component {
                             {
                                 this.state.imgSrc ?
                                     <div className="ui buttons">
-                                        <button type="button" className="ui positive button" target="_blank"
+                                        <button type="button" className={classNames({
+                                            'ui': true,
+                                            'positive': true,
+                                            'button': true,
+                                            loading: this.state.loading
+                                        })} target="_blank"
                                                 onClick={this.download}>
                                             下载
                                         </button>
@@ -477,11 +533,11 @@ class App extends Component {
                             <div className="before-upload mask">
                                 <h1>点击此处选择图片</h1>
                             </div>
-                            <a className="image mask" style={this.state.imgSrc ? {} : {display: 'none'}} target="_blank"
-                               href={this.state.imgSrc}>
+                            <div className="image mask" style={this.state.imgSrc ? {} : {display: 'none'}}
+                                 target="_blank">
                                 <img src={this.state.imgSrc} alt="v"
-                                     style={{width: '100%', height: '100%', background: 'white'}}/>
-                            </a>
+                                     style={{width: '100%', height: '100%', background: 'white', display: 'block'}}/>
+                            </div>
                         </div>
                     </form>
                 </div>
