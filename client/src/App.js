@@ -425,6 +425,15 @@ class App extends Component {
     onTouchEnd(e) {
         self.restrictDrag(dragData);
     }
+
+    download() {
+        var a = document.createElement('a');
+        a.href = document.getElementById('photo-canvas').toDataURL('image/png');
+        a.download = 'papa.png';
+        document.body.appendChild(a);
+        a.click();
+    }
+
     render() {
 
         return (
@@ -439,12 +448,21 @@ class App extends Component {
                 </p>
 
                 <div className="ui container">
-                    <form name="photoForm" className={classNames({'ui': true, 'form': true, loading: this.state.loading})}>
+                    <form name="photoForm"
+                          className={classNames({'ui': true, 'form': true, loading: this.state.loading})}>
                         <div className="field">
                             {
                                 this.state.imgSrc ?
-                                    <button type="reset" className="ui black deny button" onClick={this.clear}>
-                                        清除</button>
+                                    <div className="ui buttons">
+                                        <button type="button" className="ui positive button" target="_blank"
+                                                onClick={this.download}>
+                                            下载
+                                        </button>
+                                        <div className="ui or"></div>
+                                        <button type="reset" className="ui black deny button" onClick={this.clear}>
+                                            清除
+                                        </button>
+                                    </div>
                                     : ''
                             }
 
@@ -454,7 +472,7 @@ class App extends Component {
                             <div className="hidden-input mask">
                                 <input type="file" name="photo" onChange={() => this.onPhotoSelected(this)}
                                        ref="photo-file"
-                                       accept="image/*" />
+                                       accept="image/*"/>
                             </div>
                             <div className="before-upload mask">
                                 <h1>点击此处选择图片</h1>
