@@ -1,5 +1,3 @@
-'use strict';
-
 module.exports = {
     readImageFromFile: function (target, callback) {
         if (target.files && target.files[0]) {

@@ -79,11 +79,11 @@ class App extends Component {
             img.src = image;
         }
 
-        function convertToPng(canvas) {
-            self.setState({
-                imgSrc: canvas.toDataURL('image/png')
-            });
-        }
+        // function convertToPng(canvas) {
+        //     self.setState({
+        //         imgSrc: canvas.toDataURL('image/png')
+        //     });
+        // }
 
         let canvas = null;
         let context = null;
@@ -138,6 +138,14 @@ class App extends Component {
             });
         };
 
+        this.removeQRCode = function () {
+            self.state.loading = true;
+            cropAndDrawV(document.getElementById('the-image-mask').src, context, canvas, function () {
+                convertToJpeg(canvas, context);
+                self.setState({loading: false});
+            });
+        };
+
         this.download = function () {
             self.setState({loading: true});
             alert('请长按下面图片，直到出现弹出菜单，选择保存即可。');
@@ -154,6 +162,16 @@ class App extends Component {
                 vDecorator.decorate(canvas, context, c, v, function (canvas) {
                     qrDecorator.decorate(canvas, context, c, qr, callback);
                     App.showModal();
+                    if (typeof callback === 'function') {
+                        callback();
+                    }
+                });
+            });
+        }
+
+        function cropAndDrawV(image, context, canvas, callback) {
+            cropImage(image, context, canvas, function (c) {
+                vDecorator.decorate(canvas, context, c, v, function (canvas) {
                     if (typeof callback === 'function') {
                         callback();
                     }
@@ -269,7 +287,9 @@ class App extends Component {
     }
 
     static hideModal() {
-        App.$getModal().modal('hide');
+        App.$getModal()
+            .modal('setting', {'closable': false, observeChanges: true})
+            .modal('hide');
     }
 
     static $getModal() {
@@ -279,7 +299,7 @@ class App extends Component {
 
     static showModal() {
         App.$getModal()
-            .modal('setting', 'closable', false)
+            .modal('setting', {'closable': false, observeChanges: true})
             .modal('show');
     }
 
@@ -504,20 +524,25 @@ class App extends Component {
                         <div className="field">
                             {
                                 this.state.imgSrc ?
-                                    <div className="ui buttons">
-                                        <button type="button" className={classNames({
-                                            'ui': true,
-                                            'positive': true,
-                                            'button': true,
-                                            loading: this.state.loading
-                                        })} target="_blank"
-                                                onClick={this.download}>
-                                            下载
+                                    <div>
+                                        <button type="button" className="ui left floated button"
+                                                onClick={this.removeQRCode}>去二维码
                                         </button>
-                                        <div className="ui or"></div>
-                                        <button type="reset" className="ui black deny button" onClick={this.clear}>
-                                            清除
-                                        </button>
+                                        <div className="ui buttons">
+                                            <button type="button" className={classNames({
+                                                'ui': true,
+                                                'positive': true,
+                                                'button': true,
+                                                loading: this.state.loading
+                                            })} target="_blank"
+                                                    onClick={this.download}>
+                                                下载
+                                            </button>
+                                            <div className="ui or"></div>
+                                            <button type="reset" className="ui black deny button" onClick={this.clear}>
+                                                清除
+                                            </button>
+                                        </div>
                                     </div>
                                     : ''
                             }

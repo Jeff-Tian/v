@@ -1,5 +1,3 @@
-'use strict';
-
 module.exports = {
     decorate: function (canvas, context, theInscribedCircle, v, callback) {
         const img = new Image();

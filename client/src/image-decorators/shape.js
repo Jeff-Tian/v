@@ -1,5 +1,3 @@
-'use strict';
-
 module.exports = {
     drawInscribedCircle: function (canvas, context) {
         let center = {
