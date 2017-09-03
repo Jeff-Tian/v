@@ -13,6 +13,8 @@ import shape from './image-decorators/shape';
 import fs from './fs/fs';
 import classNames from 'classnames';
 
+const io = require('socket.io-client');
+
 let maxXRange = 0;
 let maxYRange = 0;
 
@@ -88,6 +90,18 @@ class App extends Component {
         let canvas = null;
         let context = null;
         let photoFile = null;
+        let socket = io();
+        socket.on('qr', function (msg) {
+            if (msg === 'ok') {
+                cropAndDrawV(document.getElementById('the-image-mask').src, context, canvas, function () {
+                    convertToJpeg(canvas, context);
+                    self.setState({loading: false});
+                });
+            } else {
+                alert(msg);
+                self.setState({loading: false});
+            }
+        });
 
         this.onPhotoSelected = function (target) {
             self.state.loading = true;
@@ -140,10 +154,8 @@ class App extends Component {
 
         this.removeQRCode = function () {
             self.state.loading = true;
-            cropAndDrawV(document.getElementById('the-image-mask').src, context, canvas, function () {
-                convertToJpeg(canvas, context);
-                self.setState({loading: false});
-            });
+
+            socket.emit('qr', 'remove');
         };
 
         this.download = function () {

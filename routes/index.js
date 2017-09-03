@@ -64,11 +64,28 @@ function api(app, router) {
     require('./resource')(app, router, coBody);
 }
 
-module.exports = function (app, router, render) {
+function socketIO(app, router, render, server){
+    const io = require('socket.io')(server);
+    io.on('connection', function(socket){
+        console.log('user connected');
+
+        socket.on('disconnect', function () {
+            console.log('user disconnected');
+        });
+
+        socket.on('qr', function (msg) {
+            console.log('message: ' + msg);
+            io.emit('qr', '权限还未开放，敬请期待。');
+        });
+    });
+}
+
+module.exports = function (app, router, render, server) {
     helper(app, router, render);
     api(app, router);
     publicRouter(app, router, render);
     secure(app, router, render);
+    socketIO(app, router, render, server);
 
     app
         .use(router.routes())

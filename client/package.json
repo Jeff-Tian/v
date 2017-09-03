@@ -9,7 +9,8 @@
     "react": "^15.5.3",
     "react-dom": "^15.5.4",
     "react-router": "^2.0.0",
-    "semantic-ui-react": "^0.68.2"
+    "semantic-ui-react": "^0.68.2",
+    "socket.io": "^2.0.3"
   },
   "devDependencies": {
     "react-scripts": "0.9.5"
