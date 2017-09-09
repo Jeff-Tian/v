@@ -261,7 +261,7 @@ class App extends Component {
         }
 
         if (rotated === -270) {
-            this.restrict(dragData);
+            this.restrictLeftRotated(dragData);
         }
 
         self.updateImagePosition(dragData);
@@ -478,7 +478,7 @@ class App extends Component {
     }
 
     rotateRight(e) {
-        rotated += 90;
+        rotated -= 270;
         self.rotate();
     }
 
