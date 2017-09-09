@@ -628,7 +628,7 @@ class App extends Component {
 
                 <div className="ui fullscreen modal canvas">
                     <div className="image content">
-                        <div id="the-image-wrapper">
+                        <div id="the-image-wrapper" style={{"overflow": "hidden"}}>
                             <img id="the-image-mask" className="image-mask" src={this.state.selectedImageSrc} alt="v"
                                  style={this.state.theImageMaskStyle}/>
                             <div className="image-crop" id="image-crop" style={this.state.theImageCropStyle}
