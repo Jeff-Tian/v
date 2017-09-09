@@ -91,12 +91,14 @@ class App extends Component {
         let context = null;
         let photoFile = null;
         let socket = io();
-        socket.on('qr', function (msg) {
+        socket.on('order-qr-remove', function (msg) {
             if (msg === 'ok') {
                 cropAndDrawV(document.getElementById('the-image-mask').src, context, canvas, function () {
                     convertToJpeg(canvas, context);
                     self.setState({loading: false});
                 });
+            } else if (msg === 'pending-pay') {
+                alert(msg);
             } else {
                 alert(msg);
                 self.setState({loading: false});
@@ -112,17 +114,19 @@ class App extends Component {
             fs.loadImageFromFile(photoFile, function (image, data) {
                 if (data && data.exif) {
                     let orientation = data.exif.get('Orientation');
-                    if (orientation === 8) {
-                        self.rotateLeft();
-                    }
-                    if (orientation === 6) {
-                        self.rotateRight();
-                    }
-                    if (orientation === 3) {
-                        self.rotate180DegreeLeftward();
-                    }
-                    if (orientation !== 1 && orientation !== 8 && orientation !== 6 && orientation !== 3) {
-                        alert(orientation);
+                    if (orientation) {
+                        if (orientation === 8) {
+                            self.rotateLeft();
+                        }
+                        if (orientation === 6) {
+                            self.rotateRight();
+                        }
+                        if (orientation === 3) {
+                            self.rotate180DegreeLeftward();
+                        }
+                        if (orientation !== 1 && orientation !== 8 && orientation !== 6 && orientation !== 3) {
+                            alert(orientation);
+                        }
                     }
                 }
                 self.setState({
@@ -170,7 +174,7 @@ class App extends Component {
         this.removeQRCode = function () {
             self.state.loading = true;
 
-            socket.emit('qr', 'remove');
+            socket.emit('order-qr-remove', 'create');
         };
 
         this.download = function () {

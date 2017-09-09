@@ -44,6 +44,11 @@ function secure(app, router, render) {
 }
 
 function publicRouter(app, router, render) {
+    app.use(mount('/static', serveStatic('client/build/static', {
+        gzip: true,
+        maxage: 1000 * 60 * 60 * 24 * 360
+    })));
+    
     app.use(mount('/node_modules', serveStatic('client/node_modules', {
         gzip: true,
         maxage: 1000 * 60 * 60 * 24 * 360
@@ -73,8 +78,11 @@ function socketIO(app, router, render, server){
             console.log('user disconnected');
         });
 
-        socket.on('qr', function (msg) {
+        socket.on('order-qr-remove', function (msg) {
             console.log('message: ' + msg);
+            if(msg === 'create'){
+                io.emit('order-qr-remove', 'pending-pay')
+            }
             io.emit('qr', '权限还未开放，敬请期待。');
         });
     });
