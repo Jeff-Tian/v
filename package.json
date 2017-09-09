@@ -35,7 +35,8 @@
     "client": "babel-node start-client.js",
     "test": "NODE_ENV=uat mocha --harmony && cd client && npm test && cd ..",
     "dev": "echo \"This command has been deprecated. Use 'npm start'\" && exit 1",
-    "build": "cd client && npm run build && cd .."
+    "build": "cd client && npm run build && cd ..",
+    "prd": "NODE_ENV=prd babel-node app.js"
   },
   "devDependencies": {
     "assert": "^1.4.1",
