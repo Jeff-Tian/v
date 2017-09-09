@@ -109,7 +109,19 @@ class App extends Component {
             photoFile = target.refs['photo-file'];
             context = canvas.getContext('2d');
 
-            fs.readImageFromFile(photoFile, function (image) {
+            fs.loadImageFromFile(photoFile, function (image, data) {
+                if (data && data.exif) {
+                    let orientation = data.exif.get('Orientation');
+                    if (orientation === 8) {
+                        self.rotateLeft();
+                    }
+                    if (orientation === 6) {
+                        self.rotateRight();
+                    }
+                    if (orientation !== 1 && orientation !== 8 && orientation !== 6) {
+                        alert(orientation);
+                    }
+                }
                 self.setState({
                     selectedImageSrc: image
                 });
@@ -443,9 +455,7 @@ class App extends Component {
         }
     }
 
-    rotateLeft(e) {
-        rotated -= 90;
-        console.log(rotated);
+    rotate() {
         if (rotated === -360) {
             rotated = 0;
         }
@@ -460,6 +470,16 @@ class App extends Component {
         });
 
         // todo: simulate a user drag to properly restrict it
+    }
+
+    rotateLeft(e) {
+        rotated -= 90;
+        self.rotate();
+    }
+
+    rotateRight(e) {
+        rotated += 90;
+        self.rotate();
     }
 
     onDragStart(e) {
