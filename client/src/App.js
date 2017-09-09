@@ -118,7 +118,10 @@ class App extends Component {
                     if (orientation === 6) {
                         self.rotateRight();
                     }
-                    if (orientation !== 1 && orientation !== 8 && orientation !== 6) {
+                    if (orientation === 3) {
+                        self.rotate180DegreeLeftward();
+                    }
+                    if (orientation !== 1 && orientation !== 8 && orientation !== 6 && orientation !== 3) {
                         alert(orientation);
                     }
                 }
@@ -470,6 +473,21 @@ class App extends Component {
         });
 
         // todo: simulate a user drag to properly restrict it
+        setTimeout(function () {
+            self.restrictDrag({
+                start: {
+                    x: 0,
+                    y: 0
+                },
+                delta: {
+                    x: 0,
+                    y: 0
+                },
+                theCroppingImageStyle: self.state.theCroppingImageStyle,
+                theImageCropStyle: self.state.theImageCropStyle,
+                theImageMaskStyle: self.state.theImageMaskStyle
+            });
+        });
     }
 
     rotateLeft(e) {
@@ -479,6 +497,11 @@ class App extends Component {
 
     rotateRight(e) {
         rotated -= 270;
+        self.rotate();
+    }
+
+    rotate180DegreeLeftward(e) {
+        rotated -= 180;
         self.rotate();
     }
 
