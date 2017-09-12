@@ -5,10 +5,13 @@ const mount = require('koa-mount');
 const serveStatic = require('koa-static');
 const fs = require('fs');
 const coBody = require('co-body');
+const order = require('../bll/order');
 
 let readFileThunk = function (src) {
     return new Promise(function (resolve, reject) {
-        fs.readFile(src, {'encoding': 'utf8'}, function (err, data) {
+        fs.readFile(src, {
+            'encoding': 'utf8'
+        }, function (err, data) {
             console.error(err);
             if (err) return reject(err);
 
@@ -20,17 +23,20 @@ let readFileThunk = function (src) {
 
 function helper(app, router, render) {
     router
-        .get('/healthcheck', function *(next) {
-            this.body = {everything: 'is ok', time: new Date(), nev: '' + process.env.NODE_ENV};
-        })
-    ;
+        .get('/healthcheck', function* (next) {
+            this.body = {
+                everything: 'is ok',
+                time: new Date(),
+                nev: '' + process.env.NODE_ENV
+            };
+        });
 }
 
 function renderIndex() {
     return readFileThunk(__dirname + '/../client/build/index.html');
 }
 
-function * renderIndexResponse() {
+function* renderIndexResponse() {
     this.body = yield renderIndex();
 }
 
@@ -39,8 +45,7 @@ function secure(app, router, render) {
 
     router
         .get('/', renderIndexResponse)
-        .get('/preview*', renderIndexResponse)
-    ;
+        .get('/preview*', renderIndexResponse);
 }
 
 function publicRouter(app, router, render) {
@@ -54,8 +59,7 @@ function publicRouter(app, router, render) {
     })));
 
     router
-        .get('/sign-in', renderIndexResponse)
-    ;
+        .get('/sign-in', renderIndexResponse);
 }
 
 function api(app, router) {
@@ -64,9 +68,9 @@ function api(app, router) {
     require('./resource')(app, router, coBody);
 }
 
-function socketIO(app, router, render, server){
+function socketIO(app, router, render, server) {
     const io = require('socket.io')(server);
-    io.on('connection', function(socket){
+    io.on('connection', function (socket) {
         console.log('user connected');
 
         socket.on('disconnect', function () {
@@ -75,8 +79,8 @@ function socketIO(app, router, render, server){
 
         socket.on('order-qr-remove', function (msg) {
             console.log('message: ' + msg);
-            if(msg === 'create'){
-                io.emit('order-qr-remove', 'pending-pay')
+            if (msg === 'create') {
+                io.emit('order-qr-remove', order.create('qr-remove'));
             }
             io.emit('qr', '权限还未开放，敬请期待。');
         });

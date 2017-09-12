@@ -1,10 +1,8 @@
-import React, {
-    Component
-} from 'react';
+import React, {Component} from 'react';
 // import logo from './logo.svg';
 import logo from '../public/v/v.png';
-import qr from '../public/v/v-qr.png';
 import v from '../public/v/v.png';
+import qr from '../public/v/v-qr.png';
 import vDecorator from './image-decorators/v.js';
 import qrDecorator from './image-decorators/qr';
 import './semantic-ui/semantic.min.css';
@@ -26,7 +24,7 @@ let self = null;
 let rotated = 0;
 
 let dragData = {};
-
+let popup = null;
 
 function convertToJpeg(canvas, context) {
     let startX = 0;
@@ -91,6 +89,42 @@ class App extends Component {
         let context = null;
         let photoFile = null;
         let socket = io();
+
+        function openOrderPage(orderInfo) {
+            if (popup && !popup.closed) {
+                popup.postMessage('link://' + `/order/${orderInfo.orderId}`, '*');
+            } else {
+                alert('尝试打开支付页面失败，请刷新页面重试。');
+            }
+        }
+
+        function popupReady() {
+            return new Promise((resolve, reject) => {
+                window.addEventListener('message', function (event) {
+                    console.log('got message');
+                    if (event.data && event.data.indexOf && event.data.indexOf('poup://ready') === 0) {
+                        console.log('from popup ready');
+                        resolve();
+                    }
+                });
+            });
+        }
+
+        function newOrderCreated() {
+            return new Promise((resolve, reject) => {
+                socket.on('order-qr-remove', function (msg) {
+                   if(typeof msg === 'object'){
+                       console.log('new order created');
+                       resolve(msg);
+                   }
+                });
+            });
+        }
+
+        Promise.all([popupReady(), newOrderCreated()]).then(results=>{
+            openOrderPage(results[1]);
+        });
+
         socket.on('order-qr-remove', function (msg) {
             if (msg === 'ok') {
                 cropAndDrawV(document.getElementById('the-image-mask').src, context, canvas, function () {
@@ -100,7 +134,7 @@ class App extends Component {
             } else if (msg === 'pending-pay') {
                 alert(msg);
             } else {
-                alert(msg);
+                // alert(msg);
                 self.setState({loading: false});
             }
         });
@@ -175,6 +209,17 @@ class App extends Component {
             self.state.loading = true;
 
             socket.emit('order-qr-remove', 'create');
+
+            if (popup && !popup.closed) {
+                try {
+                    popup.location.href = '/popup.html';
+                } catch (ex) {
+                    popup.close();
+                    popup = window.open('/popup.html');
+                }
+            } else {
+                popup = window.open('/popup.html');
+            }
         };
 
         this.download = function () {
@@ -209,6 +254,23 @@ class App extends Component {
                 });
             });
         }
+    }
+
+    static hideModal() {
+        App.$getModal()
+            .modal('setting', {'closable': false, observeChanges: true})
+            .modal('hide');
+    }
+
+    static $getModal() {
+        let $ = window.jQuery;
+        return $('.ui.modal.canvas');
+    }
+
+    static showModal() {
+        App.$getModal()
+            .modal('setting', {'closable': false, observeChanges: true})
+            .modal('show');
     }
 
     resetStyles() {
@@ -315,23 +377,6 @@ class App extends Component {
             dragData.delta.y -= canvasOffsetY + maxXRange;
             canvasOffsetY = -maxXRange;
         }
-    }
-
-    static hideModal() {
-        App.$getModal()
-            .modal('setting', {'closable': false, observeChanges: true})
-            .modal('hide');
-    }
-
-    static $getModal() {
-        let $ = window.jQuery;
-        return $('.ui.modal.canvas');
-    }
-
-    static showModal() {
-        App.$getModal()
-            .modal('setting', {'closable': false, observeChanges: true})
-            .modal('show');
     }
 
     setCropperStyles() {
@@ -567,117 +612,261 @@ class App extends Component {
     render() {
 
         return (
-            <div className="App">
-                <div className="App-header">
-                    <div className="ui container">
-                        <img src={logo} className="App-logo" alt="logo"/>
+            <div
+                className="App">
+                <div
+                    className="App-header">
+                    <div
+                        className="ui container">
+                        <img
+                            src={logo}
+                            className="App-logo"
+                            alt="logo"/>
                     </div>
                 </div>
-                <p className="App-intro">
+                < p
+                    className="App-intro">
                     上传图片，自动加V
                 </p>
 
-                <div className="ui container">
-                    <form name="photoForm"
-                          className={classNames({'ui': true, 'form': true, loading: this.state.loading})}>
-                        <div className="field">
+                <div
+                    className="ui container">
+                    < form
+                        name="photoForm"
+                        className={classNames({
+                            'ui': true, 'form': true, loading: this.state.loading
+                        })
+                        }>
+                        <
+                            div
+                            className="field">
                             {
                                 this.state.imgSrc ?
-                                    <div>
-                                        <button type="button" className="ui left floated button"
-                                                onClick={this.removeQRCode}>去二维码
+                                    <
+                                        div>
+                                        < button
+                                            type="button"
+                                            className="ui left floated button"
+                                            onClick={this.removeQRCode
+                                            }>
+                                            去二维码
                                         </button>
-                                        <div className="ui buttons">
-                                            <button type="button" className={classNames({
-                                                'ui': true,
-                                                'positive': true,
-                                                'button': true,
-                                                loading: this.state.loading
-                                            })} target="_blank"
-                                                    onClick={this.download}>
+                                        <div
+                                            className="ui buttons">
+                                            < button
+                                                type="button"
+                                                className={
+                                                    classNames({
+                                                        'ui': true,
+                                                        'positive': true,
+                                                        'button': true,
+                                                        loading: this.state.loading
+                                                    })
+                                                }
+                                                target="_blank"
+                                                onClick={this.download
+                                                }>
                                                 下载
                                             </button>
-                                            <div className="ui or"></div>
-                                            <button type="reset" className="ui black deny button" onClick={this.clear}>
+                                            <div
+                                                className="ui or">
+                                            </div>
+                                            < button
+                                                type="reset"
+                                                className="ui black deny button"
+                                                onClick={this.clear
+                                                }>
                                                 清除
                                             </button>
                                         </div>
                                     </div>
-                                    : ''
+                                    :
+                                    ''
                             }
 
                         </div>
-                        <div className="field"
-                             style={{position: 'relative', border: 'solid 1px black', minHeight: '150px'}}>
-                            <div className="hidden-input mask">
-                                <input type="file" name="photo" onChange={() => this.onPhotoSelected(this)}
-                                       ref="photo-file"
-                                       accept="image/*"/>
+                        <div
+                            className="field"
+                            style={
+                                {
+                                    position: 'relative', border:
+                                    'solid 1px black', minHeight:
+                                    '150px'
+                                }
+                            }>
+                            <
+                                div
+                                className="hidden-input mask">
+                                <input
+                                    type="file"
+                                    name="photo"
+                                    onChange={() => this.onPhotoSelected(this)
+                                    }
+                                    ref="photo-file"
+                                    accept="image/*"/>
                             </div>
-                            <div className="before-upload mask">
-                                <h1>点击此处选择图片</h1>
+                            <div
+                                className="before-upload mask">
+                                < h1> 点击此处选择图片
+                                </h1>
                             </div>
-                            <div className="image mask" style={this.state.imgSrc ? {} : {display: 'none'}}
-                                 target="_blank">
-                                <img src={this.state.imgSrc} alt="v"
-                                     style={{width: '100%', height: '100%', background: 'white', display: 'block'}}/>
+                            <div
+                                className="image mask"
+                                style={this.state.imgSrc ? {} : {display: 'none'}
+                                }
+                                target="_blank">
+                                <img
+                                    src={this.state.imgSrc
+                                    }
+                                    alt="v"
+                                    style={
+                                        {
+                                            width: '100%', height:
+                                            '100%', background:
+                                            'white', display:
+                                            'block'
+                                        }
+                                    }
+                                />
                             </div>
                         </div>
                     </form>
                 </div>
 
-                <div className="ui fullscreen modal canvas">
-                    <div className="image content">
-                        <div id="the-image-wrapper" style={{"overflow": "hidden"}}>
-                            <img id="the-image-mask" className="image-mask" src={this.state.selectedImageSrc} alt="v"
-                                 style={this.state.theImageMaskStyle}/>
-                            <div className="image-crop" id="image-crop" style={this.state.theImageCropStyle}
-                                 draggable={false}
-                                 onDragStart={this.onDragStart} onDrag={this.onDrag} onDragEnd={this.onDragEnd}
-                                 onDragExit={this.onDragExit} onTouchStart={this.onTouchStart}
-                                 onTouchMove={this.onTouchMove} onTouchEnd={this.onTouchEnd}>
-                                <img src={this.state.selectedImageSrc} alt="v"
-                                     style={this.state.theCroppingImageStyle}/>
+                <div
+                    className="ui fullscreen modal canvas">
+                    <div
+                        className="image content">
+                        <div
+                            id="the-image-wrapper"
+                            style={
+                                {
+                                    "overflow":
+                                        "hidden"
+                                }
+                            }>
+                            <
+                                img
+                                id="the-image-mask"
+                                className="image-mask"
+                                src={this.state.selectedImageSrc
+                                }
+                                alt="v"
+                                style={this.state.theImageMaskStyle
+                                }
+                            />
+                            <div
+                                className="image-crop"
+                                id="image-crop"
+                                style={this.state.theImageCropStyle
+                                }
+                                draggable={false}
+                                onDragStart={this.onDragStart
+                                }
+                                onDrag={this.onDrag
+                                }
+                                onDragEnd={this.onDragEnd
+                                }
+                                onDragExit={this.onDragExit
+                                }
+                                onTouchStart={this.onTouchStart
+                                }
+                                onTouchMove={this.onTouchMove
+                                }
+                                onTouchEnd={this.onTouchEnd
+                                }>
+                                <
+                                    img
+                                    src={this.state.selectedImageSrc
+                                    }
+                                    alt="v"
+                                    style={this.state.theCroppingImageStyle
+                                    }
+                                />
                             </div>
-                            <img id="the-image" ref="image" src={this.state.selectedImageSrc} alt="v"
-                                 style={Object.assign({
-                                     maxWidth: '100%',
-                                     height: 'auto',
-                                     display: 'block',
-                                     visibility: 'hidden'
-                                 }, {})}/>
+                            <img
+                                id="the-image"
+                                ref="image"
+                                src={this.state.selectedImageSrc
+                                }
+                                alt="v"
+                                style={Object.assign({
+                                    maxWidth: '100%',
+                                    height: 'auto',
+                                    display: 'block',
+                                    visibility: 'hidden'
+                                }, {})
+                                }
+                            />
                         </div>
-                        <canvas id="photo-canvas" ref="photo-canvas"
-                                style={{
-                                    'width': '100%',
-                                    'height': 'auto',
-                                    border: 'solid 1px black',
-                                    visibility: 'hidden',
-                                    display: 'none'
-                                }}
-                                onTouchStart={this.onTouchStart} onTouchMove={this.onTouchMove}
-                                onTouchEnd={this.onTouchEnd}
-                                onTouchCancel={this.onTouchCancel}/>
+                        < canvas
+                            id="photo-canvas"
+                            ref="photo-canvas"
+                            style={
+                                {
+                                    'width':
+                                        '100%',
+                                    'height':
+                                        'auto',
+                                    border:
+                                        'solid 1px black',
+                                    visibility:
+                                        'hidden',
+                                    display:
+                                        'none'
+                                }
+                            }
+                            onTouchStart={this.onTouchStart
+                            }
+                            onTouchMove={this.onTouchMove
+                            }
+                            onTouchEnd={this.onTouchEnd
+                            }
+                            onTouchCancel={this.onTouchCancel
+                            }
+                        />
                     </div>
-                    <div className="actions">
-                        <div className="ui violet left icon button" onClick={this.rotateLeft} style={{float: 'left'}}>
-                            <i className="undo icon"/>
+                    <div
+                        className="actions">
+                        <div
+                            className="ui violet left icon button"
+                            onClick={this.rotateLeft
+                            }
+                            style={
+                                {
+                                    float: 'left'
+                                }
+                            }>
+                            <
+                                i
+                                className="undo icon"/>
                             向左旋转
                         </div>
-                        <div className="ui buttons">
-                            <div className="ui black deny button" onClick={this.clear}>
+                        <div
+                            className="ui buttons">
+                            <div
+                                className="ui black deny button"
+                                onClick={this.clear
+                                }>
                                 重来
                             </div>
-                            <div className="or"></div>
-                            <div className="ui positive right labeled icon button" onClick={this.generateImage}>
+                            <div
+                                className="or">
+                            </div>
+                            <div
+                                className="ui positive right labeled icon button"
+                                onClick={this.generateImage
+                                }>
                                 确定
-                                <i className="checkmark icon"/>
+                                <i
+                                    className="checkmark icon"/>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        );
+        )
+            ;
     }
 }
 
