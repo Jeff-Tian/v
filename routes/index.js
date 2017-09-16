@@ -87,12 +87,25 @@ function socketIO(app, router, render, server) {
     });
 }
 
+function routeFolder(folder, app, router, render, server) {
+    fs.readdir(__dirname + `/${folder}`, function (err, results) {
+        if (err) {
+            throw err;
+        }
+
+        results.forEach(fileName => {
+            require(`./${folder}/` + fileName)(app, router, render, server);
+        });
+    });
+}
+
 module.exports = function (app, router, render, server) {
     helper(app, router, render);
     api(app, router);
     publicRouter(app, router, render);
     // secure(app, router, render);
     socketIO(app, router, render, server);
+    routeFolder('admin', app, router, render, server);
 
     app
         .use(router.routes())
