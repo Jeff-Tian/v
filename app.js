@@ -10,6 +10,7 @@ const logger = require('koa-logger');
 const views = require('co-views');
 const serveStatic = require('koa-static');
 const server = require('http').createServer(app.callback());
+const mount = require('koa-mount');
 
 const render = views(path.join(__dirname, 'views'), {
     default: "pug",
@@ -17,6 +18,7 @@ const render = views(path.join(__dirname, 'views'), {
 });
 
 app.use(logger());
+app.use(mount('/admin', require('./routes/admin/index.js')));
 
 require('./routes')(app, router, render, server);
 

@@ -105,7 +105,6 @@ module.exports = function (app, router, render, server) {
     publicRouter(app, router, render);
     // secure(app, router, render);
     socketIO(app, router, render, server);
-    routeFolder('admin', app, router, render, server);
 
     app
         .use(router.routes())
