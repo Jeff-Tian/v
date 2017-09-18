@@ -22,7 +22,7 @@ app.use(function* (next) {
             let data = yield  parse(this.request);
             console.log(`Authenticating...`);
             console.log(data);
-            return this.body = authenticateUser(data.username, data.password);
+            return this.body = authenticateUser(data.username, data.password, data.returnUrl);
         }
 
         yield next;

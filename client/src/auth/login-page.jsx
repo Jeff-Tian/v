@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
 import Auth from './auth';
 import LoginForm from './components/LoginForm.jsx';
+import { browserHistory } from 'react-router';
 
 class LoginPage extends React.Component {
     constructor(props, context) {
@@ -39,7 +40,6 @@ class LoginPage extends React.Component {
         const xhr = new XMLHttpRequest();
         xhr.open('post', '/admin/api/sign-in');
         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-        // xhr.responseType = 'json';
         xhr.addEventListener('load', () => {
             if (xhr.status === 200) {
                 try {
@@ -52,7 +52,7 @@ class LoginPage extends React.Component {
 
                     Auth.authenticateUser(json.token);
 
-                    self.context.router.replace(json.returnUrl || '/');
+                    browserHistory.push(json.returnUrl || '/');
                 } catch (ex) {
                     const errors = ex.message || JSON.stringify(ex);
 
