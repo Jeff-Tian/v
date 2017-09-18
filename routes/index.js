@@ -44,8 +44,7 @@ function secure(app, router, render) {
     let membership = require('koa-membership')(config);
 
     router
-        .get('/', renderIndexResponse)
-        .get('/preview*', renderIndexResponse);
+        .get('/', renderIndexResponse);
 }
 
 function publicRouter(app, router, render) {
@@ -60,12 +59,6 @@ function publicRouter(app, router, render) {
 
     router
         .get('/sign-in', renderIndexResponse);
-}
-
-function api(app, router) {
-    require('./lesson')(app, router, coBody);
-    require('./sso')(app, router, coBody);
-    require('./resource')(app, router, coBody);
 }
 
 function socketIO(app, router, render, server) {
@@ -101,7 +94,6 @@ function routeFolder(folder, app, router, render, server) {
 
 module.exports = function (app, router, render, server) {
     helper(app, router, render);
-    api(app, router);
     publicRouter(app, router, render);
     // secure(app, router, render);
     socketIO(app, router, render, server);

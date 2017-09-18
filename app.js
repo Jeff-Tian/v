@@ -22,11 +22,7 @@ app.use(mount('/admin', require('./routes/admin/index.js')));
 
 require('./routes')(app, router, render, server);
 
-if (['producation', 'prd', 'uat', 'qa'].indexOf(process.env.NODE_ENV) >= 0) {
-    app.use(serveStatic('client/build'));
-} else {
-    app.use(serveStatic('client/public'));
-}
+app.use(serveStatic(config.publicFolder));
 
 if (!module.parent) {
     var port = process.env.PORT || config.port || 16016;
