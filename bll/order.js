@@ -19,7 +19,9 @@ module.exports = {
     },
 
     list: function () {
-        return orders.sort((o1, o2) => {
+        let orderList = Object.keys(orders).map(orderId => orders[orderId]);
+
+        return orderList.sort((o1, o2) => {
             if (o1.createdTime > o2.createdTime) {
                 return 1;
             }
