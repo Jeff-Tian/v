@@ -28,31 +28,43 @@ class LoginPage extends React.Component {
     }
 
     processForm(event) {
-        console.error('hals;dhfasdkl;jfsdaf');
         event.preventDefault();
 
         const username = encodeURIComponent(this.state.user.name);
         const password = encodeURIComponent(this.state.user.password);
         const formData = `username=${username}&password=${password}&returnUrl=/admin/orders`;
 
+        let self = this;
+
         const xhr = new XMLHttpRequest();
         xhr.open('post', '/admin/api/sign-in');
         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-        xhr.responseType = 'json';
+        // xhr.responseType = 'json';
         xhr.addEventListener('load', () => {
             if (xhr.status === 200) {
-                this.setState({
-                    errors: {}
-                });
+                try {
+                    let json = JSON.parse(xhr.response);
 
-                Auth.authenticateUser(xhr.response.token);
+                    self.setState({
+                        errors: {},
+                        successMessage: 'welcome'
+                    });
 
-                this.context.router.replace(xhr.response.returnUrl || '/');
+                    Auth.authenticateUser(json.token);
+
+                    self.context.router.replace(json.returnUrl || '/');
+                } catch (ex) {
+                    const errors = ex.message || JSON.stringify(ex);
+
+                    self.setState({
+                        errors
+                    });
+                }
             } else {
                 const errors = xhr.response.errors ? xhr.response.errors : {};
-                errors.summary = xhr.response.message;
+                errors.summary = xhr.response.message || xhr.response;
 
-                this.setState({
+                self.setState({
                     errors
                 });
             }
