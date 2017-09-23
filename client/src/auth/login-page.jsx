@@ -1,4 +1,4 @@
-import React, {PropTypes} from 'react';
+import React from 'react';
 import Auth from './auth';
 import LoginForm from './components/LoginForm.jsx';
 import { browserHistory } from 'react-router';
@@ -52,8 +52,12 @@ class LoginPage extends React.Component {
 
                     Auth.authenticateUser(json.token);
 
-                    browserHistory.push(json.returnUrl || '/');
+                    let returnUrl = json.returnUrl || '/';
+                    console.log(returnUrl);
+                    browserHistory.push(returnUrl);
+                    console.log('should redirect');
                 } catch (ex) {
+                    console.error(ex);
                     const errors = ex.message || JSON.stringify(ex);
 
                     self.setState({

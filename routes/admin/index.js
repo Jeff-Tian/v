@@ -10,7 +10,7 @@ const parse = require('co-body');
 
 function authenticateUser(username, password, returnUrl) {
     if (username === credentials.name && password === credentials.pass) {
-        return {token: 'true', returnUrl: returnUrl || '/'};
+        return {token: new Buffer(`${username}:${password}`).toString('base64'), returnUrl: returnUrl || '/'};
     }
 
     throw new Error('fuck you!');
@@ -47,6 +47,7 @@ router.get('/orders', function* (next) {
 });
 
 router.get('/api/orders', function* (next) {
+    orderBll.create('test');
     this.body = orderBll.list();
 });
 

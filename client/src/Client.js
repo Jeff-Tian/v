@@ -1,15 +1,4 @@
-const config = require('../../config');
-const proxy = require('./shared/proxy');
-const qs = require('querystring');
-
-function listLessons(data, cb) {
-    return fetch(config.serviceUrls.buzz.courses.list.frontEnd + '?' + qs.stringify(data), { accept: 'application/json' })
-        .then(checkStatus)
-        .then(parseJSON)
-        .then(cb)
-        ;
-}
-
+import Auth from './auth/auth';
 
 function checkStatus(response) {
     if (response.status >= 200 && response.status < 300) {
@@ -28,4 +17,20 @@ function parseJSON(response) {
 }
 
 export default {
+    fetchOrders: async function () {
+        let token = Auth.getToken();
+
+        try {
+            let response = await fetch('/admin/api/orders', {
+                accept: 'application/json',
+                headers: {Authorization: `Basic ${token}`}
+            });
+
+            response = checkStatus(response);
+
+            return parseJSON(response);
+        }catch(ex){
+            console.error(ex);
+        }
+    }
 }

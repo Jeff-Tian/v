@@ -3,20 +3,22 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import './index.css';
 import {Router, Route, browserHistory} from 'react-router';
-import Auth from './auth/login-page';
+import LoginPage from './auth/login-page';
+import Orders from './orders/orders';
+import Auth from './auth/auth';
 
-class Test extends Component {
-    render() {
-        return (
-            <div>Haha</div>
-        );
+function isUserAuthenticated(nextState, replaceState) {
+    if (!Auth.isUserAuthenticated()) {
+        replaceState({
+            nextPathname: nextState.location.pathname
+        }, '/admin/sign-in');
     }
 }
 
 ReactDOM.render((
     <Router history={browserHistory}>
         <Route path="/" component={App}/>
-        <Route path="/test" component={Test}/>
-        <Route path="/admin/sign-in" component={Auth} />
+        <Route path="/admin/sign-in" component={LoginPage}/>
+        <Route path="/admin/orders" component={Orders} onEnter={isUserAuthenticated}/>
     </Router>
 ), document.getElementById('root'));

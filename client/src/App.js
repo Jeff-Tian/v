@@ -92,7 +92,7 @@ class App extends Component {
 
         function openOrderPage(orderInfo) {
             if (popup && !popup.closed) {
-                popup.postMessage('link://' + `/order/${orderInfo.orderId}`, '*');
+                popup.postMessage(`link:///order/${orderInfo.orderId}`, '*');
             } else {
                 alert('尝试打开支付页面失败，请刷新页面重试。');
             }
