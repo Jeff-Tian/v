@@ -1,5 +1,6 @@
 import React from 'react';
 import Client from '../Client';
+import OrderStatus from '../../../bll/orderStatus';
 
 class Orders extends React.Component {
     constructor(props, context) {
@@ -12,7 +13,15 @@ class Orders extends React.Component {
 
     async componentDidMount() {
         let orders = await Client.fetchOrders();
-        console.log(orders);
+
+        this.setState({
+            orders: orders
+        });
+    }
+
+    async markAsPaid(orderId) {
+        await Client.markAsPaid(orderId);
+        let orders = await Client.fetchOrders();
         this.setState({
             orders: orders
         });
@@ -29,6 +38,7 @@ class Orders extends React.Component {
                         <th>状态</th>
                         <th>类型</th>
                         <th>上次修改时间</th>
+                        <th></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -41,6 +51,16 @@ class Orders extends React.Component {
                                     <td>{o.status}</td>
                                     <td>{o.type}</td>
                                     <td>{o.updatedTime}</td>
+                                    <td>
+                                        {
+                                            OrderStatus.pendingPay === o.status ? (
+                                                <button className="ui positive button"
+                                                        onClick={() => this.markAsPaid(o.orderId)}>
+                                                    Mark as Paid
+                                                </button>
+                                            ) : ''
+                                        }
+                                    </td>
                                 </tr>
                             );
                         })

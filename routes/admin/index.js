@@ -7,6 +7,7 @@ const readFile = require('../../common/readFile');
 const path = require('path');
 const config = require('../../config');
 const parse = require('co-body');
+const orderStatus = require('../../bll/orderStatus');
 
 function authenticateUser(username, password, returnUrl) {
     if (username === credentials.name && password === credentials.pass) {
@@ -46,10 +47,16 @@ router.get('/orders', function* (next) {
     this.body = yield readFile.thunk(p);
 });
 
-router.get('/api/orders', function* (next) {
-    orderBll.create('test');
-    this.body = orderBll.list();
-});
+router
+    .get('/api/orders', function* (next) {
+        this.body = orderBll.list();
+    })
+    .post('/api/orders/:orderId', function* (next) {
+        let o = orderBll.get(this.params.orderId);
+        o.status = orderStatus.paid;
+
+        this.body = o;
+    });
 
 app
     .use(router.routes())

@@ -12,24 +12,34 @@ function checkStatus(response) {
     }
 }
 
-function parseJSON(response) {
-    return response.json();
-}
+let authHeader = {
+    Authorization: `Basic ${Auth.getToken()}`
+};
 
 export default {
     fetchOrders: async function () {
-        let token = Auth.getToken();
-
         try {
             let response = await fetch('/admin/api/orders', {
                 accept: 'application/json',
-                headers: {Authorization: `Basic ${token}`}
+                headers: authHeader
             });
 
-            response = checkStatus(response);
+            return checkStatus(response).json();
+        } catch (ex) {
+            console.error(ex);
+        }
+    },
 
-            return parseJSON(response);
-        }catch(ex){
+    markAsPaid: async function (orderId) {
+        try {
+            let response = await fetch(`/admin/api/orders/${orderId}/`, {
+                method: 'POST',
+                accept: 'application/json',
+                headers: authHeader
+            });
+
+            return checkStatus(response).json();
+        } catch (ex) {
             console.error(ex);
         }
     }
