@@ -53,7 +53,7 @@ class Orders extends React.Component {
                                     <td>{o.updatedTime}</td>
                                     <td>
                                         {
-                                            OrderStatus.pendingPay === o.status ? (
+                                            [OrderStatus.pendingPay, OrderStatus.claimPaid].indexOf(o.status) >= 0 ? (
                                                 <button className="ui positive button"
                                                         onClick={() => this.markAsPaid(o.orderId)}>
                                                     Mark as Paid

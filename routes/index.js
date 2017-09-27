@@ -6,6 +6,7 @@ const serveStatic = require('koa-static');
 const fs = require('fs');
 const coBody = require('co-body');
 const order = require('../bll/order');
+const OrderStatus = require('../bll/orderStatus');
 
 let readFileThunk = function (src) {
     return new Promise(function (resolve, reject) {
@@ -63,6 +64,8 @@ function publicRouter(app, router, render) {
 
 function socketIO(app, router, render, server) {
     const io = require('socket.io')(server);
+    order.setIO(io);
+    console.log('io set');
     io.on('connection', function (socket) {
         console.log('user connected');
 
@@ -75,6 +78,19 @@ function socketIO(app, router, render, server) {
             if (msg === 'create') {
                 io.emit('order-qr-remove', order.create('qr-remove'));
             }
+
+            if (typeof msg === 'object') {
+                if (msg.message === 'claim-paid') {
+                    let theOrder = order.get(msg.orderId);
+                    theOrder.status = OrderStatus.claimPaid;
+
+                    io.emit('order-qr-remove', {
+                        message: 'claim-paid',
+                        order: theOrder
+                    });
+                }
+            }
+
             io.emit('qr', '权限还未开放，敬请期待。');
         });
     });

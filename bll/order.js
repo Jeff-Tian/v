@@ -2,6 +2,7 @@ const uuidv1 = require('uuid/v1');
 const orderStatus = require('./orderStatus');
 
 let orders = {};
+let io = null;
 
 module.exports = {
     create: function (type) {
@@ -35,6 +36,21 @@ module.exports = {
     },
 
     get: function (orderId) {
-        return orders[orderId];
+        return orders[orderId] || {};
+    },
+
+    notifyClient: function (order) {
+        if (!io) {
+            console.error('io not set');
+            return;
+        }
+
+        io.emit('order-paid', order);
+    },
+
+    setIO: function (newIO) {
+        console.log('io set really');
+        io = newIO;
+        console.log(io);
     }
 };

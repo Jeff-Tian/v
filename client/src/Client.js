@@ -30,6 +30,18 @@ export default {
         }
     },
 
+    fetchOrder: async function (orderId) {
+        try {
+            let response = await fetch(`/api/order/${orderId}`, {
+                accept: 'application/json'
+            });
+
+            return checkStatus(response).json();
+        } catch (ex) {
+            console.error(ex);
+        }
+    },
+
     markAsPaid: async function (orderId) {
         try {
             let response = await fetch(`/admin/api/orders/${orderId}/`, {

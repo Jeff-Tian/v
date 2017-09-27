@@ -55,6 +55,8 @@ router
         let o = orderBll.get(this.params.orderId);
         o.status = orderStatus.paid;
 
+        orderBll.notifyClient(o);
+
         this.body = o;
     });
 

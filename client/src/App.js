@@ -10,8 +10,7 @@ import './App.css';
 import shape from './image-decorators/shape';
 import fs from './fs/fs';
 import classNames from 'classnames';
-
-const io = require('socket.io-client');
+import socket from './socket.js';
 
 let maxXRange = 0;
 let maxYRange = 0;
@@ -88,11 +87,11 @@ class App extends Component {
         let canvas = null;
         let context = null;
         let photoFile = null;
-        let socket = io();
 
         function openOrderPage(orderInfo) {
             if (popup && !popup.closed) {
                 popup.postMessage(`link:///order/${orderInfo.orderId}`, '*');
+                console.log('可以支付了');
             } else {
                 alert('尝试打开支付页面失败，请刷新页面重试。');
             }
@@ -113,17 +112,13 @@ class App extends Component {
         function newOrderCreated() {
             return new Promise((resolve, reject) => {
                 socket.on('order-qr-remove', function (msg) {
-                   if(typeof msg === 'object'){
-                       console.log('new order created');
-                       resolve(msg);
-                   }
+                    if (typeof msg === 'object') {
+                        console.log('new order created');
+                        resolve(msg);
+                    }
                 });
             });
         }
-
-        Promise.all([popupReady(), newOrderCreated()]).then(results=>{
-            openOrderPage(results[1]);
-        });
 
         socket.on('order-qr-remove', function (msg) {
             if (msg === 'ok') {
@@ -134,9 +129,17 @@ class App extends Component {
             } else if (msg === 'pending-pay') {
                 alert(msg);
             } else {
-                // alert(msg);
                 self.setState({loading: false});
             }
+        });
+
+        socket.on('order-paid', function (msg) {
+            console.log(msg);
+
+            cropAndDrawV(document.getElementById('the-image-mask').src, context, canvas, function () {
+                convertToJpeg(canvas, context);
+                self.setState({loading: false});
+            });
         });
 
         this.onPhotoSelected = function (target) {
@@ -220,6 +223,10 @@ class App extends Component {
             } else {
                 popup = window.open('/popup.html');
             }
+
+            Promise.all([popupReady(), newOrderCreated()]).then(results => {
+                openOrderPage(results[1]);
+            });
         };
 
         this.download = function () {
