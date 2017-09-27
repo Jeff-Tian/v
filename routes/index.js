@@ -54,8 +54,12 @@ function publicRouter(app, router, render) {
             gzip: true,
             maxage: 1000 * 60 * 60 * 24 * 360
         }));
+
+        router
+            .get('/order/:orderId', renderIndexResponse())
+        ;
     }
-    
+
     app.use(mount('/node_modules', serveStatic('client/node_modules', {
         gzip: true,
         maxage: 1000 * 60 * 60 * 24 * 360
