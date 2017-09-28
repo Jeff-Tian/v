@@ -1,16 +1,15 @@
 import React, {Component} from 'react';
-// import logo from './logo.svg';
-import logo from '../public/v/v.png';
-import v from '../public/v/v.png';
-import qr from '../public/v/v-qr.png';
-import vDecorator from './image-decorators/v.js';
-import qrDecorator from './image-decorators/qr';
-import './semantic-ui/semantic.min.css';
-import './App.css';
-import shape from './image-decorators/shape';
-import fs from './fs/fs';
+import logo from '../../public/v/v.png';
+import v from '../../public/v/v.png';
+import qr from '../../public/v/v-qr.png';
+import vDecorator from '../image-decorators/v.js';
+import qrDecorator from '../image-decorators/qr';
+import '../semantic-ui/semantic.min.css';
+import '../App.css';
+import shape from '../image-decorators/shape';
+import fs from '../fs/fs';
 import classNames from 'classnames';
-import socket from './socket.js';
+import socket from '../socket.js';
 
 let maxXRange = 0;
 let maxYRange = 0;
@@ -59,7 +58,7 @@ function convertToJpeg(canvas, context) {
 }
 
 class App extends Component {
-    constructor() {
+    constructor(props) {
         super();
 
         this.state = this.resetStyles();
@@ -144,11 +143,49 @@ class App extends Component {
 
         this.onPhotoSelected = function (target) {
             self.state.loading = true;
-            photoFile = target.refs['photo-file'];
-            fs.loadImageFromFile(photoFile, function (dataURL) {
-                localStorage.setItem('image', dataURL);
+            canvas = target.refs['photo-canvas'];
+            try {
+                photoFile = atob(props.params.vid);
+            }catch(ex){
+                photoFile = localStorage.getItem('image');
+                console.log(photoFile);
+            }
 
-                self.context.router.push('/v/local-image');
+            if(!photoFile){
+                this.context.router.push('/');
+                return;
+            }
+
+            console.log('photo = ', photoFile);
+            context = canvas.getContext('2d');
+
+            fs.loadImageFromURI(photoFile, function (image, data) {
+                if (data && data.exif) {
+                    let orientation = data.exif.get('Orientation');
+                    if (orientation) {
+                        if (orientation === 8) {
+                            self.rotateLeft();
+                        }
+                        if (orientation === 6) {
+                            self.rotateRight();
+                        }
+                        if (orientation === 3) {
+                            self.rotate180DegreeLeftward();
+                        }
+                        if (orientation !== 1 && orientation !== 8 && orientation !== 6 && orientation !== 3) {
+                            alert(orientation);
+                        }
+                    }
+                }
+                self.setState({
+                    selectedImageSrc: image
+                });
+
+                document.getElementById('the-image').onload = function () {
+                    App.showModal();
+                    self.setCropperStyles();
+                    self.state.loading = false;
+                };
             });
         };
 
@@ -242,6 +279,10 @@ class App extends Component {
                 });
             });
         }
+    }
+
+    componentDidMount() {
+        this.onPhotoSelected(this);
     }
 
     static hideModal() {

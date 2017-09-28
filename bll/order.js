@@ -24,11 +24,11 @@ module.exports = {
 
         return orderList.sort((o1, o2) => {
             if (o1.createdTime > o2.createdTime) {
-                return 1;
+                return -1;
             }
 
             if (o1.createdTime < o2.createdTime) {
-                return -1;
+                return 1;
             }
 
             return 0;

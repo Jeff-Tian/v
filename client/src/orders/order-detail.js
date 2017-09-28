@@ -32,7 +32,11 @@ class Orders extends React.Component {
                     order: msg
                 });
 
-                window.close();
+                if (navigator.userAgent.indexOf('MicroMessenger') >= 0) {
+                    history.back();
+                } else {
+                    window.close();
+                }
             }
         });
     }

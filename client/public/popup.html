@@ -12,7 +12,11 @@
         }
     });
 
-    window.opener.postMessage('poup://ready', '*');
+    if (window.opener) {
+        window.opener.postMessage('poup://ready', '*');
+    } else {
+        alert(navigator.userAgent);
+    }
 </script>
 </body>
 </html>
