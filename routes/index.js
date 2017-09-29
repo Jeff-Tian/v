@@ -38,6 +38,7 @@ function renderIndex() {
 }
 
 function* renderIndexResponse() {
+    console.log('render index file');
     this.body = yield renderIndex();
 }
 
@@ -57,8 +58,7 @@ function publicRouter(app, router, render) {
 
         router
             .get('/order/:orderId', renderIndexResponse)
-            .get('/v/:uri', renderIndexResponse)
-        ;
+            .get('/v/:uri', renderIndexResponse);
     }
 
     app.use(mount('/node_modules', serveStatic('client/node_modules', {
@@ -77,7 +77,6 @@ function publicRouter(app, router, render) {
 function socketIO(app, router, render, server) {
     const io = require('socket.io')(server);
     order.setIO(io);
-    console.log('io set');
     io.on('connection', function (socket) {
         console.log('user connected');
 

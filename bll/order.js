@@ -49,8 +49,6 @@ module.exports = {
     },
 
     setIO: function (newIO) {
-        console.log('io set really');
         io = newIO;
-        console.log(io);
     }
 };

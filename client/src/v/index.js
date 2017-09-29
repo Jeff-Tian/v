@@ -11,6 +11,8 @@ import fs from '../fs/fs';
 import classNames from 'classnames';
 import socket from '../socket.js';
 import {browserHistory} from 'react-router';
+import Client from '../Client';
+import OrderStatus from '../../../bll/orderStatus';
 
 let maxXRange = 0;
 let maxYRange = 0;
@@ -24,6 +26,11 @@ let rotated = 0;
 
 let dragData = {};
 let popup = null;
+
+let photoFile = null;
+
+let canvas = null;
+let context = null;
 
 function convertToJpeg(canvas, context) {
     let startX = 0;
@@ -79,9 +86,6 @@ class App extends Component {
             img.src = image;
         }
 
-        let canvas = null;
-        let context = null;
-        let photoFile = null;
 
         function openOrderPage(orderInfo) {
             if (popup && !popup.closed) {
@@ -137,44 +141,9 @@ class App extends Component {
         this.onPhotoSelected = function (target) {
             self.state.loading = true;
             canvas = target.refs['photo-canvas'];
-            try {
-                photoFile = atob(props.params.vid);
-            } catch (ex) {
-                photoFile = localStorage.getItem('image');
-                console.log(photoFile);
-            }
-
-            if (!photoFile) {
-                browserHistory.push('/');
-
-                return;
-            }
-
-            console.log('photo = ', photoFile);
             context = canvas.getContext('2d');
 
-            fs.loadImageFromURI(photoFile, function (image, data) {
-                if (data && data.exif) {
-                    let orientation = data.exif.get('Orientation');
-                    if (orientation) {
-                        if (orientation === 8) {
-                            self.rotateLeft();
-                        }
-                        if (orientation === 6) {
-                            self.rotateRight();
-                        }
-                        if (orientation === 3) {
-                            self.rotate180DegreeLeftward();
-                        }
-                        if (orientation !== 1 && orientation !== 8 && orientation !== 6 && orientation !== 3) {
-                            alert(orientation);
-                        }
-                    }
-                }
-                self.setState({
-                    selectedImageSrc: image
-                });
-
+            this.readPhotoFile(photoFile, this.props, function () {
                 document.getElementById('the-image').onload = function () {
                     App.showModal();
                     self.setCropperStyles();
@@ -188,19 +157,7 @@ class App extends Component {
                 return;
             }
 
-            rotated = 0;
-            self.setState(self.resetStyles());
-
-            if (context) {
-                context.clearRect(0, 0, canvas.width, canvas.height);
-            }
-
-            if (photoFile) {
-                photoFile.value = null;
-            }
-
-            canvasOffsetX = 0;
-            canvasOffsetY = 0;
+            browserHistory.push('/');
         };
 
         this.generateImage = function () {
@@ -289,9 +246,65 @@ class App extends Component {
         }
     }
 
-    componentDidMount() {
+    readPhotoFile(photoFile, props, callback) {
+        try {
+            photoFile = atob(props.params.vid);
+        } catch (ex) {
+            photoFile = localStorage.getItem('image');
+        }
+
+        if (!photoFile) {
+            console.log('redirecting to select image');
+            return browserHistory.push('/');
+        }
+
+        fs.loadImageFromURI(photoFile, function (image, data) {
+            if (data && data.exif) {
+                let orientation = data.exif.get('Orientation');
+                if (orientation) {
+                    if (orientation === 8) {
+                        self.rotateLeft();
+                    }
+                    if (orientation === 6) {
+                        self.rotateRight();
+                    }
+                    if (orientation === 3) {
+                        self.rotate180DegreeLeftward();
+                    }
+                    if (orientation !== 1 && orientation !== 8 && orientation !== 6 && orientation !== 3) {
+                        alert(orientation);
+                    }
+                }
+            }
+            self.setState({
+                selectedImageSrc: image
+            });
+
+            callback();
+        });
+
+        return photoFile;
+    }
+
+    async componentDidMount() {
+        console.log('hello = ', this.props.location.query.orderId);
+
         if (this.props.location.query.orderId) {
-            this.generateImageWithoutQRCode();
+            self.state.loading = true;
+            canvas = this.refs['photo-canvas'];
+            context = canvas.getContext('2d');
+
+            this.setState({loading: true});
+            let o = await Client.fetchOrder(this.props.location.query.orderId);
+            console.log('order = ', o);
+
+            photoFile = this.readPhotoFile(photoFile, this.props, function () {
+                if (o.status === OrderStatus.paid) {
+                    self.generateImageWithoutQRCode();
+                } else {
+                    self.generateImage();
+                }
+            });
         } else {
             this.onPhotoSelected(this);
         }
@@ -544,6 +557,8 @@ class App extends Component {
             canvas.width = img.width;
             canvas.height = img.height;
         } else {
+            console.log(img);
+            console.log(img.width, img.height);
             canvas.height = canvas.width * img.height / img.width;
         }
     }
@@ -899,9 +914,5 @@ class App extends Component {
             ;
     }
 }
-
-App.contextTypes = {
-    router: React.PropTypes.object
-};
 
 export default App;
