@@ -12,12 +12,12 @@ function checkStatus(response) {
     }
 }
 
-let authHeader = {
-    Authorization: `Basic ${Auth.getToken()}`
-};
-
 export default {
     fetchOrders: async function () {
+        let authHeader = {
+            Authorization: `Basic ${Auth.getToken()}`
+        };
+
         try {
             let response = await fetch('/admin/api/orders', {
                 accept: 'application/json',
@@ -43,6 +43,10 @@ export default {
     },
 
     markAsPaid: async function (orderId) {
+        let authHeader = {
+            Authorization: `Basic ${Auth.getToken()}`
+        };
+
         try {
             let response = await fetch(`/admin/api/orders/${orderId}/`, {
                 method: 'POST',
