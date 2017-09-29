@@ -11,8 +11,12 @@ module.exports = function (opts) {
     assert(opts.pass, 'simple form auth .pass required');
 
     return function* simpleFormAuth(next) {
-        let user = basicAuth(this) || auth(this);
-
+        try {
+            let user = basicAuth(this) || auth(this);
+        } catch (ex) {
+            this.throw(401, ex);
+        }
+        
         if (user && user.name === opts.name && user.pass === opts.pass) {
             yield next;
         } else {
