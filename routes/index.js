@@ -57,6 +57,7 @@ function publicRouter(app, router, render) {
 
         router
             .get('/order/:orderId', renderIndexResponse)
+            .get('/v/:uri', renderIndexResponse)
         ;
     }
 
