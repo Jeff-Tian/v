@@ -253,12 +253,17 @@ class App extends Component {
         this.download = function () {
             self.setState({loading: true});
             alert('请长按下面图片，直到出现弹出菜单，选择保存即可。');
-            let a = document.createElement('a');
-            a.href = convertToJpeg(canvas, context);
-            a.download = 'papa.jpg';
-            document.body.appendChild(a);
-            a.click();
-            self.setState({loading: false});
+            try {
+                let a = document.createElement('a');
+                a.href = convertToJpeg(canvas, context);
+                a.download = 'papa.jpg';
+                document.body.appendChild(a);
+                a.click();
+            } catch (ex) {
+                // alert(JSON.stringify(ex));
+            } finally {
+                self.setState({loading: false});
+            }
         };
 
         function cropAndDrawVAndQR(image, context, canvas, callback) {
