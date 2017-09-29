@@ -1,4 +1,4 @@
-const auth = require('koa-basic-auth');
+const auth = require('./auth');
 const koa = require('koa');
 const app = koa();
 const router = require('koa-router')();
@@ -9,9 +9,17 @@ const config = require('../../config');
 const parse = require('co-body');
 const orderStatus = require('../../bll/orderStatus');
 
-function authenticateUser(username, password, returnUrl) {
+function authenticateUser(ctx, username, password, returnUrl) {
     if (username === credentials.name && password === credentials.pass) {
-        return {token: new Buffer(`${username}:${password}`).toString('base64'), returnUrl: returnUrl || '/'};
+        let token = new Buffer(`${username}:${password}`).toString('base64');
+
+        ctx.cookies.set('auth', token, {
+            expires: 0,
+            path: '/',
+            httpOnly: true
+        });
+
+        return {token: token, returnUrl: returnUrl || '/'};
     }
 
     throw new Error('fuck you!');
@@ -23,15 +31,14 @@ app.use(function* (next) {
             let data = yield  parse(this.request);
             console.log(`Authenticating...`);
             console.log(data);
-            return this.body = authenticateUser(data.username, data.password, data.returnUrl);
+            return this.body = authenticateUser(this, data.username, data.password, data.returnUrl);
         }
 
         yield next;
     } catch (ex) {
-        if (401 == ex.status) {
-            this.status = 401;
-            this.set('WWW-Authenticate', 'Basic');
-            this.body = '请验证身份';
+        console.error('ahhhhhhhhhhhh!');
+        if (ex.status === 401) {
+            this.redirect('/sign-in');
         } else {
             this.throw(401, ex);
         }
