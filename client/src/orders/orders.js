@@ -38,6 +38,7 @@ class Orders extends React.Component {
                         <th>状态</th>
                         <th>类型</th>
                         <th>上次修改时间</th>
+                        <th>数据</th>
                         <th></th>
                     </tr>
                     </thead>
@@ -51,6 +52,7 @@ class Orders extends React.Component {
                                     <td>{o.status}</td>
                                     <td>{o.type}</td>
                                     <td>{o.updatedTime}</td>
+                                    <td>{o.data}</td>
                                     <td>
                                         {
                                             [OrderStatus.pendingPay, OrderStatus.claimPaid].indexOf(o.status) >= 0 ? (

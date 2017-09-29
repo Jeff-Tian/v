@@ -3,6 +3,7 @@ import Client from '../Client';
 import wechatPaymentQrCode from '../../public/images/wechat-pay.jpg';
 import socket from '../socket';
 import OrderStatus from '../../../bll/orderStatus';
+import {browserHistory} from 'react-router';
 
 class Orders extends React.Component {
     constructor(props, context) {
@@ -33,7 +34,7 @@ class Orders extends React.Component {
                 });
 
                 if (navigator.userAgent.indexOf('MicroMessenger') >= 0) {
-                    history.back();
+                    browserHistory.push(`/v/local-image?orderId=${self.props.params.orderId}`);
                 } else {
                     window.close();
                 }

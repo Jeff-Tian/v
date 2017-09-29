@@ -10,6 +10,7 @@ import shape from '../image-decorators/shape';
 import fs from '../fs/fs';
 import classNames from 'classnames';
 import socket from '../socket.js';
+import {browserHistory} from 'react-router';
 
 let maxXRange = 0;
 let maxYRange = 0;
@@ -62,6 +63,7 @@ class App extends Component {
         super();
 
         this.state = this.resetStyles();
+        this.loading = true;
 
         self = this;
 
@@ -76,12 +78,6 @@ class App extends Component {
             };
             img.src = image;
         }
-
-        // function convertToPng(canvas) {
-        //     self.setState({
-        //         imgSrc: canvas.toDataURL('image/png')
-        //     });
-        // }
 
         let canvas = null;
         let context = null;
@@ -121,10 +117,7 @@ class App extends Component {
 
         socket.on('order-qr-remove', function (msg) {
             if (msg === 'ok') {
-                cropAndDrawV(document.getElementById('the-image-mask').src, context, canvas, function () {
-                    convertToJpeg(canvas, context);
-                    self.setState({loading: false});
-                });
+                self.generateImageWithoutQRCode();
             } else if (msg === 'pending-pay') {
                 alert(msg);
             } else {
@@ -146,13 +139,14 @@ class App extends Component {
             canvas = target.refs['photo-canvas'];
             try {
                 photoFile = atob(props.params.vid);
-            }catch(ex){
+            } catch (ex) {
                 photoFile = localStorage.getItem('image');
                 console.log(photoFile);
             }
 
-            if(!photoFile){
-                this.context.router.push('/');
+            if (!photoFile) {
+                browserHistory.push('/');
+
                 return;
             }
 
@@ -219,14 +213,23 @@ class App extends Component {
             });
         };
 
+        this.generateImageWithoutQRCode = function () {
+            cropAndDrawV(document.getElementById('the-image-mask').src, context, canvas, function () {
+                convertToJpeg(canvas, context);
+                self.setState({loading: false});
+            });
+        };
+
         this.removeQRCode = function () {
             self.setState({loading: true});
 
-            socket.emit('order-qr-remove', 'create');
+            socket.emit('order-qr-remove', {
+                message: 'create'
+            });
 
             if (navigator.userAgent.indexOf('MicroMessenger') >= 0) {
                 newOrderCreated().then(function (order) {
-                    location.href = `/order/${order.orderId}`;
+                    browserHistory.push(`/order/${order.orderId}`);
                 });
             } else {
                 if (popup && !popup.closed) {
@@ -282,7 +285,11 @@ class App extends Component {
     }
 
     componentDidMount() {
-        this.onPhotoSelected(this);
+        if (this.props.location.query.orderId) {
+            this.generateImageWithoutQRCode();
+        } else {
+            this.onPhotoSelected(this);
+        }
     }
 
     static hideModal() {
@@ -743,8 +750,7 @@ class App extends Component {
                                 }
                                 target="_blank">
                                 <img
-                                    src={this.state.imgSrc
-                                    }
+                                    src={this.state.imgSrc}
                                     alt="v"
                                     style={
                                         {
@@ -772,16 +778,8 @@ class App extends Component {
                                         "hidden"
                                 }
                             }>
-                            <
-                                img
-                                id="the-image-mask"
-                                className="image-mask"
-                                src={this.state.selectedImageSrc
-                                }
-                                alt="v"
-                                style={this.state.theImageMaskStyle
-                                }
-                            />
+                            <img id="the-image-mask" className="image-mask" src={this.state.selectedImageSrc} alt="v"
+                                 style={this.state.theImageMaskStyle}/>
                             <div
                                 className="image-crop"
                                 id="image-crop"

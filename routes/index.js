@@ -85,12 +85,11 @@ function socketIO(app, router, render, server) {
         });
 
         socket.on('order-qr-remove', function (msg) {
-            console.log('message: ' + msg);
-            if (msg === 'create') {
-                io.emit('order-qr-remove', order.create('qr-remove'));
-            }
-
             if (typeof msg === 'object') {
+                if(msg.message === 'create'){
+                    io.emit('order-qr-remove', order.create('qr-remove', msg));
+                }
+
                 if (msg.message === 'claim-paid') {
                     let theOrder = order.get(msg.orderId);
                     theOrder.status = OrderStatus.claimPaid;

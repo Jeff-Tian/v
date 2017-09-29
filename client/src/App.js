@@ -11,6 +11,7 @@ import shape from './image-decorators/shape';
 import fs from './fs/fs';
 import classNames from 'classnames';
 import socket from './socket.js';
+import {browserHistory} from 'react-router';
 
 let maxXRange = 0;
 let maxYRange = 0;
@@ -148,7 +149,7 @@ class App extends Component {
             fs.loadImageFromFile(photoFile, function (dataURL) {
                 localStorage.setItem('image', dataURL);
 
-                self.context.router.push('/v/local-image');
+                browserHistory.push(`/v/local-image`);
             });
         };
 
@@ -851,13 +852,8 @@ class App extends Component {
                     </div>
                 </div>
             </div>
-        )
-            ;
+        );
     }
 }
-
-App.contextTypes = {
-    router: React.PropTypes.object
-};
 
 export default App;
