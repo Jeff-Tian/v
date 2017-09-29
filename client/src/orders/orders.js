@@ -1,6 +1,7 @@
 import React from 'react';
 import Client from '../Client';
 import OrderStatus from '../../../bll/orderStatus';
+import socket from '../socket';
 
 class Orders extends React.Component {
     constructor(props, context) {
@@ -12,63 +13,74 @@ class Orders extends React.Component {
     }
 
     async componentDidMount() {
-        let orders = await Client.fetchOrders();
-
         this.setState({
-            orders: orders
+            orders: await Client.fetchOrders()
+        });
+
+        let self = this;
+        socket.on('order-paid', function (msg) {
+            self.setState(prevState => ({
+                orders: self.state.orders.map(o => o.orderId === msg.orderId ? msg : o)
+            }));
+        });
+
+        socket.on('order-qr-remove', function (msg) {
+            if (typeof msg === 'object') {
+                console.log('new order created: ', msg);
+
+                self.setState(prevState => ({
+                    orders: [msg, ...self.state.orders]
+                }));
+            }
         });
     }
 
     async markAsPaid(orderId) {
         await Client.markAsPaid(orderId);
-        let orders = await Client.fetchOrders();
-        this.setState({
-            orders: orders
-        });
+        // let orders = await Client.fetchOrders();
+        // this.setState({
+        //     orders: orders
+        // });
     }
 
     render() {
         return (
             <div className="ui container">
-                <table className="ui table">
-                    <thead>
-                    <tr>
-                        <th>order Id</th>
-                        <th>时间</th>
-                        <th>状态</th>
-                        <th>类型</th>
-                        <th>上次修改时间</th>
-                        <th>数据</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
+                <div className={"ui divided items"}>
                     {
                         this.state.orders.map(o => {
                             return (
-                                <tr key={o.orderId}>
-                                    <td>{o.orderId}</td>
-                                    <td>{o.createdTime}</td>
-                                    <td>{o.status}</td>
-                                    <td>{o.type}</td>
-                                    <td>{o.updatedTime}</td>
-                                    <td>{o.data}</td>
-                                    <td>
-                                        {
-                                            [OrderStatus.pendingPay, OrderStatus.claimPaid].indexOf(o.status) >= 0 ? (
-                                                <button className="ui positive button"
-                                                        onClick={() => this.markAsPaid(o.orderId)}>
-                                                    Mark as Paid
-                                                </button>
-                                            ) : ''
-                                        }
-                                    </td>
-                                </tr>
+                                <div className={"item"} key={o.orderId}>
+                                    <div className={"image"}>
+                                        <img src={""} alt={""}/>
+                                    </div>
+                                    <div className={"content"}>
+                                        <div className={"header"}>{o.orderId}</div>
+                                        <div className={"meta"}>
+                                            <span className={"cinema"}>{o.type}</span>
+                                            <span className={"cinema"}>{o.status}</span>
+                                        </div>
+                                        <div className={"description"}>
+                                            {o.data}
+                                        </div>
+                                        <div className={"extra"}>
+                                            {
+                                                [OrderStatus.pendingPay, OrderStatus.claimPaid].indexOf(o.status) >= 0 ? (
+                                                    <button className="ui right floated primary button"
+                                                            onClick={() => this.markAsPaid(o.orderId)}>
+                                                        Mark as Paid
+                                                    </button>
+                                                ) : ''
+                                            }
+                                            <div className={"ui label"}>{o.createdTime}</div>
+                                            <div className={"ui label"}>{o.updatedTime}</div>
+                                        </div>
+                                    </div>
+                                </div>
                             );
                         })
                     }
-                    </tbody>
-                </table>
+                </div>
             </div>
         );
     }
