@@ -13,14 +13,14 @@ module.exports = function (opts) {
     return function* simpleFormAuth(next) {
         try {
             let user = basicAuth(this) || auth(this);
+
+            if (user && user.name === opts.name && user.pass === opts.pass) {
+                yield next;
+            } else {
+                throw new Error('auth failed');
+            }
         } catch (ex) {
             this.throw(401, ex);
-        }
-        
-        if (user && user.name === opts.name && user.pass === opts.pass) {
-            yield next;
-        } else {
-            this.throw(401);
         }
     };
 };
