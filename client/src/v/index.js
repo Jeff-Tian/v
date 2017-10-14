@@ -4,7 +4,7 @@ import v from '../../public/v/v.png';
 import qr from '../../public/v/v-qr.png';
 import vDecorator from '../image-decorators/v.js';
 import qrDecorator from '../image-decorators/qr';
-import '../semantic-ui/semantic.min.css';
+import 'semantic-ui-css/semantic.min.css';
 import '../App.css';
 import shape from '../image-decorators/shape';
 import fs from '../fs/fs';
@@ -13,6 +13,7 @@ import socket from '../socket.js';
 import {browserHistory} from 'react-router';
 import Client from '../Client';
 import OrderStatus from '../../../bll/orderStatus';
+import {Modal} from 'semantic-ui-react';
 
 let maxXRange = 0;
 let maxYRange = 0;
@@ -65,9 +66,11 @@ function convertToJpeg(canvas, context) {
     return self.state.imgSrc;
 }
 
-class App extends Component {
+class VApp extends Component {
     constructor(props) {
         super();
+
+        console.log('constructing...');
 
         this.state = this.resetStyles();
         this.loading = true;
@@ -132,7 +135,7 @@ class App extends Component {
         socket.on('order-paid', function (msg) {
             console.log(msg);
 
-            cropAndDrawV(document.getElementById('the-image-mask').src, context, canvas, function () {
+            cropAndDrawV(document.getElementById('the-image-mask-on-modal-canvas').src, context, canvas, function () {
                 convertToJpeg(canvas, context);
                 self.setState({loading: false});
             });
@@ -140,12 +143,13 @@ class App extends Component {
 
         this.onPhotoSelected = function (target) {
             self.state.loading = true;
-            canvas = target.refs['photo-canvas'];
+            canvas = document.getElementById('photo-canvas');
             context = canvas.getContext('2d');
 
             this.readPhotoFile(photoFile, this.props, function () {
-                document.getElementById('the-image').onload = function () {
-                    App.showModal();
+                console.log('read photo file callback');
+                document.getElementById('the-image-on-modal-canvas').onload = function () {
+                    self.showModal();
                     self.setCropperStyles();
                     self.state.loading = false;
                 };
@@ -153,25 +157,30 @@ class App extends Component {
         };
 
         this.clear = function () {
-            if (!confirm('真的要清除重来吗？')) {
+            if (!window.confirm('真的要清除重来吗？')) {
                 return;
             }
 
+            self.setState(self.resetStyles());
             browserHistory.push('/');
         };
 
         this.generateImage = function () {
+            alert('generating...');
             self.state.loading = true;
-            cropAndDrawVAndQR(document.getElementById('the-image-mask').src, context, canvas, function () {
+
+            cropAndDrawVAndQR(document.getElementById('the-image-mask-on-modal-canvas').src, context, canvas, function () {
+                alert('convert');
                 convertToJpeg(canvas, context);
 
-                App.hideModal();
+                self.hideModal();
                 self.state.loading = false;
+                alert('done');
             });
         };
 
         this.generateImageWithoutQRCode = function () {
-            cropAndDrawV(document.getElementById('the-image-mask').src, context, canvas, function () {
+            cropAndDrawV(document.getElementById('the-image-mask-on-modal-canvas').src, context, canvas, function () {
                 convertToJpeg(canvas, context);
                 self.setState({loading: false});
             });
@@ -227,7 +236,7 @@ class App extends Component {
             cropImage(image, context, canvas, function (c) {
                 vDecorator.decorate(canvas, context, c, v, function (canvas) {
                     qrDecorator.decorate(canvas, context, c, qr, callback);
-                    App.showModal();
+                    self.showModal();
                     if (typeof callback === 'function') {
                         callback();
                     }
@@ -244,6 +253,14 @@ class App extends Component {
                 });
             });
         }
+    }
+
+    hideModal() {
+        this.setState({open: false});
+    }
+
+    showModal() {
+        this.setState({open: true})
     }
 
     readPhotoFile(photoFile, props, callback) {
@@ -276,10 +293,12 @@ class App extends Component {
                     }
                 }
             }
+
             self.setState({
-                selectedImageSrc: image
+                modalImageSrc: image
             });
 
+            console.log('callback after loaded image form url...');
             callback();
         });
 
@@ -306,31 +325,28 @@ class App extends Component {
                 }
             });
         } else {
-            this.onPhotoSelected(this);
+            console.log('reading local image from local storage');
+            // this.onPhotoSelected(this);
+            this.setState({open: true});
         }
     }
 
-    static hideModal() {
-        App.$getModal()
-            .modal('setting', {'closable': false, observeChanges: true})
-            .modal('hide');
+    modalDidMount() {
+        console.log('modal moujnte')
+        setTimeout(function () {
+            self.onPhotoSelected(self);
+        }, 500);
     }
 
-    static $getModal() {
-        let $ = window.jQuery;
-        return $('.ui.modal.canvas');
-    }
-
-    static showModal() {
-        App.$getModal()
-            .modal('setting', {'closable': false, observeChanges: true})
-            .modal('show');
+    modalOpen() {
+        console.log('modal open');
+        // self.onPhotoSelected(self);
     }
 
     resetStyles() {
         return {
             imgSrc: '',
-            selectedImageSrc: '',
+            modalImageSrc: '',
 
             theImageCropStyle: {
                 top: 0,
@@ -348,7 +364,9 @@ class App extends Component {
             theImageMaskStyle: {
                 top: 0,
                 left: 0
-            }
+            },
+
+            open: false
         };
     }
 
@@ -434,7 +452,7 @@ class App extends Component {
     }
 
     setCropperStyles() {
-        let imageMask = document.getElementById('the-image-mask');
+        let imageMask = document.getElementById('the-image-mask-on-modal-canvas');
         let diameter = Math.min(imageMask.offsetWidth, imageMask.offsetHeight);
         let theImageCropStyle = {
             width: diameter + 'px',
@@ -666,6 +684,7 @@ class App extends Component {
     }
 
     render() {
+        const open = this.state.open;
 
         return (
             <div
@@ -786,19 +805,17 @@ class App extends Component {
                     </form>
                 </div>
 
-                <div
-                    className="ui fullscreen modal canvas">
-                    <div
-                        className="image content">
-                        <div
-                            id="the-image-wrapper"
-                            style={
-                                {
-                                    "overflow":
-                                        "hidden"
-                                }
-                            }>
-                            <img id="the-image-mask" className="image-mask" src={this.state.selectedImageSrc} alt="v"
+                <Modal size={'fullscreen'} open={open} onClose={this.hideModal} onMount={this.modalDidMount}
+                       onOpen={this.modalOpen}>
+                    <div className="image content">
+                        <div id="the-image-wrapper" style={
+                            {
+                                "overflow":
+                                    "hidden"
+                            }
+                        }>
+                            <img id="the-image-mask-on-modal-canvas" className="image-mask"
+                                 src={this.state.modalImageSrc} alt="v"
                                  style={this.state.theImageMaskStyle}/>
                             <div
                                 className="image-crop"
@@ -820,9 +837,8 @@ class App extends Component {
                                 }
                                 onTouchEnd={this.onTouchEnd
                                 }>
-                                <
-                                    img
-                                    src={this.state.selectedImageSrc
+                                <img
+                                    src={this.state.modalImageSrc
                                     }
                                     alt="v"
                                     style={this.state.theCroppingImageStyle
@@ -830,9 +846,9 @@ class App extends Component {
                                 />
                             </div>
                             <img
-                                id="the-image"
+                                id="the-image-on-modal-canvas"
                                 ref="image"
-                                src={this.state.selectedImageSrc
+                                src={this.state.modalImageSrc
                                 }
                                 alt="v"
                                 style={Object.assign({
@@ -844,7 +860,7 @@ class App extends Component {
                                 }
                             />
                         </div>
-                        < canvas
+                        <canvas
                             id="photo-canvas"
                             ref="photo-canvas"
                             style={
@@ -908,11 +924,11 @@ class App extends Component {
                             </div>
                         </div>
                     </div>
-                </div>
+                </Modal>
             </div>
         )
             ;
     }
 }
 
-export default App;
+export default VApp;

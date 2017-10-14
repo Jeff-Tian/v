@@ -14,6 +14,7 @@ class App extends Component {
 
         let self = this;
 
+        localStorage.removeItem('image');
         this.onPhotoSelected = function (target) {
             self.state.loading = true;
             let photoFile = target.refs['photo-file'];
