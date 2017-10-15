@@ -32,6 +32,34 @@ let photoFile = null;
 
 let canvas = null;
 let context = null;
+let contextScaleX = 1;
+let contextScaleY = 1;
+
+let imageScale = 1;
+
+function resetAllVars() {
+    maxXRange = 0;
+    maxYRange = 0;
+
+    minWidth = 400;
+    minHeight = 400;
+    canvasOffsetX = 0;
+    canvasOffsetY = 0;
+    self = null;
+    rotated = 0;
+
+    dragData = {};
+    popup = null;
+
+    photoFile = null;
+
+    canvas = null;
+    context = null;
+    contextScaleX = 1;
+    contextScaleY = 1;
+
+    imageScale = 1;
+}
 
 function convertToJpeg(canvas, context) {
     let startX = 0;
@@ -70,23 +98,19 @@ class VApp extends Component {
     constructor(props) {
         super();
 
-        console.log('constructing...');
+        resetAllVars();
+
+        self = this;
 
         this.state = this.resetStyles();
         this.loading = true;
 
-        self = this;
-
         function cropImage(image, context, canvas, callback) {
-            const img = new Image();
-            img.onload = function () {
-                let c = self.cropImage(img, minHeight, minWidth, canvas, context, canvasOffsetX, canvasOffsetY);
+            let c = self.cropImage(document.getElementById('the-image-mask-on-modal-canvas'), minHeight, minWidth, canvas, context);
 
-                if (typeof callback === 'function') {
-                    callback(c);
-                }
-            };
-            img.src = image;
+            if (typeof callback === 'function') {
+                callback(c);
+            }
         }
 
 
@@ -148,7 +172,7 @@ class VApp extends Component {
 
             this.readPhotoFile(photoFile, this.props, function () {
                 console.log('read photo file callback');
-                document.getElementById('the-image-on-modal-canvas').onload = function () {
+                document.getElementById('cropping-image').onload = function () {
                     self.showModal();
                     self.setCropperStyles();
                     self.state.loading = false;
@@ -162,25 +186,25 @@ class VApp extends Component {
             }
 
             self.setState(self.resetStyles());
+
+            resetAllVars();
+
             browserHistory.push('/');
         };
 
         this.generateImage = function () {
-            alert('generating...');
             self.state.loading = true;
 
-            cropAndDrawVAndQR(document.getElementById('the-image-mask-on-modal-canvas').src, context, canvas, function () {
-                alert('convert');
+            cropAndDrawVAndQR(self.state.modalImageSrc, context, canvas, function () {
                 convertToJpeg(canvas, context);
 
                 self.hideModal();
                 self.state.loading = false;
-                alert('done');
             });
         };
 
         this.generateImageWithoutQRCode = function () {
-            cropAndDrawV(document.getElementById('the-image-mask-on-modal-canvas').src, context, canvas, function () {
+            cropAndDrawV(self.modalImageSrc, context, canvas, function () {
                 convertToJpeg(canvas, context);
                 self.setState({loading: false});
             });
@@ -276,8 +300,10 @@ class VApp extends Component {
         }
 
         fs.loadImageFromURI(photoFile, function (image, data) {
+            console.log('data = ', data);
             if (data && data.exif) {
                 let orientation = data.exif.get('Orientation');
+                console.log('orientation = ', orientation);
                 if (orientation) {
                     if (orientation === 8) {
                         self.rotateLeft();
@@ -332,10 +358,9 @@ class VApp extends Component {
     }
 
     modalDidMount() {
-        console.log('modal moujnte')
         setTimeout(function () {
             self.onPhotoSelected(self);
-        }, 500);
+        });
     }
 
     modalOpen() {
@@ -377,13 +402,15 @@ class VApp extends Component {
                 left: parseFloat(dragData.theCroppingImageStyle.left) + dragData.delta.x
             }),
             theImageMaskStyle: Object.assign({}, self.state.theImageMaskStyle, {
-                top: dragData.delta.y + parseFloat(dragData.theImageMaskStyle.top),
-                left: dragData.delta.x + parseFloat(dragData.theImageMaskStyle.left)
+                top: parseFloat(dragData.theImageMaskStyle.top) + dragData.delta.y,
+                left: parseFloat(dragData.theImageMaskStyle.left) + dragData.delta.x
             })
         });
     }
 
     restrictDrag(dragData) {
+        console.log('current scale = ', contextScaleX, contextScaleY);
+
         canvasOffsetX += dragData.delta.x;
         canvasOffsetY += dragData.delta.y;
 
@@ -459,8 +486,14 @@ class VApp extends Component {
             height: diameter + 'px'
         };
         if (imageMask.offsetWidth > imageMask.offsetHeight && imageMask.offsetWidth > diameter) {
+            console.log('imageMask.offsetWidth = ', imageMask.offsetWidth);
+            console.log('imagemask natural with = ', imageMask.naturalWidth);
+            imageScale = imageMask.offsetWidth / imageMask.naturalWidth;
+            console.log('image scale = ', imageScale);
+            console.log('diameter = ', diameter);
             maxXRange = (imageMask.offsetWidth - diameter) / 2;
             console.log('maxXrange = ', maxXRange);
+            console.log('offset = ', canvasOffsetX, canvasOffsetY);
         } else {
             maxXRange = 0;
         }
@@ -471,12 +504,20 @@ class VApp extends Component {
             maxYRange = 0;
         }
         theImageCropStyle.top = maxYRange + 'px';
+
+        theImageCropStyle.top = 0;
+        theImageCropStyle.bottom = 0;
+
         this.setState({
             theImageCropStyle: theImageCropStyle,
             theCroppingImageStyle: Object.assign({}, this.state.theCroppingImageStyle, {
                 width: imageMask.offsetWidth + 'px',
                 height: imageMask.offsetHeight + 'px',
                 left: -maxXRange,
+                top: -maxYRange
+            }),
+            theImageMaskStyle: Object.assign({}, this.state.theImageMaskStyle, {
+                // left: -maxXRange,
                 top: -maxYRange
             })
         });
@@ -488,6 +529,8 @@ class VApp extends Component {
     }
 
     getCanvasOffsetX(img) {
+        console.log('offset before translate: ', canvasOffsetX, canvasOffsetY);
+        console.log('img info:', img.width, img.height);
         if (rotated === 0) {
             return canvasOffsetX - img.width / 2;
         }
@@ -527,7 +570,7 @@ class VApp extends Component {
         return canvasOffsetY;
     }
 
-    cropImage(img, minHeight, minWidth, canvas, context, canvasOffsetX, canvasOffsetY) {
+    cropImage(img, minHeight, minWidth, canvas, context) {
 
         function drawInscribedCircle(context, canvas) {
             if (canvas.width > canvas.height) {
@@ -552,31 +595,34 @@ class VApp extends Component {
             return shape.drawInscribedCircle(canvas, context);
         }
 
-        this.adjustImageStyles(img, minHeight, minWidth, canvas, this);
+        this.adjustImageStyles(img, minHeight, minWidth, canvas);
 
         context.save();
         let c = drawInscribedCircle(context, canvas);
         this.scaleCanvas(img, minHeight, minWidth, context, canvas);
         context.clip();
         this.rotateImage(context, canvas);
-        context.drawImage(img, 0, 0, img.width, img.height, this.getCanvasOffsetX(img), this.getCanvasOffsetY(img), img.width, img.height);
+        let offsetX = this.getCanvasOffsetX(img);
+        let offsetY = this.getCanvasOffsetY(img);
+        console.log('offset = ', offsetX, offsetY);
+        context.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight, offsetX * contextScaleX, offsetY * contextScaleY, img.width, img.height);
         context.restore();
         return c;
     }
 
     scaleCanvas(img, minHeight, minWidth, context, canvas) {
         if (img.height < minHeight || img.width < minWidth) {
-            context.scale(canvas.width / img.width, canvas.height / img.height);
+            contextScaleX = canvas.width / img.width;
+            contextScaleY = canvas.height / img.height;
+            context.scale(contextScaleX, contextScaleY);
         }
     }
 
-    adjustImageStyles(img, minHeight, minWidth, canvas, self) {
+    adjustImageStyles(img, minHeight, minWidth, canvas) {
         if (img.height >= minHeight && img.width >= minWidth) {
             canvas.width = img.width;
             canvas.height = img.height;
         } else {
-            console.log(img);
-            console.log(img.width, img.height);
             canvas.height = canvas.width * img.height / img.width;
         }
     }
@@ -595,7 +641,12 @@ class VApp extends Component {
             })
         });
 
+        this.simulateDragAndRestrict();
+    }
+
+    simulateDragAndRestrict() {
         // todo: simulate a user drag to properly restrict it
+        self.setState({rotating: true});
         setTimeout(function () {
             self.restrictDrag({
                 start: {
@@ -610,7 +661,9 @@ class VApp extends Component {
                 theImageCropStyle: self.state.theImageCropStyle,
                 theImageMaskStyle: self.state.theImageMaskStyle
             });
-        });
+
+            self.setState({rotating: false});
+        }, 10);
     }
 
     rotateLeft(e) {
@@ -659,12 +712,15 @@ class VApp extends Component {
     }
 
     onDragEnd(e) {
+        console.log('drag end');
         dragData.delta.x = e.clientX - dragData.start.x;
         dragData.delta.y = e.clientY - dragData.start.y;
 
         self.updateImagePosition(dragData);
 
         self.restrictDrag(dragData);
+
+        console.log('current offset = ', canvasOffsetX, canvasOffsetY);
     }
 
     onDragExit(e) {
@@ -672,6 +728,7 @@ class VApp extends Component {
     }
 
     onTouchStart(e) {
+        console.log('touch start');
         self.onDragStart(e.touches[0]);
     }
 
@@ -680,6 +737,8 @@ class VApp extends Component {
     }
 
     onTouchEnd(e) {
+        console.log('on touch end');
+        console.log('current offset = ', canvasOffsetX, canvasOffsetY);
         self.restrictDrag(dragData);
     }
 
@@ -806,12 +865,12 @@ class VApp extends Component {
                 </div>
 
                 <Modal size={'fullscreen'} open={open} onClose={this.hideModal} onMount={this.modalDidMount}
-                       onOpen={this.modalOpen}>
-                    <div className="image content">
+                       onOpen={this.modalOpen} className={classNames({'loading': this.state.rotating})}>
+                    <Modal.Content image scrolling>
                         <div id="the-image-wrapper" style={
                             {
-                                "overflow":
-                                    "hidden"
+                                "overflow": "hidden",
+                                "height": this.state.theImageCropStyle.height
                             }
                         }>
                             <img id="the-image-mask-on-modal-canvas" className="image-mask"
@@ -820,46 +879,25 @@ class VApp extends Component {
                             <div
                                 className="image-crop"
                                 id="image-crop"
-                                style={this.state.theImageCropStyle
-                                }
+                                style={this.state.theImageCropStyle}
                                 draggable={false}
-                                onDragStart={this.onDragStart
-                                }
-                                onDrag={this.onDrag
-                                }
-                                onDragEnd={this.onDragEnd
-                                }
-                                onDragExit={this.onDragExit
-                                }
-                                onTouchStart={this.onTouchStart
-                                }
-                                onTouchMove={this.onTouchMove
-                                }
-                                onTouchEnd={this.onTouchEnd
-                                }>
-                                <img
-                                    src={this.state.modalImageSrc
-                                    }
-                                    alt="v"
-                                    style={this.state.theCroppingImageStyle
-                                    }
+                                onDragStart={this.onDragStart}
+                                onDrag={this.onDrag}
+                                onDragEnd={this.onDragEnd}
+                                onDragExit={this.onDragExit}
+                                onTouchStart={this.onTouchStart}
+                                onTouchMove={this.onTouchMove}
+                                onTouchEnd={this.onTouchEnd}>
+                                <img id={"cropping-image"}
+                                     src={this.state.modalImageSrc
+                                     }
+                                     alt="v"
+                                     style={this.state.theCroppingImageStyle
+                                     }
                                 />
                             </div>
-                            <img
-                                id="the-image-on-modal-canvas"
-                                ref="image"
-                                src={this.state.modalImageSrc
-                                }
-                                alt="v"
-                                style={Object.assign({
-                                    maxWidth: '100%',
-                                    height: 'auto',
-                                    display: 'block',
-                                    visibility: 'hidden'
-                                }, {})
-                                }
-                            />
                         </div>
+
                         <canvas
                             id="photo-canvas"
                             ref="photo-canvas"
@@ -886,9 +924,8 @@ class VApp extends Component {
                             onTouchCancel={this.onTouchCancel
                             }
                         />
-                    </div>
-                    <div
-                        className="actions">
+                    </Modal.Content>
+                    <Modal.Actions>
                         <div
                             className="ui violet left icon button"
                             onClick={this.rotateLeft
@@ -916,14 +953,13 @@ class VApp extends Component {
                             </div>
                             <div
                                 className="ui positive right labeled icon button"
-                                onClick={this.generateImage
-                                }>
+                                onClick={this.generateImage}>
                                 确定
                                 <i
                                     className="checkmark icon"/>
                             </div>
                         </div>
-                    </div>
+                    </Modal.Actions>
                 </Modal>
             </div>
         )
