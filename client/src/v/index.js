@@ -140,14 +140,13 @@ class VApp extends Component {
             }
         });
 
-        socket.on('order-paid', function (msg) {
+        socket.on('order-paid', async function (msg) {
             console.log(msg);
 
             console.log(document.getElementById('uploaded-image'));
-            cropAndDrawV(document.getElementById('uploaded-image'), context, canvas, function () {
-                convertToJpeg(canvas, context);
-                self.setState({loading: false});
-            });
+            await            cropAndDrawV(document.getElementById('uploaded-image'), context, canvas)
+            convertToJpeg(canvas, context);
+            self.setState({loading: false});
         });
 
         this.onPhotoSelected = function (target) {
@@ -177,22 +176,21 @@ class VApp extends Component {
             browserHistory.push('/');
         };
 
-        this.generateImage = function () {
-            self.state.loading = true;
+        this.generateImage = async function () {
+            self.setState({loading: true});
 
-            cropAndDrawVAndQR(document.getElementById('the-image-mask-on-modal-canvas'), context, canvas, function () {
-                convertToJpeg(canvas, context);
+            await cropAndDrawVAndQR(document.getElementById('the-image-mask-on-modal-canvas'), context, canvas);
+            convertToJpeg(canvas, context);
 
-                self.hideModal();
-                self.state.loading = false;
-            });
+            self.hideModal();
+            self.setState({loading: false});
+            // self.state.loading = false;
         };
 
-        this.generateImageWithoutQRCode = function () {
-            cropAndDrawV(document.getElementById('uploaded-image'), context, canvas, function () {
-                convertToJpeg(canvas, context);
-                self.setState({loading: false});
-            });
+        this.generateImageWithoutQRCode = async function () {
+            cropAndDrawV(document.getElementById('uploaded-image'), context, canvas);
+            convertToJpeg(canvas, context);
+            self.setState({loading: false});
         };
 
         this.removeQRCode = function () {
@@ -241,28 +239,23 @@ class VApp extends Component {
             }
         };
 
-        function cropAndDrawVAndQR(imageToBeCropped, context, canvas, callback) {
+        async function cropAndDrawVAndQR(imageToBeCropped, context, canvas, callback) {
             contextScaleX = imageToBeCropped.naturalWidth / imageToBeCropped.width;
             contextScaleY = imageToBeCropped.naturalHeight / imageToBeCropped.height;
 
             let c = crop.circleCropImageToCanvas(imageToBeCropped, canvas, context, canvasOffsetX - maxXRange, canvasOffsetY - maxYRange, contextScaleX, contextScaleY);
-            vDecorator.decorate(canvas, context, c, v, function (canvas) {
-                qrDecorator.decorate(canvas, context, c, qr, callback);
-                self.showModal();
-                if (typeof callback === 'function') {
-                    callback();
-                }
-            });
+            await vDecorator.decorateV(canvas, context, c, v);
+            qrDecorator.decorate(canvas, context, c, qr, callback);
+            self.showModal();
+            if (typeof callback === 'function') {
+                callback();
+            }
         }
 
-        function cropAndDrawV(image, context, canvas, callback) {
+        async function cropAndDrawV(image, context, canvas) {
             let c = crop.circleCropImageToCanvas(image, canvas, context, canvasOffsetX - maxXRange, canvasOffsetY - maxYRange, contextScaleX, contextScaleY);
 
-            vDecorator.decorate(canvas, context, c, v, function (canvas) {
-                if (typeof callback === 'function') {
-                    callback();
-                }
-            });
+            await vDecorator.decorateV(canvas, context, c, v);
         }
     }
 
