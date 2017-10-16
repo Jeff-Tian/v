@@ -18,8 +18,6 @@ import {Modal} from 'semantic-ui-react';
 let maxXRange = 0;
 let maxYRange = 0;
 
-let minWidth = 400;
-let minHeight = 400;
 let canvasOffsetX = 0;
 let canvasOffsetY = 0;
 let self = null;
@@ -27,8 +25,6 @@ let rotated = 0;
 
 let dragData = {};
 let popup = null;
-
-let photoFile = null;
 
 let canvas = null;
 let context = null;
@@ -41,8 +37,6 @@ function resetAllVars() {
     maxXRange = 0;
     maxYRange = 0;
 
-    minWidth = 400;
-    minHeight = 400;
     canvasOffsetX = 0;
     canvasOffsetY = 0;
     self = null;
@@ -50,8 +44,6 @@ function resetAllVars() {
 
     dragData = {};
     popup = null;
-
-    photoFile = null;
 
     canvas = null;
     context = null;
@@ -106,13 +98,6 @@ class VApp extends Component {
         this.state = this.resetStyles();
         this.loading = true;
 
-        function cropImage(imageToBeCropped, context, canvas, callback) {
-            if (typeof callback === 'function') {
-                callback(crop.circleCropImageToCanvas(imageToBeCropped, canvas, context, canvasOffsetX - maxXRange, canvasOffsetY - maxYRange));
-            }
-        }
-
-
         function openOrderPage(orderInfo) {
             if (popup && !popup.closed) {
                 popup.postMessage(`link:///order/${orderInfo.orderId}`, '*');
@@ -158,7 +143,8 @@ class VApp extends Component {
         socket.on('order-paid', function (msg) {
             console.log(msg);
 
-            cropAndDrawV(document.getElementById('the-image-mask-on-modal-canvas'), context, canvas, function () {
+            console.log(document.getElementById('uploaded-image'));
+            cropAndDrawV(document.getElementById('uploaded-image'), context, canvas, function () {
                 convertToJpeg(canvas, context);
                 self.setState({loading: false});
             });
@@ -169,7 +155,7 @@ class VApp extends Component {
             canvas = document.getElementById('photo-canvas');
             context = canvas.getContext('2d');
 
-            this.readPhotoFile(photoFile, this.props, function () {
+            this.readPhotoFile(this.props, function () {
                 console.log('read photo file callback');
                 document.getElementById('cropping-image').onload = function () {
                     self.showModal();
@@ -203,7 +189,7 @@ class VApp extends Component {
         };
 
         this.generateImageWithoutQRCode = function () {
-            cropAndDrawV(document.getElementById('the-image-mask-on-modal-canvas'), context, canvas, function () {
+            cropAndDrawV(document.getElementById('uploaded-image'), context, canvas, function () {
                 convertToJpeg(canvas, context);
                 self.setState({loading: false});
             });
@@ -256,24 +242,23 @@ class VApp extends Component {
         };
 
         function cropAndDrawVAndQR(imageToBeCropped, context, canvas, callback) {
-            cropImage(imageToBeCropped, context, canvas, function (c) {
-                vDecorator.decorate(canvas, context, c, v, function (canvas) {
-                    qrDecorator.decorate(canvas, context, c, qr, callback);
-                    self.showModal();
-                    if (typeof callback === 'function') {
-                        callback();
-                    }
-                });
+            let c = crop.circleCropImageToCanvas(imageToBeCropped, canvas, context, canvasOffsetX, canvasOffsetY);
+            vDecorator.decorate(canvas, context, c, v, function (canvas) {
+                qrDecorator.decorate(canvas, context, c, qr, callback);
+                self.showModal();
+                if (typeof callback === 'function') {
+                    callback();
+                }
             });
         }
 
         function cropAndDrawV(image, context, canvas, callback) {
-            cropImage(image, context, canvas, function (c) {
-                vDecorator.decorate(canvas, context, c, v, function (canvas) {
-                    if (typeof callback === 'function') {
-                        callback();
-                    }
-                });
+            let c = crop.circleCropImageToCanvas(image, canvas, context, canvasOffsetX, canvasOffsetY);
+
+            vDecorator.decorate(canvas, context, c, v, function (canvas) {
+                if (typeof callback === 'function') {
+                    callback();
+                }
             });
         }
     }
@@ -286,7 +271,9 @@ class VApp extends Component {
         this.setState({open: true})
     }
 
-    readPhotoFile(photoFile, props, callback) {
+    readPhotoFile(props, callback) {
+        let photoFile = null;
+
         try {
             photoFile = atob(props.params.vid);
         } catch (ex) {
@@ -342,7 +329,7 @@ class VApp extends Component {
             let o = await Client.fetchOrder(this.props.location.query.orderId);
             console.log('order = ', o);
 
-            photoFile = this.readPhotoFile(photoFile, this.props, function () {
+            this.readPhotoFile(this.props, function () {
                 if (o.status === OrderStatus.paid) {
                     self.generateImageWithoutQRCode();
                 } else {
@@ -709,21 +696,16 @@ class VApp extends Component {
                     上传图片，自动加V
                 </p>
 
+                <img src={this.state.modalImageSrc} className={"ui image"} alt={"v"} id={"uploaded-image"} style={{"display": "none"}} />
+
                 <div
                     className="ui container">
-                    <form
-                        name="photoForm"
-                        className={classNames({
-                            'ui': true, 'form': true, loading: this.state.loading
-                        })
-                        }>
-                        <
-                            div
-                            className="field">
+                    <form name="photoForm"
+                          className={classNames({'ui': true, 'form': true, loading: this.state.loading})}>
+                        <div className="field">
                             {
                                 this.state.imgSrc ?
-                                    <
-                                        div>
+                                    <div>
                                         <button type="button"
                                                 className={classNames("ui left floated button", {loading: this.state.loading})}
                                                 onClick={this.removeQRCode}>
@@ -783,28 +765,13 @@ class VApp extends Component {
                                     ref="photo-file"
                                     accept="image/*"/>
                             </div>
-                            <div
-                                className="before-upload mask">
-                                < h1> 点击此处选择图片
-                                </h1>
+                            <div className="before-upload mask">
+                                <h1>点击此处选择图片</h1>
                             </div>
-                            <div
-                                className="image mask"
-                                style={this.state.imgSrc ? {} : {display: 'none'}
-                                }
-                                target="_blank">
-                                <img
-                                    src={this.state.imgSrc}
-                                    alt="v"
-                                    style={
-                                        {
-                                            width: '100%', height:
-                                            '100%', background:
-                                            'white', display:
-                                            'block'
-                                        }
-                                    }
-                                />
+                            <div className="image mask" style={this.state.imgSrc ? {} : {display: 'none'}}
+                                 target="_blank">
+                                <img src={this.state.imgSrc} alt="v"
+                                     style={{width: '100%', height: '100%', background: 'white', display: 'block'}}/>
                             </div>
                         </div>
                     </form>

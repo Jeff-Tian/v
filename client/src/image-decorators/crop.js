@@ -1,6 +1,6 @@
 import shape from './shape';
 
-let minResolution = 500;
+let minResolution = 400;
 
 module.exports = {
     circleCropImageToCanvas: function (img, canvas, context, offsetX, offsetY) {
@@ -10,9 +10,6 @@ module.exports = {
         let scaleX = img.naturalWidth / img.width;
         let scaleY = img.naturalHeight / img.height;
 
-        console.log('min = ', min, 'scale = ', scaleX, scaleY);
-
-
         canvas.width = min;
         canvas.height = min;
 
@@ -20,8 +17,6 @@ module.exports = {
             canvas.width = minResolution;
             canvas.height = minResolution;
         }
-
-        console.log('cropping with ', offsetX, offsetY);
 
         let c = shape.drawInscribedCircle(canvas, context);
         context.clip();

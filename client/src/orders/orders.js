@@ -13,6 +13,7 @@ class Orders extends React.Component {
     }
 
     async componentDidMount() {
+        console.log('mount');
         this.setState({
             orders: await Client.fetchOrders()
         });
