@@ -5,7 +5,7 @@ module.exports = {
             let qrCenter = theInscribedCircle.center;
             let width = 2 * theInscribedCircle.radius / 6.18;
             let height = width * img.height / img.width;
-            context.drawImage(img, 0, 0, img.width, img.height, qrCenter.x - width / 2, qrCenter.y - height / 2, width, height);
+            context.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight, qrCenter.x - width / 2, qrCenter.y - height / 2, width, height);
 
             if (typeof callback === 'function') {
                 callback(canvas);
