@@ -242,7 +242,10 @@ class VApp extends Component {
         };
 
         function cropAndDrawVAndQR(imageToBeCropped, context, canvas, callback) {
-            let c = crop.circleCropImageToCanvas(imageToBeCropped, canvas, context, canvasOffsetX, canvasOffsetY);
+            contextScaleX = imageToBeCropped.naturalWidth / imageToBeCropped.width;
+            contextScaleY = imageToBeCropped.naturalHeight / imageToBeCropped.height;
+
+            let c = crop.circleCropImageToCanvas(imageToBeCropped, canvas, context, canvasOffsetX - maxXRange, canvasOffsetY - maxYRange, contextScaleX, contextScaleY);
             vDecorator.decorate(canvas, context, c, v, function (canvas) {
                 qrDecorator.decorate(canvas, context, c, qr, callback);
                 self.showModal();
@@ -253,7 +256,7 @@ class VApp extends Component {
         }
 
         function cropAndDrawV(image, context, canvas, callback) {
-            let c = crop.circleCropImageToCanvas(image, canvas, context, canvasOffsetX, canvasOffsetY);
+            let c = crop.circleCropImageToCanvas(image, canvas, context, canvasOffsetX - maxXRange, canvasOffsetY - maxYRange, contextScaleX, contextScaleY);
 
             vDecorator.decorate(canvas, context, c, v, function (canvas) {
                 if (typeof callback === 'function') {
@@ -632,6 +635,7 @@ class VApp extends Component {
 
     onDrag(e) {
         let imageToCrop = document.getElementById('the-image-mask-on-modal-canvas');
+        let imageCopy = document.getElementById('uploaded-image');
 
         dragData.delta.x = e.clientX - dragData.start.x;
         dragData.delta.y = e.clientY - dragData.start.y;
@@ -639,6 +643,7 @@ class VApp extends Component {
         self.updateImagePosition(dragData);
 
         console.log(imageToCrop.naturalWidth, imageToCrop.naturalHeight, imageToCrop.width, imageToCrop.height, self.state.theImageMaskStyle.left, self.state.theImageMaskStyle.top);
+        console.log(imageCopy.naturalWidth, imageCopy.naturalHeight, imageCopy.width, imageCopy.height, self.state.theImageMaskStyle.left, self.state.theImageMaskStyle.top);
 
         return false;
 
@@ -696,7 +701,8 @@ class VApp extends Component {
                     上传图片，自动加V
                 </p>
 
-                <img src={this.state.modalImageSrc} className={"ui image"} alt={"v"} id={"uploaded-image"} style={{"display": "none"}} />
+                <img src={this.state.modalImageSrc} className={"ui fluid image"} alt={"v"} id={"uploaded-image"}
+                     style={{"display": "none"}}/>
 
                 <div
                     className="ui container">
