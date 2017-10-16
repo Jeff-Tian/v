@@ -6,7 +6,7 @@ import vDecorator from '../image-decorators/v.js';
 import qrDecorator from '../image-decorators/qr';
 import 'semantic-ui-css/semantic.min.css';
 import '../App.css';
-import shape from '../image-decorators/shape';
+import crop from '../image-decorators/crop';
 import fs from '../fs/fs';
 import classNames from 'classnames';
 import socket from '../socket.js';
@@ -61,6 +61,7 @@ function resetAllVars() {
     imageScale = 1;
 }
 
+
 function convertToJpeg(canvas, context) {
     let startX = 0;
     let startY = 0;
@@ -105,11 +106,9 @@ class VApp extends Component {
         this.state = this.resetStyles();
         this.loading = true;
 
-        function cropImage(image, context, canvas, callback) {
-            let c = self.cropImage(document.getElementById('the-image-mask-on-modal-canvas'), minHeight, minWidth, canvas, context);
-
+        function cropImage(imageToBeCropped, context, canvas, callback) {
             if (typeof callback === 'function') {
-                callback(c);
+                callback(crop.circleCropImageToCanvas(imageToBeCropped, canvas, context, canvasOffsetX - maxXRange, canvasOffsetY - maxYRange));
             }
         }
 
@@ -159,7 +158,7 @@ class VApp extends Component {
         socket.on('order-paid', function (msg) {
             console.log(msg);
 
-            cropAndDrawV(document.getElementById('the-image-mask-on-modal-canvas').src, context, canvas, function () {
+            cropAndDrawV(document.getElementById('the-image-mask-on-modal-canvas'), context, canvas, function () {
                 convertToJpeg(canvas, context);
                 self.setState({loading: false});
             });
@@ -195,7 +194,7 @@ class VApp extends Component {
         this.generateImage = function () {
             self.state.loading = true;
 
-            cropAndDrawVAndQR(self.state.modalImageSrc, context, canvas, function () {
+            cropAndDrawVAndQR(document.getElementById('the-image-mask-on-modal-canvas'), context, canvas, function () {
                 convertToJpeg(canvas, context);
 
                 self.hideModal();
@@ -204,7 +203,7 @@ class VApp extends Component {
         };
 
         this.generateImageWithoutQRCode = function () {
-            cropAndDrawV(self.modalImageSrc, context, canvas, function () {
+            cropAndDrawV(document.getElementById('the-image-mask-on-modal-canvas'), context, canvas, function () {
                 convertToJpeg(canvas, context);
                 self.setState({loading: false});
             });
@@ -256,8 +255,8 @@ class VApp extends Component {
             }
         };
 
-        function cropAndDrawVAndQR(image, context, canvas, callback) {
-            cropImage(image, context, canvas, function (c) {
+        function cropAndDrawVAndQR(imageToBeCropped, context, canvas, callback) {
+            cropImage(imageToBeCropped, context, canvas, function (c) {
                 vDecorator.decorate(canvas, context, c, v, function (canvas) {
                     qrDecorator.decorate(canvas, context, c, qr, callback);
                     self.showModal();
@@ -570,63 +569,6 @@ class VApp extends Component {
         return canvasOffsetY;
     }
 
-    cropImage(img, minHeight, minWidth, canvas, context) {
-
-        function drawInscribedCircle(context, canvas) {
-            if (canvas.width > canvas.height) {
-                maxXRange = (canvas.width - canvas.height) / 2;
-                maxYRange = 0;
-            } else {
-                maxYRange = (canvas.height - canvas.width) / 2;
-                maxXRange = 0;
-            }
-
-            function drawWhiteBackground() {
-                context.save();
-                let fillStyle = context.fillStyle;
-                context.fillStyle = '#ffffff';
-                context.fillRect(0, 0, canvas.width, canvas.height);
-                context.fillStyle = fillStyle;
-                context.restore();
-            }
-
-            drawWhiteBackground();
-
-            return shape.drawInscribedCircle(canvas, context);
-        }
-
-        this.adjustImageStyles(img, minHeight, minWidth, canvas);
-
-        context.save();
-        let c = drawInscribedCircle(context, canvas);
-        this.scaleCanvas(img, minHeight, minWidth, context, canvas);
-        context.clip();
-        this.rotateImage(context, canvas);
-        let offsetX = this.getCanvasOffsetX(img);
-        let offsetY = this.getCanvasOffsetY(img);
-        console.log('offset = ', offsetX, offsetY);
-        context.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight, offsetX * contextScaleX, offsetY * contextScaleY, img.width, img.height);
-        context.restore();
-        return c;
-    }
-
-    scaleCanvas(img, minHeight, minWidth, context, canvas) {
-        if (img.height < minHeight || img.width < minWidth) {
-            contextScaleX = canvas.width / img.width;
-            contextScaleY = canvas.height / img.height;
-            context.scale(contextScaleX, contextScaleY);
-        }
-    }
-
-    adjustImageStyles(img, minHeight, minWidth, canvas) {
-        if (img.height >= minHeight && img.width >= minWidth) {
-            canvas.width = img.width;
-            canvas.height = img.height;
-        } else {
-            canvas.height = canvas.width * img.height / img.width;
-        }
-    }
-
     rotate() {
         if (rotated === -360) {
             rotated = 0;
@@ -702,10 +644,14 @@ class VApp extends Component {
     }
 
     onDrag(e) {
+        let imageToCrop = document.getElementById('the-image-mask-on-modal-canvas');
+
         dragData.delta.x = e.clientX - dragData.start.x;
         dragData.delta.y = e.clientY - dragData.start.y;
 
         self.updateImagePosition(dragData);
+
+        console.log(imageToCrop.naturalWidth, imageToCrop.naturalHeight, imageToCrop.width, imageToCrop.height, self.state.theImageMaskStyle.left, self.state.theImageMaskStyle.top);
 
         return false;
 
