@@ -184,7 +184,6 @@ class VApp extends Component {
 
             self.hideModal();
             self.setState({loading: false});
-            // self.state.loading = false;
         };
 
         this.generateImageWithoutQRCode = async function () {
@@ -239,17 +238,14 @@ class VApp extends Component {
             }
         };
 
-        async function cropAndDrawVAndQR(imageToBeCropped, context, canvas, callback) {
+        async function cropAndDrawVAndQR(imageToBeCropped, context, canvas) {
             contextScaleX = imageToBeCropped.naturalWidth / imageToBeCropped.width;
             contextScaleY = imageToBeCropped.naturalHeight / imageToBeCropped.height;
 
             let c = crop.circleCropImageToCanvas(imageToBeCropped, canvas, context, canvasOffsetX - maxXRange, canvasOffsetY - maxYRange, contextScaleX, contextScaleY);
             await vDecorator.decorateV(canvas, context, c, v);
-            qrDecorator.decorate(canvas, context, c, qr, callback);
+            await qrDecorator.decorateQR(canvas, context, c, qr);
             self.showModal();
-            if (typeof callback === 'function') {
-                callback();
-            }
         }
 
         async function cropAndDrawV(image, context, canvas) {
