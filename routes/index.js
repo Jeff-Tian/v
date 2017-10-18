@@ -58,7 +58,7 @@ function publicRouter(app, router, render) {
 
         router
             .get('/order/:orderId', renderIndexResponse)
-            .get('/v/:uri', renderIndexResponse);
+            .get('/v/:uri/:orderId?', renderIndexResponse);
     }
 
     app.use(mount('/node_modules', serveStatic('client/node_modules', {

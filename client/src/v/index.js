@@ -188,12 +188,6 @@ class VApp extends Component {
             self.setState({loading: false});
         };
 
-        this.generateImageWithoutQRCode = async function () {
-            cropAndDrawV(document.getElementById('uploaded-image'), context, canvas);
-            convertToJpeg(canvas, context);
-            self.setState({loading: false});
-        };
-
         this.removeQRCode = function () {
             self.setState({loading: true});
 
@@ -282,7 +276,7 @@ class VApp extends Component {
         fs.loadImageFromURI(photoFile, function (image, exifData) {
             setTimeout(function () {
                 self.initRotation(exifData);
-            }, 100);
+            }, 500);
 
             self.setState({
                 modalImageSrc: image
@@ -317,7 +311,7 @@ class VApp extends Component {
 
             console.log('orientation = ', orientation);
 
-            if (orientation) {
+            if (orientation && rotated === 0) {
                 if (orientation === 8) {
                     self.rotateLeft();
                 }
@@ -336,32 +330,35 @@ class VApp extends Component {
 
     async componentDidMount() {
         console.log('hello = ', this.props.location.query.orderId);
+        console.log('hello = ', this.props.params.orderId);
 
-        if (this.props.location.query.orderId) {
+        let orderId = this.props.location.query.orderId || this.props.params.orderId;
+
+        self.showModal();
+
+        if (orderId) {
             self.state.loading = true;
-            canvas = this.refs['photo-canvas'];
-            context = canvas.getContext('2d');
 
             this.setState({loading: true});
-            let o = await Client.fetchOrder(this.props.location.query.orderId);
+            let o = await Client.fetchOrder(orderId);
             console.log('order = ', o);
 
-            this.readPhotoFile(this.props, async function () {
-                if (o.status === OrderStatus.paid) {
-                    self.setState({paid: true});
-                } else {
-                    self.setState({paid: false});
-                }
+            if (o.status === OrderStatus.paid) {
+                self.setState({paid: true});
+            } else {
+                self.setState({paid: false});
+            }
 
+            self.setState({loading: true});
+            setTimeout(async function () {
                 await self.generateImage();
-            });
-        } else {
-            console.log('reading local image from local storage');
-            this.setState({open: true});
+                self.setState({loading: false});
+            }, 1000);
         }
     }
 
     modalDidMount() {
+        console.log('modal did mount');
         setTimeout(function () {
             self.onPhotoSelected(self);
         });
@@ -404,12 +401,12 @@ class VApp extends Component {
     updateImagePosition(dragData) {
         self.setState({
             theCroppingImageStyle: Object.assign({}, self.state.theCroppingImageStyle, {
-                top: parseFloat(dragData.theCroppingImageStyle.top) + dragData.delta.y,
-                left: parseFloat(dragData.theCroppingImageStyle.left) + dragData.delta.x
+                top: parseFloat(dragData.theCroppingImageStyle.top || 0) + dragData.delta.y,
+                left: parseFloat(dragData.theCroppingImageStyle.left || 0) + dragData.delta.x
             }),
             theImageMaskStyle: Object.assign({}, self.state.theImageMaskStyle, {
-                top: parseFloat(dragData.theImageMaskStyle.top) + dragData.delta.y,
-                left: parseFloat(dragData.theImageMaskStyle.left) + dragData.delta.x
+                top: parseFloat(dragData.theImageMaskStyle.top || 0) + dragData.delta.y,
+                left: parseFloat(dragData.theImageMaskStyle.left || 0) + dragData.delta.x
             })
         });
     }
@@ -653,6 +650,17 @@ class VApp extends Component {
         self.showModal();
     }
 
+    cancel() {
+        console.log('closing');
+
+        if (!self.state.imgSrc) {
+            browserHistory.push('/');
+        } else {
+            self.setState({loading: false});
+            self.hideModal();
+        }
+    }
+
     render() {
         const open = this.state.open;
 
@@ -721,6 +729,8 @@ class VApp extends Component {
                                                 onClick={this.clear}>
                                                 清除
                                             </button>
+                                            <div className="ui or"></div>
+                                            <button type={"button"} className={"ui button"} onClick={this.edit}>调整</button>
                                         </div>
                                     </div>
                                     :
@@ -738,7 +748,7 @@ class VApp extends Component {
                                 }
                             }>
                             <div className="image mask" style={this.state.imgSrc ? {} : {display: 'none'}}
-                                 target="_blank" onClick={this.edit}>
+                                 target="_blank">
                                 <img src={this.state.imgSrc} alt="v"
                                      style={{width: '100%', height: '100%', background: 'white', display: 'block'}}/>
                             </div>
@@ -750,16 +760,7 @@ class VApp extends Component {
                     </form>
                 </div>
 
-                <Modal size={'fullscreen'} open={open} onClose={() => {
-                    console.log('closing');
-
-                    if (!this.state.imgSrc) {
-                        browserHistory.push('/');
-                    } else {
-                        this.setState({loading: false});
-                        this.hideModal();
-                    }
-                }} onMount={this.modalDidMount}
+                <Modal size={'fullscreen'} open={open} onClose={this.cancel} onMount={this.modalDidMount}
                        onOpen={() => {
                            this.modalOpen();
                        }} className={classNames({'loading': this.state.rotating})}>
@@ -841,9 +842,8 @@ class VApp extends Component {
                             className="ui buttons">
                             <div
                                 className="ui black deny button"
-                                onClick={this.clear
-                                }>
-                                重来
+                                onClick={this.cancel}>
+                                取消
                             </div>
                             <div
                                 className="or">

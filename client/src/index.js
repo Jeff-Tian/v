@@ -21,6 +21,7 @@ ReactDOM.render((
     <Router history={browserHistory}>
         <Route path="/" component={App}/>
         <Route path="/v/:vid" component={V}/>
+        <Route path="/v/:vid/:orderId" component={V}/>
         <Route path="/order/:orderId" component={OrderDetail}/>
         <Route path="/sign-in" component={LoginPage}/>
         <Route path="/admin/orders" component={Orders} onEnter={isUserAuthenticated}/>

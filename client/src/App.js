@@ -20,9 +20,7 @@ class App extends Component {
         this.onPhotoSelected = function (target, ref) {
             self.state.loading = true;
             let photoFile = target.refs[ref];
-            alert(photoFile);
             fs.loadImageFromFile(photoFile, function (dataURL, exifData) {
-                alert(dataURL);
                 localStorage.setItem('image', dataURL);
                 localStorage.setItem('exif', JSON.stringify(exifData));
                 if (exifData.exif && exifData.exif.get) {

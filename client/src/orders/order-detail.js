@@ -34,7 +34,8 @@ class Orders extends React.Component {
                 });
 
                 if (navigator.userAgent.indexOf('MicroMessenger') >= 0) {
-                    browserHistory.push(`/v/local-image?orderId=${self.props.params.orderId}`);
+                    // browserHistory.push(`/v/local-image?orderId=${self.props.params.orderId}`);
+                    browserHistory.push(`/v/local-image/${self.props.params.orderId}`);
                 } else {
                     window.close();
                 }
