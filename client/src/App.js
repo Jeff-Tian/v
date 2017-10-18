@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import logo from '../public/v/v.png';
-import './semantic-ui/semantic.min.css';
+import 'semantic-ui-css/semantic.min.css';
 import './App.css';
 import fs from './fs/fs';
 import classNames from 'classnames';
@@ -10,46 +10,28 @@ class App extends Component {
     constructor() {
         super();
 
-        this.state = this.resetStyles();
-
         let self = this;
 
         localStorage.removeItem('image');
+        localStorage.removeItem('exif');
+        localStorage.removeItem('orientation');
+
         this.onPhotoSelected = function (target) {
             self.state.loading = true;
             let photoFile = target.refs['photo-file'];
-            fs.loadImageFromFile(photoFile, function (dataURL) {
+            fs.loadImageFromFile(photoFile, function (dataURL, exifData) {
                 localStorage.setItem('image', dataURL);
+                localStorage.setItem('exif', JSON.stringify(exifData));
+                localStorage.setItem('orientation', exifData.exif.get('Orientation'))
+                console.log(exifData);
 
                 browserHistory.push(`/v/local-image`);
             });
         };
+
+        this.state = {loading: false};
     }
 
-    resetStyles() {
-        return {
-            imgSrc: '',
-            selectedImageSrc: '',
-
-            theImageCropStyle: {
-                top: 0,
-                left: 0,
-                width: '100px',
-                height: '100px'
-            },
-
-            theCroppingImageStyle: {
-                width: '100%',
-                height: 'auto',
-                position: 'absolute'
-            },
-
-            theImageMaskStyle: {
-                top: 0,
-                left: 0
-            }
-        };
-    }
 
     render() {
 

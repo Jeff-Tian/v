@@ -4,6 +4,22 @@ import {shallow} from 'enzyme';
 import React from 'react';
 import App from '../src/App';
 
+if (!window.localStorage) {
+    let localStorage = {
+        getItem: function () {
+            return 'ok';
+        },
+        setItem: function () {
+            return 'ok';
+        },
+        removeItem: function () {
+            return 'ok';
+        }
+    };
+
+    window.localStorage = localStorage;
+}
+
 
 describe('App', () => {
     let wrapper;

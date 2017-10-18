@@ -242,14 +242,14 @@ class VApp extends Component {
             contextScaleX = imageToBeCropped.naturalWidth / imageToBeCropped.width;
             contextScaleY = imageToBeCropped.naturalHeight / imageToBeCropped.height;
 
-            let c = crop.circleCropImageToCanvas(imageToBeCropped, canvas, context, canvasOffsetX - maxXRange, canvasOffsetY - maxYRange, contextScaleX, contextScaleY);
+            let c = crop.circleCropImageToCanvas(imageToBeCropped, canvas, context, canvasOffsetX - maxXRange, canvasOffsetY - maxYRange, contextScaleX, contextScaleY, rotated);
             await vDecorator.decorateV(canvas, context, c, v);
             await qrDecorator.decorateQR(canvas, context, c, qr);
             self.showModal();
         }
 
         async function cropAndDrawV(image, context, canvas) {
-            let c = crop.circleCropImageToCanvas(image, canvas, context, canvasOffsetX - maxXRange, canvasOffsetY - maxYRange, contextScaleX, contextScaleY);
+            let c = crop.circleCropImageToCanvas(image, canvas, context, canvasOffsetX - maxXRange, canvasOffsetY - maxYRange, contextScaleX, contextScaleY, rotated);
 
             await vDecorator.decorateV(canvas, context, c, v);
         }
@@ -279,9 +279,26 @@ class VApp extends Component {
 
         fs.loadImageFromURI(photoFile, function (image, data) {
             console.log('data = ', data);
+
+            if (!data || !data.exif) {
+                try {
+                    data = JSON.parse(localStorage.getItem('exif'));
+                } catch (ex) {
+                    data = null;
+                }
+            }
+
             if (data && data.exif) {
-                let orientation = data.exif.get('Orientation');
+                let orientation = 1;
+
+                try {
+                    orientation = data.exif.get('Orientation');
+                } catch (ex) {
+                    orientation = parseInt(localStorage.getItem('orientation'), 10);
+                }
+
                 console.log('orientation = ', orientation);
+
                 if (orientation) {
                     if (orientation === 8) {
                         self.rotateLeft();
@@ -330,7 +347,6 @@ class VApp extends Component {
             });
         } else {
             console.log('reading local image from local storage');
-            // this.onPhotoSelected(this);
             this.setState({open: true});
         }
     }
@@ -343,7 +359,6 @@ class VApp extends Component {
 
     modalOpen() {
         console.log('modal open');
-        // self.onPhotoSelected(self);
     }
 
     resetStyles() {
@@ -392,6 +407,8 @@ class VApp extends Component {
         canvasOffsetX += dragData.delta.x;
         canvasOffsetY += dragData.delta.y;
 
+        console.log('current offset: ', canvasOffsetX, canvasOffsetY);
+
         console.log('restrict drag with (mx, my): ', maxXRange, maxYRange);
 
         if (rotated === 0) {
@@ -432,6 +449,8 @@ class VApp extends Component {
             dragData.delta.y -= canvasOffsetY + maxYRange;
             canvasOffsetY = -maxYRange;
         }
+
+        console.log('restricted: ', canvasOffsetX, canvasOffsetY);
     }
 
     restrictLeftRotated(dragData) {
@@ -454,6 +473,8 @@ class VApp extends Component {
             dragData.delta.y -= canvasOffsetY + maxXRange;
             canvasOffsetY = -maxXRange;
         }
+
+        console.log('left rotated restricted: ', canvasOffsetX, canvasOffsetY);
     }
 
     setCropperStyles() {
@@ -463,24 +484,17 @@ class VApp extends Component {
             width: diameter + 'px',
             height: diameter + 'px'
         };
-        if (imageMask.offsetWidth > imageMask.offsetHeight && imageMask.offsetWidth > diameter) {
-            console.log('imageMask.offsetWidth = ', imageMask.offsetWidth);
-            console.log('imagemask natural with = ', imageMask.naturalWidth);
-            imageScale = imageMask.offsetWidth / imageMask.naturalWidth;
-            console.log('image scale = ', imageScale);
-            console.log('diameter = ', diameter);
-            maxXRange = (imageMask.offsetWidth - diameter) / 2;
-            console.log('maxXrange = ', maxXRange);
-            console.log('offset = ', canvasOffsetX, canvasOffsetY);
-        } else {
-            maxXRange = 0;
-        }
+
+        let panRange = crop.getPanRange(imageMask, rotated);
+
+        console.log('panRange = ', panRange, rotated);
+
+
+        imageScale = imageMask.offsetWidth / imageMask.naturalWidth;
+        maxXRange = panRange.x * imageScale;
+        maxYRange = panRange.y * imageScale;
+
         theImageCropStyle.left = maxXRange + 'px';
-        if (imageMask.offsetHeight > imageMask.offsetWidth && imageMask.offsetHeight > diameter) {
-            maxYRange = (imageMask.offsetHeight - diameter) / 2;
-        } else {
-            maxYRange = 0;
-        }
         theImageCropStyle.top = maxYRange + 'px';
 
         theImageCropStyle.top = 0;
@@ -499,11 +513,6 @@ class VApp extends Component {
                 top: -maxYRange
             })
         });
-    }
-
-    rotateImage(context, canvas) {
-        context.translate(canvas.width / 2, canvas.height / 2);
-        context.rotate(rotated * Math.PI / 180);
     }
 
     getCanvasOffsetX(img) {
@@ -631,9 +640,6 @@ class VApp extends Component {
 
         self.updateImagePosition(dragData);
 
-        console.log(imageToCrop.naturalWidth, imageToCrop.naturalHeight, imageToCrop.width, imageToCrop.height, self.state.theImageMaskStyle.left, self.state.theImageMaskStyle.top);
-        console.log(imageCopy.naturalWidth, imageCopy.naturalHeight, imageCopy.width, imageCopy.height, self.state.theImageMaskStyle.left, self.state.theImageMaskStyle.top);
-
         return false;
 
     }
@@ -646,8 +652,6 @@ class VApp extends Component {
         self.updateImagePosition(dragData);
 
         self.restrictDrag(dragData);
-
-        console.log('current offset = ', canvasOffsetX, canvasOffsetY);
     }
 
     onDragExit(e) {
@@ -749,8 +753,7 @@ class VApp extends Component {
                                     '150px'
                                 }
                             }>
-                            <
-                                div
+                            <div
                                 className="hidden-input mask">
                                 <input
                                     type="file"
