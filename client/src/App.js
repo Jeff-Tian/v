@@ -22,7 +22,10 @@ class App extends Component {
             fs.loadImageFromFile(photoFile, function (dataURL, exifData) {
                 localStorage.setItem('image', dataURL);
                 localStorage.setItem('exif', JSON.stringify(exifData));
-                localStorage.setItem('orientation', exifData.exif.get('Orientation'))
+                if (exifData.exif && exifData.exif.get) {
+                    localStorage.setItem('orientation', exifData.exif.get('Orientation'));
+                }
+
                 console.log(exifData);
 
                 browserHistory.push(`/v/local-image`);

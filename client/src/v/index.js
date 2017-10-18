@@ -28,10 +28,9 @@ let popup = null;
 
 let canvas = null;
 let context = null;
-let contextScaleX = 1;
-let contextScaleY = 1;
 
-let imageScale = 1;
+let imageScaleX = 1;
+let imageScaleY = 1;
 
 function resetAllVars() {
     maxXRange = 0;
@@ -47,10 +46,9 @@ function resetAllVars() {
 
     canvas = null;
     context = null;
-    contextScaleX = 1;
-    contextScaleY = 1;
 
-    imageScale = 1;
+    imageScaleX = 1;
+    imageScaleY = 1;
 }
 
 
@@ -239,28 +237,26 @@ class VApp extends Component {
         };
 
         async function cropAndDrawVAndQR(imageToBeCropped, context, canvas) {
-            contextScaleX = imageToBeCropped.naturalWidth / imageToBeCropped.width;
-            contextScaleY = imageToBeCropped.naturalHeight / imageToBeCropped.height;
-
-            let c = crop.circleCropImageToCanvas(imageToBeCropped, canvas, context, canvasOffsetX - maxXRange, canvasOffsetY - maxYRange, contextScaleX, contextScaleY, rotated);
+            console.log('offset = ', canvasOffsetX, canvasOffsetY);
+            let c = crop.circleCropImageToCanvas(imageToBeCropped, canvas, context, canvasOffsetX, canvasOffsetY, imageScaleX, imageScaleY, rotated);
             await vDecorator.decorateV(canvas, context, c, v);
             await qrDecorator.decorateQR(canvas, context, c, qr);
             self.showModal();
         }
 
         async function cropAndDrawV(image, context, canvas) {
-            let c = crop.circleCropImageToCanvas(image, canvas, context, canvasOffsetX - maxXRange, canvasOffsetY - maxYRange, contextScaleX, contextScaleY, rotated);
+            let c = crop.circleCropImageToCanvas(image, canvas, context, canvasOffsetX, canvasOffsetY, imageScaleX, imageScaleY, rotated);
 
             await vDecorator.decorateV(canvas, context, c, v);
         }
     }
 
     hideModal() {
-        this.setState({open: false});
+        self.setState({open: false});
     }
 
     showModal() {
-        this.setState({open: true})
+        self.setState({open: true})
     }
 
     readPhotoFile(props, callback) {
@@ -402,7 +398,7 @@ class VApp extends Component {
     }
 
     restrictDrag(dragData) {
-        console.log('current scale = ', contextScaleX, contextScaleY);
+        console.log('current scale = ', imageScaleX, imageScaleY);
 
         canvasOffsetX += dragData.delta.x;
         canvasOffsetY += dragData.delta.y;
@@ -489,10 +485,11 @@ class VApp extends Component {
 
         console.log('panRange = ', panRange, rotated);
 
+        imageScaleX = imageMask.offsetWidth / imageMask.naturalWidth;
+        imageScaleY = imageMask.offsetHeight / imageMask.naturalHeight;
 
-        imageScale = imageMask.offsetWidth / imageMask.naturalWidth;
-        maxXRange = panRange.x * imageScale;
-        maxYRange = panRange.y * imageScale;
+        maxXRange = panRange.x * imageScaleX;
+        maxYRange = panRange.y * imageScaleY;
 
         theImageCropStyle.left = maxXRange + 'px';
         theImageCropStyle.top = maxYRange + 'px';
@@ -513,48 +510,6 @@ class VApp extends Component {
                 top: -maxYRange
             })
         });
-    }
-
-    getCanvasOffsetX(img) {
-        console.log('offset before translate: ', canvasOffsetX, canvasOffsetY);
-        console.log('img info:', img.width, img.height);
-        if (rotated === 0) {
-            return canvasOffsetX - img.width / 2;
-        }
-
-        if (rotated === -90) {
-            return canvasOffsetY - img.width / 2;
-        }
-
-        if (rotated === -180) {
-            return -canvasOffsetX - img.width / 2;
-        }
-
-        if (rotated === -270) {
-            return -canvasOffsetY - img.width / 2;
-        }
-
-        return canvasOffsetX;
-    }
-
-    getCanvasOffsetY(img) {
-        if (rotated === 0) {
-            return canvasOffsetY - img.height / 2;
-        }
-
-        if (rotated === -90) {
-            return canvasOffsetX - img.height / 2;
-        }
-
-        if (rotated === -180) {
-            return -canvasOffsetY - img.height / 2;
-        }
-
-        if (rotated === -270) {
-            return -canvasOffsetX - img.height / 2;
-        }
-
-        return canvasOffsetY;
     }
 
     rotate() {
@@ -632,9 +587,6 @@ class VApp extends Component {
     }
 
     onDrag(e) {
-        let imageToCrop = document.getElementById('the-image-mask-on-modal-canvas');
-        let imageCopy = document.getElementById('uploaded-image');
-
         dragData.delta.x = e.clientX - dragData.start.x;
         dragData.delta.y = e.clientY - dragData.start.y;
 
