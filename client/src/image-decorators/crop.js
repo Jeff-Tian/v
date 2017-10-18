@@ -1,7 +1,5 @@
 import shape from './shape';
 
-let minResolution = 400;
-
 function getPanRange(image, rotated) {
     console.log('(w, h) = ', image.naturalWidth, image.naturalHeight);
 
@@ -30,7 +28,7 @@ function getOffset(img, offsetX, offsetY, rotated) {
 
     if (rotated === -90) {
         return {
-            offsetX: panRange.y - offsetY,
+            offsetX: panRange.y + offsetY,
             offsetY: panRange.x - offsetX
         };
     }
@@ -44,7 +42,7 @@ function getOffset(img, offsetX, offsetY, rotated) {
 
     if (rotated === -270) {
         return {
-            offsetX: panRange.y + offsetY,
+            offsetX: panRange.y - offsetY,
             offsetY: panRange.x + offsetX
         };
     }
@@ -58,24 +56,12 @@ function getOffset(img, offsetX, offsetY, rotated) {
 module.exports = {
     circleCropImageToCanvas: function (img, canvas, context, offsetX, offsetY, scaleX, scaleY, rotated) {
         let min = Math.min(img.naturalWidth, img.naturalHeight);
-        scaleX = scaleX || img.width / img.naturalWidth;
-        scaleY = scaleY || img.height / img.naturalHeight;
-
-        canvas.width = min;
-        canvas.height = min;
-
-        if (min < minResolution) {
-            canvas.width = minResolution;
-            canvas.height = minResolution;
-        }
 
         context.save();
         let c = shape.drawInscribedCircle(canvas, context);
         context.clip();
 
         let offset = getOffset(img, offsetX / scaleX, offsetY / scaleY, rotated);
-
-        let panRange = this.getPanRange(img, rotated);
 
         if (!rotated) {
             context.drawImage(img, offset.offsetX, offset.offsetY, min, min, 0, 0, canvas.width, canvas.height);

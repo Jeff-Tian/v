@@ -7,6 +7,8 @@ import qrDecorator from '../image-decorators/qr';
 import 'semantic-ui-css/semantic.min.css';
 import '../App.css';
 import crop from '../image-decorators/crop';
+import dimension from '../image-decorators/dimension';
+import background from '../image-decorators/background';
 import fs from '../fs/fs';
 import classNames from 'classnames';
 import socket from '../socket.js';
@@ -237,7 +239,8 @@ class VApp extends Component {
         };
 
         async function cropAndDrawVAndQR(imageToBeCropped, context, canvas) {
-            console.log('offset = ', canvasOffsetX, canvasOffsetY);
+            dimension.setCanvas(imageToBeCropped, canvas);
+            background.set(canvas, context, '#ff0000');
             let c = crop.circleCropImageToCanvas(imageToBeCropped, canvas, context, canvasOffsetX, canvasOffsetY, imageScaleX, imageScaleY, rotated);
             await vDecorator.decorateV(canvas, context, c, v);
             await qrDecorator.decorateQR(canvas, context, c, qr);
@@ -245,6 +248,8 @@ class VApp extends Component {
         }
 
         async function cropAndDrawV(image, context, canvas) {
+            dimension.setCanvas(image, canvas);
+            background.set(canvas, context, '#ffff00');
             let c = crop.circleCropImageToCanvas(image, canvas, context, canvasOffsetX, canvasOffsetY, imageScaleX, imageScaleY, rotated);
 
             await vDecorator.decorateV(canvas, context, c, v);
