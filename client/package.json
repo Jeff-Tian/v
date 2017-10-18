@@ -10,7 +10,7 @@
     "react": "^15.5.3",
     "react-dom": "^15.5.4",
     "react-router": "^2.0.0",
-    "semantic-ui-css": "^2.2.12",
+    "semantic-ui-css": "https://github.com/Jeff-Tian/Semantic-UI-CSS.git#noGoogle",
     "semantic-ui-react": "^0.68.5",
     "socket.io": "^2.0.3"
   },

@@ -5,6 +5,7 @@ import './App.css';
 import fs from './fs/fs';
 import classNames from 'classnames';
 import {browserHistory} from 'react-router';
+import {Form, Button, Label} from 'semantic-ui-react';
 
 class App extends Component {
     constructor() {
@@ -16,10 +17,12 @@ class App extends Component {
         localStorage.removeItem('exif');
         localStorage.removeItem('orientation');
 
-        this.onPhotoSelected = function (target) {
+        this.onPhotoSelected = function (target, ref) {
             self.state.loading = true;
-            let photoFile = target.refs['photo-file'];
+            let photoFile = target.refs[ref];
+            alert(photoFile);
             fs.loadImageFromFile(photoFile, function (dataURL, exifData) {
+                alert(dataURL);
                 localStorage.setItem('image', dataURL);
                 localStorage.setItem('exif', JSON.stringify(exifData));
                 if (exifData.exif && exifData.exif.get) {
@@ -32,9 +35,12 @@ class App extends Component {
             });
         };
 
-        this.state = {loading: false};
+        this.state = {loading: false, capture: 'user'};
     }
 
+    componentDidMount() {
+        document.getElementById('capture').setAttribute('capture', 'user');
+    }
 
     render() {
 
@@ -53,31 +59,25 @@ class App extends Component {
                     <form name="photoForm" className={classNames({
                         'ui': true, 'form': true, loading: this.state.loading
                     })}>
-                        <div className="field">
-                        </div>
-                        <div className="field" style={
-                            {
-                                position: 'relative', border:
-                                'solid 1px black', minHeight:
-                                '150px'
-                            }
-                        }>
-                            <div className="before-upload mask">
-                                <label htmlFor="photo-file"
-                                       style={{
-                                           "display": "flex",
-                                           "alignItems": "center",
-                                           "textAlign": "center",
-                                           "justifyContent": "space-around"
-                                       }}>
-                                    点击开始拍照或者选取已有照片
-                                </label>
-                            </div>
-                            <div className="hidden-input mask">
-                                <input type="file" name="photo" onChange={() => this.onPhotoSelected(this)
-                                } ref="photo-file" accept="image/*" id={"photo-file"}/>
-                            </div>
-                        </div>
+                        <Form.Field>
+                            <Button.Group size={'huge'} className={"label-button"}>
+                                <Button className={"ui primary button"} primary={true} type={"button"}
+                                        htmlFor={"capture"}>
+                                    <label htmlFor={"capture"}>快速自拍</label>
+                                    <input type={"file"} name={"capture"}
+                                           onChange={() => this.onPhotoSelected(this, "capture")} accept={"image/*"} ref={"capture"}
+                                           id={"capture"} style={{display: "none"}} capture={this.state.capture}/>
+                                </Button>
+                                <Button.Or/>
+                                <Button className={"ui secondary button"} secondary={true} type={"button"}
+                                        htmlFor={"photo-file"}>
+                                    <label htmlFor={"photo-file"}>从相册选择</label>
+                                    <input type={"file"} name={"photo"}
+                                           onChange={() => this.onPhotoSelected(this, "photo-file")} ref={"photo-file"}
+                                           accept={"image/*"} id={"photo-file"} style={{"display": "none"}}/>
+                                </Button>
+                            </Button.Group>
+                        </Form.Field>
                     </form>
                 </div>
             </div>

@@ -85,3 +85,15 @@
     overflow: hidden;
     border-radius: 50%;
 }
+
+.label-button button[for] {
+    padding: 0 !important;
+}
+
+.label-button label[for] {
+    display: block;
+    height: 100%;
+    width: 100%;
+    padding-left: 1em;
+    padding-right: 1em;
+}

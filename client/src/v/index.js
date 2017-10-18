@@ -282,7 +282,7 @@ class VApp extends Component {
         fs.loadImageFromURI(photoFile, function (image, exifData) {
             setTimeout(function () {
                 self.initRotation(exifData);
-            }, 1);
+            }, 100);
 
             self.setState({
                 modalImageSrc: image

@@ -1,5 +1,5 @@
 import React, {PropTypes} from 'react';
-import '../../semantic-ui/semantic.min.css';
+import 'semantic-ui-css/semantic.min.css';
 import classnames from 'classnames';
 
 const LoginForm = ({
