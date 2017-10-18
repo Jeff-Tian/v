@@ -15,7 +15,8 @@ import socket from '../socket.js';
 import {browserHistory} from 'react-router';
 import Client from '../Client';
 import OrderStatus from '../../../bll/orderStatus';
-import {Modal} from 'semantic-ui-react';
+import {Modal, Form} from 'semantic-ui-react';
+import BackgroundColorSelector from './background-color-selector';
 
 let maxXRange = 0;
 let maxYRange = 0;
@@ -63,18 +64,16 @@ function convertToJpeg(canvas, context) {
 
     if (width > height) {
         startX = (width - height) / 2;
-        width = height;
     }
 
     if (height > width) {
         startY = (height - width) / 2;
-        height = width;
     }
 
     let imageData = context.getImageData(startX, startY, width, height);
     let cvs = document.createElement('canvas');
-    cvs.setAttribute('width', sideLength);
-    cvs.setAttribute('height', sideLength);
+    cvs.setAttribute('width', sideLength + 'px');
+    cvs.setAttribute('height', sideLength + 'px');
     let ctx = cvs.getContext('2d');
     ctx.width = sideLength;
     ctx.height = sideLength;
@@ -95,7 +94,7 @@ class VApp extends Component {
 
         self = this;
 
-        this.state = this.resetStyles();
+        this.state = this.initState();
         this.loading = true;
 
         function openOrderPage(orderInfo) {
@@ -130,9 +129,10 @@ class VApp extends Component {
             });
         }
 
-        socket.on('order-qr-remove', function (msg) {
+        socket.on('order-qr-remove', async function (msg) {
             if (msg === 'ok') {
-                self.generateImageWithoutQRCode();
+                self.setState({paid: true});
+                await self.generateImage();
             } else if (msg === 'pending-pay') {
                 alert(msg);
             } else {
@@ -142,10 +142,8 @@ class VApp extends Component {
 
         socket.on('order-paid', async function (msg) {
             console.log(msg);
-
-            console.log(document.getElementById('uploaded-image'));
-            await            cropAndDrawV(document.getElementById('uploaded-image'), context, canvas)
-            convertToJpeg(canvas, context);
+            self.setState({paid: true});
+            await self.generateImage();
             self.setState({loading: false});
         });
 
@@ -169,7 +167,7 @@ class VApp extends Component {
                 return;
             }
 
-            self.setState(self.resetStyles());
+            self.setState(self.initState());
 
             resetAllVars();
 
@@ -179,7 +177,11 @@ class VApp extends Component {
         this.generateImage = async function () {
             self.setState({loading: true});
 
-            await cropAndDrawVAndQR(document.getElementById('the-image-mask-on-modal-canvas'), context, canvas);
+            if (!self.state.paid) {
+                await cropAndDrawVAndQR(document.getElementById('uploaded-image'), context, canvas);
+            } else {
+                await cropAndDrawV(document.getElementById('uploaded-image'), context, canvas);
+            }
             convertToJpeg(canvas, context);
 
             self.hideModal();
@@ -240,16 +242,15 @@ class VApp extends Component {
 
         async function cropAndDrawVAndQR(imageToBeCropped, context, canvas) {
             dimension.setCanvas(imageToBeCropped, canvas);
-            background.set(canvas, context, '#ff0000');
+            background.set(canvas, context, self.state.backgroundColor);
             let c = crop.circleCropImageToCanvas(imageToBeCropped, canvas, context, canvasOffsetX, canvasOffsetY, imageScaleX, imageScaleY, rotated);
             await vDecorator.decorateV(canvas, context, c, v);
             await qrDecorator.decorateQR(canvas, context, c, qr);
-            self.showModal();
         }
 
         async function cropAndDrawV(image, context, canvas) {
             dimension.setCanvas(image, canvas);
-            background.set(canvas, context, '#ffff00');
+            background.set(canvas, context, self.state.backgroundColor);
             let c = crop.circleCropImageToCanvas(image, canvas, context, canvasOffsetX, canvasOffsetY, imageScaleX, imageScaleY, rotated);
 
             await vDecorator.decorateV(canvas, context, c, v);
@@ -345,12 +346,14 @@ class VApp extends Component {
             let o = await Client.fetchOrder(this.props.location.query.orderId);
             console.log('order = ', o);
 
-            this.readPhotoFile(this.props, function () {
+            this.readPhotoFile(this.props, async function () {
                 if (o.status === OrderStatus.paid) {
-                    self.generateImageWithoutQRCode();
+                    self.setState({paid: true});
                 } else {
-                    self.generateImage();
+                    self.setState({paid: false});
                 }
+
+                await self.generateImage();
             });
         } else {
             console.log('reading local image from local storage');
@@ -368,7 +371,7 @@ class VApp extends Component {
         console.log('modal open');
     }
 
-    resetStyles() {
+    initState() {
         return {
             imgSrc: '',
             modalImageSrc: '',
@@ -391,7 +394,10 @@ class VApp extends Component {
                 left: 0
             },
 
-            open: false
+            open: false,
+
+            backgroundColor: '#f5f5f5',
+            paid: false
         };
     }
 
@@ -636,6 +642,17 @@ class VApp extends Component {
         self.restrictDrag(dragData);
     }
 
+    async selectColor(color) {
+        self.setState({backgroundColor: color});
+        setTimeout(async function () {
+            await self.generateImage();
+        }, 1);
+    }
+
+    edit() {
+        self.showModal();
+    }
+
     render() {
         const open = this.state.open;
 
@@ -654,7 +671,7 @@ class VApp extends Component {
                 </div>
                 < p
                     className="App-intro">
-                    上传图片，自动加V
+                    上传照片，自动加V
                 </p>
 
                 <img src={this.state.modalImageSrc} className={"ui fluid image"} alt={"v"} id={"uploaded-image"}
@@ -668,11 +685,16 @@ class VApp extends Component {
                             {
                                 this.state.imgSrc ?
                                     <div>
-                                        <button type="button"
-                                                className={classNames("ui left floated button", {loading: this.state.loading})}
-                                                onClick={this.removeQRCode}>
-                                            去二维码
-                                        </button>
+                                        {
+                                            !this.state.paid
+                                                ?
+                                                <button type="button"
+                                                        className={classNames("ui left floated button", {loading: this.state.loading})}
+                                                        onClick={this.removeQRCode}>
+                                                    去二维码
+                                                </button>
+                                                : ''
+                                        }
                                         <div
                                             className="ui buttons">
                                             < button
@@ -716,16 +738,31 @@ class VApp extends Component {
                                 }
                             }>
                             <div className="image mask" style={this.state.imgSrc ? {} : {display: 'none'}}
-                                 target="_blank">
+                                 target="_blank" onClick={this.edit}>
                                 <img src={this.state.imgSrc} alt="v"
                                      style={{width: '100%', height: '100%', background: 'white', display: 'block'}}/>
                             </div>
                         </div>
+                        <Form.Field>
+                            <BackgroundColorSelector selected={this.state.backgroundColor}
+                                                     selectColor={this.selectColor}/>
+                        </Form.Field>
                     </form>
                 </div>
 
-                <Modal size={'fullscreen'} open={open} onClose={this.hideModal} onMount={this.modalDidMount}
-                       onOpen={this.modalOpen} className={classNames({'loading': this.state.rotating})}>
+                <Modal size={'fullscreen'} open={open} onClose={() => {
+                    console.log('closing');
+
+                    if (!this.state.imgSrc) {
+                        browserHistory.push('/');
+                    } else {
+                        this.setState({loading: false});
+                        this.hideModal();
+                    }
+                }} onMount={this.modalDidMount}
+                       onOpen={() => {
+                           this.modalOpen();
+                       }} className={classNames({'loading': this.state.rotating})}>
                     <Modal.Content image scrolling>
                         <div id="the-image-wrapper" style={
                             {

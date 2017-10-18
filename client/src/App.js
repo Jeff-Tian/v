@@ -66,9 +66,9 @@ class App extends Component {
                                 <label htmlFor="photo-file"
                                        style={{
                                            "display": "flex",
-                                           "align-items": "center",
-                                           "text-align": "center",
-                                           "justify-content": "space-around"
+                                           "alignItems": "center",
+                                           "textAlign": "center",
+                                           "justifyContent": "space-around"
                                        }}>
                                     点击开始拍照或者选取已有照片
                                 </label>
