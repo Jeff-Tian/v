@@ -46,7 +46,7 @@
 .hidden-input input {
     width: 100%;
     height: 100%;
-    padding-left: 100000px;
+    padding-left: 100000px !important;
 }
 
 .before-upload {
@@ -56,11 +56,13 @@
     align-items: center;
     text-align: center;
     width: 100%;
-    z-index: -1;
+    z-index: 1;
 }
 
-.before-upload h1 {
-    width: 100%;
+.before-upload label {
+    width: 100% !important;
+    height: 100% !important;
+    display: block !important;
 }
 
 #the-image-wrapper {

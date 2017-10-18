@@ -46,7 +46,7 @@ class App extends Component {
                     </div>
                 </div>
                 <p className="App-intro">
-                    上传图片，自动加V
+                    上传照片，自动加V
                 </p>
 
                 <div className="ui container">
@@ -62,13 +62,12 @@ class App extends Component {
                                 '150px'
                             }
                         }>
+                            <div className="before-upload mask">
+                                <label htmlFor="photo-file">点击开始拍照或者选取已有照片</label>
+                            </div>
                             <div className="hidden-input mask">
                                 <input type="file" name="photo" onChange={() => this.onPhotoSelected(this)
-                                } ref="photo-file" accept="image/*"/>
-                            </div>
-                            <div className="before-upload mask">
-                                <h1> 点击此处选择图片
-                                </h1>
+                                } ref="photo-file" accept="image/*" id={"photo-file"}/>
                             </div>
                         </div>
                     </form>
