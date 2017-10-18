@@ -63,7 +63,15 @@ class App extends Component {
                             }
                         }>
                             <div className="before-upload mask">
-                                <label htmlFor="photo-file">点击开始拍照或者选取已有照片</label>
+                                <label htmlFor="photo-file"
+                                       style={{
+                                           "display": "flex",
+                                           "align-items": "center",
+                                           "text-align": "center",
+                                           "justify-content": "space-around"
+                                       }}>
+                                    点击开始拍照或者选取已有照片
+                                </label>
                             </div>
                             <div className="hidden-input mask">
                                 <input type="file" name="photo" onChange={() => this.onPhotoSelected(this)

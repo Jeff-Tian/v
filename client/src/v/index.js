@@ -278,43 +278,10 @@ class VApp extends Component {
             return browserHistory.push('/');
         }
 
-        fs.loadImageFromURI(photoFile, function (image, data) {
-            console.log('data = ', data);
-
-            if (!data || !data.exif) {
-                try {
-                    data = JSON.parse(localStorage.getItem('exif'));
-                } catch (ex) {
-                    data = null;
-                }
-            }
-
-            if (data && data.exif) {
-                let orientation = 1;
-
-                try {
-                    orientation = data.exif.get('Orientation');
-                } catch (ex) {
-                    orientation = parseInt(localStorage.getItem('orientation'), 10);
-                }
-
-                console.log('orientation = ', orientation);
-
-                if (orientation) {
-                    if (orientation === 8) {
-                        self.rotateLeft();
-                    }
-                    if (orientation === 6) {
-                        self.rotateRight();
-                    }
-                    if (orientation === 3) {
-                        self.rotate180DegreeLeftward();
-                    }
-                    if (orientation !== 1 && orientation !== 8 && orientation !== 6 && orientation !== 3) {
-                        alert(orientation);
-                    }
-                }
-            }
+        fs.loadImageFromURI(photoFile, function (image, exifData) {
+            setTimeout(function () {
+                self.initRotation(exifData);
+            }, 1);
 
             self.setState({
                 modalImageSrc: image
@@ -325,6 +292,45 @@ class VApp extends Component {
         });
 
         return photoFile;
+    }
+
+    initRotation(exifData) {
+        console.log('data = ', exifData);
+
+        if (!exifData || !exifData.exif) {
+            try {
+                exifData = JSON.parse(localStorage.getItem('exif'));
+            } catch (ex) {
+                exifData = null;
+            }
+        }
+
+        if (exifData && exifData.exif) {
+            let orientation = 1;
+
+            try {
+                orientation = exifData.exif.get('Orientation');
+            } catch (ex) {
+                orientation = parseInt(localStorage.getItem('orientation'), 10);
+            }
+
+            console.log('orientation = ', orientation);
+
+            if (orientation) {
+                if (orientation === 8) {
+                    self.rotateLeft();
+                }
+                if (orientation === 6) {
+                    self.rotateRight();
+                }
+                if (orientation === 3) {
+                    self.rotate180DegreeLeftward();
+                }
+                if (orientation !== 1 && orientation !== 8 && orientation !== 6 && orientation !== 3) {
+                    alert(orientation);
+                }
+            }
+        }
     }
 
     async componentDidMount() {
@@ -687,11 +693,10 @@ class VApp extends Component {
                                             <div
                                                 className="ui or">
                                             </div>
-                                            < button
+                                            <button
                                                 type="reset"
                                                 className="ui black deny button"
-                                                onClick={this.clear
-                                                }>
+                                                onClick={this.clear}>
                                                 清除
                                             </button>
                                         </div>
@@ -710,19 +715,6 @@ class VApp extends Component {
                                     '150px'
                                 }
                             }>
-                            <div
-                                className="hidden-input mask">
-                                <input
-                                    type="file"
-                                    name="photo"
-                                    onChange={() => this.onPhotoSelected(this)
-                                    }
-                                    ref="photo-file"
-                                    accept="image/*"/>
-                            </div>
-                            <div className="before-upload mask">
-                                <h1>点击此处选择图片</h1>
-                            </div>
                             <div className="image mask" style={this.state.imgSrc ? {} : {display: 'none'}}
                                  target="_blank">
                                 <img src={this.state.imgSrc} alt="v"
