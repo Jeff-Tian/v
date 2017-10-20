@@ -8,6 +8,7 @@ import Orders from './orders/orders';
 import OrderDetail from './orders/order-detail';
 import V from './v/index';
 import Auth from './auth/auth';
+import NotFound404 from './errors/404';
 
 function isUserAuthenticated(nextState, replaceState) {
     if (!Auth.isUserAuthenticated()) {
@@ -25,5 +26,6 @@ ReactDOM.render((
         <Route path="/order/:orderId" component={OrderDetail}/>
         <Route path="/sign-in" component={LoginPage}/>
         <Route path="/admin/orders" component={Orders} onEnter={isUserAuthenticated}/>
+        <Route path="/*" component={NotFound404}/>
     </Router>
 ), document.getElementById('root'));

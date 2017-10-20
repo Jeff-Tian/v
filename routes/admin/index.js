@@ -50,7 +50,7 @@ const credentials = {name: process.env.V_ADMIN, pass: process.env.V_PWD};
 app.use(auth(credentials));
 
 router.get('/orders', function* (next) {
-    let p = path.join(__dirname, `../../`, config.publicFolder, `/index.html`);
+    let p = path.join(__dirname, `../../client/build`, `/index.html`);
     this.body = yield readFile.thunk(p);
 });
 

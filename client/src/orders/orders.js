@@ -49,37 +49,39 @@ class Orders extends React.Component {
             <div className="ui container">
                 <div className={"ui divided items"}>
                     {
-                        this.state.orders.map(o => {
-                            return (
-                                <div className={"item"} key={o.orderId}>
-                                    <div className={"image"}>
-                                        <img src={""} alt={""}/>
+                        this.state.orders.length
+                            ? this.state.orders.map(o => {
+                                return (
+                                    <div className={"item"} key={o.orderId}>
+                                        <div className={"image"}>
+                                            <img src={""} alt={""}/>
+                                        </div>
+                                        <div className={"content"}>
+                                            <div className={"header"}>{o.orderId}</div>
+                                            <div className={"meta"}>
+                                                <span className={"cinema"}>{o.type}</span>
+                                                <span className={"cinema"}>{o.status}</span>
+                                            </div>
+                                            <div className={"description"}>
+                                                {o.data}
+                                            </div>
+                                            <div className={"extra"}>
+                                                {
+                                                    [OrderStatus.pendingPay, OrderStatus.claimPaid].indexOf(o.status) >= 0 ? (
+                                                        <button className="ui right floated primary button"
+                                                                onClick={() => this.markAsPaid(o.orderId)}>
+                                                            Mark as Paid
+                                                        </button>
+                                                    ) : ''
+                                                }
+                                                <div className={"ui label"}>{o.createdTime}</div>
+                                                <div className={"ui label"}>{o.updatedTime}</div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div className={"content"}>
-                                        <div className={"header"}>{o.orderId}</div>
-                                        <div className={"meta"}>
-                                            <span className={"cinema"}>{o.type}</span>
-                                            <span className={"cinema"}>{o.status}</span>
-                                        </div>
-                                        <div className={"description"}>
-                                            {o.data}
-                                        </div>
-                                        <div className={"extra"}>
-                                            {
-                                                [OrderStatus.pendingPay, OrderStatus.claimPaid].indexOf(o.status) >= 0 ? (
-                                                    <button className="ui right floated primary button"
-                                                            onClick={() => this.markAsPaid(o.orderId)}>
-                                                        Mark as Paid
-                                                    </button>
-                                                ) : ''
-                                            }
-                                            <div className={"ui label"}>{o.createdTime}</div>
-                                            <div className={"ui label"}>{o.updatedTime}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        })
+                                );
+                            })
+                            : <p>没有订单</p>
                     }
                 </div>
             </div>

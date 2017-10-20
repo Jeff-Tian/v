@@ -1,13 +1,12 @@
 CACHE MANIFEST
 
-#version: 7
+#version: 9
 
 FALLBACK:
 / /favicon.ico
 
 NETWORK:
 *
-/admin/orders
 
 CACHE:
 /favicon.ico

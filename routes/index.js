@@ -24,6 +24,10 @@ let readFileThunk = function (src) {
 
 function helper(app, router, render) {
     router
+        .get('/v.appcache', function* () {
+            this.set('Content-Type', 'text/cache-manifest');
+            this.body = yield readFileThunk(__dirname + `/../public/v.appcache`);
+        })
         .get('/healthcheck', function* (next) {
             this.body = {
                 everything: 'is ok',
@@ -86,7 +90,7 @@ function socketIO(app, router, render, server) {
 
         socket.on('order-qr-remove', function (msg) {
             if (typeof msg === 'object') {
-                if(msg.message === 'create'){
+                if (msg.message === 'create') {
                     io.emit('order-qr-remove', order.create('qr-remove', msg));
                 }
 

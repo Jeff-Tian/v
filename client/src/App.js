@@ -5,7 +5,7 @@ import './App.css';
 import fs from './fs/fs';
 import classNames from 'classnames';
 import {browserHistory} from 'react-router';
-import {Form, Button, Label} from 'semantic-ui-react';
+import {Form, Button} from 'semantic-ui-react';
 
 class App extends Component {
     constructor() {
