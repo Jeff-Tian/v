@@ -70,7 +70,7 @@ class Orders extends React.Component {
                             状态: {this.state.order.status}
                         </div>
                         <div className={"description"}>
-                            请用微信扫描识别上面的付款码，完成一笔任意金额的转账。在审核通过后即可下载不带广告二维码的加 V 图片啦！
+                            请长按识别或者扫描以上二维码，完成转账。在审核通过后即可下载不带二维码的加 V 图片啦！
                             <br/>
 
                             {

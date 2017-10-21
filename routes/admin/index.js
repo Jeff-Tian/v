@@ -36,9 +36,16 @@ app.use(function* (next) {
 
         yield next;
     } catch (ex) {
-        console.error('ahhhhhhhhhhhh!');
+        console.error('ahhhhhhhhhhhh!   ---', this.path, ex);
         if (ex.status === 401) {
-            this.redirect('/sign-in');
+            let authPath = '/sign-in';
+
+            if (this.headers.fetch) {
+                ex.message = authPath;
+                this.throw(ex);
+            } else {
+                this.redirect(authPath);
+            }
         } else {
             this.throw(401, ex);
         }
@@ -49,13 +56,16 @@ const credentials = {name: process.env.V_ADMIN, pass: process.env.V_PWD};
 
 app.use(auth(credentials));
 
-router.get('/orders', function* (next) {
-    let p = path.join(__dirname, `../../client/build`, `/index.html`);
-    this.body = yield readFile.thunk(p);
-});
+if (process.env.NODE_ENV === 'prd') {
+    router.get('/orders', function* (next) {
+        let p = path.join(__dirname, `../../client/build`, `/index.html`);
+        this.body = yield readFile.thunk(p);
+    });
+}
 
 router
     .get('/api/orders', function* (next) {
+        console.log('fetching orders...');
         this.body = orderBll.list();
     })
     .post('/api/orders/:orderId', function* (next) {

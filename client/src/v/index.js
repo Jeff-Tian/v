@@ -190,11 +190,9 @@ class VApp extends Component {
 
         this.removeQRCode = function () {
             self.setState({loading: true});
-
             socket.emit('order-qr-remove', {
                 message: 'create'
             });
-
             if (navigator.userAgent.indexOf('MicroMessenger') >= 0) {
                 newOrderCreated().then(function (order) {
                     browserHistory.push(`/order/${order.orderId}`);
@@ -210,8 +208,6 @@ class VApp extends Component {
                 } else {
                     popup = window.open('/popup.html');
                 }
-
-
                 Promise.all([popupReady(), newOrderCreated()]).then(results => {
                     openOrderPage(results[1]);
                 });

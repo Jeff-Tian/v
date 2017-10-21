@@ -17,7 +17,8 @@ module.exports = function (opts) {
             if (user && user.name === opts.name && user.pass === opts.pass) {
                 yield next;
             } else {
-                throw new Error('auth failed');
+                console.error(`Auth failed. Tried with ${user.name}:${user.pass} to match ${opts.name}:${opts.pass}`);
+                throw new Error(`Auth failed`);
             }
         } catch (ex) {
             this.throw(401, ex);

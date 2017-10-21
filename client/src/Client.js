@@ -1,21 +1,35 @@
 import Auth from './auth/auth';
+import {browserHistory} from 'react-router';
 
-function checkStatus(response) {
+async function checkStatus(response) {
     if (response.status >= 200 && response.status < 300) {
         return response;
     } else {
         const error = new Error(`HTTP Error: ${response.statusText}`);
-        error.status = response.statusText;
-        error.response = response;
-        console.log(error); // eslint-disable-line no-console
+        error.statusText = response.statusText;
+        error.status = response.status;
+        error.authPath = await response.text();
         throw error;
     }
+}
+
+async function handleError(ex) {
+    if (ex.status === 401) {
+        if (ex.authPath) {
+            browserHistory.push(ex.authPath);
+        } else {
+            console.error('fuck you!');
+        }
+    }
+
+    console.error('ex = ', ex, JSON.stringify(ex));
 }
 
 export default {
     fetchOrders: async function () {
         let authHeader = {
-            Authorization: `Basic ${Auth.getToken()}`
+            Authorization: `Basic ${Auth.getToken()}`,
+            fetch: true
         };
 
         try {
@@ -24,9 +38,9 @@ export default {
                 headers: authHeader
             });
 
-            return checkStatus(response).json();
+            return (await checkStatus(response)).json();
         } catch (ex) {
-            console.error(ex);
+            await handleError(ex);
         }
     },
 
@@ -36,9 +50,9 @@ export default {
                 accept: 'application/json'
             });
 
-            return checkStatus(response).json();
+            return (await checkStatus(response)).json();
         } catch (ex) {
-            console.error(ex);
+            await handleError(ex);
         }
     },
 
@@ -54,9 +68,9 @@ export default {
                 headers: authHeader
             });
 
-            return checkStatus(response).json();
+            return (await checkStatus(response)).json();
         } catch (ex) {
-            console.error(ex);
+            await handleError(ex);
         }
     }
 }

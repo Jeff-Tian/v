@@ -5,7 +5,7 @@ let orders = {};
 let io = null;
 
 module.exports = {
-    create: function (type) {
+    create: function (type, paymentMethod) {
         let orderId = uuidv1();
 
         orders[orderId] = {
@@ -13,6 +13,7 @@ module.exports = {
             createdTime: new Date(),
             updatedTime: new Date(),
             type: type,
+            paymentMethod: paymentMethod,
             orderId: orderId
         };
 

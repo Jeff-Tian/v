@@ -13,10 +13,8 @@ let readFileThunk = function (src) {
         fs.readFile(src, {
             'encoding': 'utf8'
         }, function (err, data) {
-            console.error(err);
             if (err) return reject(err);
 
-            console.log(data.toString());
             resolve(data);
         });
     });
@@ -24,10 +22,6 @@ let readFileThunk = function (src) {
 
 function helper(app, router, render) {
     router
-        .get('/v2.appcache', function* () {
-            this.set('Content-Type', 'text/cache-manifest');
-            this.body = yield readFileThunk(__dirname + `/../public/v.appcache`);
-        })
         .get('/healthcheck', function* (next) {
             this.body = {
                 everything: 'is ok',
@@ -46,13 +40,6 @@ function* renderIndexResponse() {
     this.body = yield renderIndex();
 }
 
-function secure(app, router, render) {
-    let membership = require('koa-membership')(config);
-
-    router
-        .get('/', renderIndexResponse);
-}
-
 function publicRouter(app, router, render) {
     if (process.env.NODE_ENV === 'prd') {
         app.use(serveStatic('client/build', {
@@ -61,8 +48,19 @@ function publicRouter(app, router, render) {
         }));
 
         router
+            .get('/v2.appcache', function* () {
+                this.set('Content-Type', 'text/cache-manifest');
+                this.body = yield readFileThunk(__dirname + `/../public/v2.appcache`);
+            })
             .get('/order/:orderId', renderIndexResponse)
-            .get('/v/:uri/:orderId?', renderIndexResponse);
+            .get('/v/:uri/:orderId?', renderIndexResponse)
+            .get('/sign-in', renderIndexResponse);
+    } else {
+        router
+            .get('/v2.appcache', function* () {
+                this.set('Content-Type', 'text/cache-manifest');
+                this.body = 'CACHE MANIFEST\n';
+            });
     }
 
     app.use(mount('/node_modules', serveStatic('client/node_modules', {
@@ -73,9 +71,6 @@ function publicRouter(app, router, render) {
         gzip: true,
         maxage: 1000 * 60 * 60 * 24 * 360
     })));
-
-    router
-        .get('/sign-in', renderIndexResponse);
 }
 
 function socketIO(app, router, render, server) {
@@ -125,7 +120,6 @@ function routeFolder(folder, app, router, render, server) {
 module.exports = function (app, router, render, server) {
     helper(app, router, render);
     publicRouter(app, router, render);
-    // secure(app, router, render);
     socketIO(app, router, render, server);
 
     app
