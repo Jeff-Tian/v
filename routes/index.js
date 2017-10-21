@@ -24,7 +24,7 @@ let readFileThunk = function (src) {
 
 function helper(app, router, render) {
     router
-        .get('/v.appcache', function* () {
+        .get('/v2.appcache', function* () {
             this.set('Content-Type', 'text/cache-manifest');
             this.body = yield readFileThunk(__dirname + `/../public/v.appcache`);
         })

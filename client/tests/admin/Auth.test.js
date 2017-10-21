@@ -2,22 +2,6 @@ import {shallow, mount} from 'enzyme';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-if (!window.localStorage) {
-    let localStorage = {
-        getItem: function () {
-            return 'ok';
-        },
-        setItem: function () {
-            return 'ok';
-        },
-        removeItem: function () {
-            return 'ok';
-        }
-    };
-
-    window.localStorage = localStorage;
-}
-
 import Auth from '../../src/auth/login-page';
 // import Client from '../../src/Client';
 
@@ -48,7 +32,7 @@ describe('Auth', () => {
         ).toBe(1);
     });
 
-    it.skip('should fail login when input is bad', () => {
+    it('should fail login when input is bad', () => {
         let input = wrapper.find('input').first();
         input.simulate('change', {
             target: {value: 'badguy'}

@@ -5,7 +5,7 @@ import './App.css';
 import fs from './fs/fs';
 import classNames from 'classnames';
 import {browserHistory} from 'react-router';
-import {Form, Button} from 'semantic-ui-react';
+import {Button, Form} from 'semantic-ui-react';
 
 class App extends Component {
     constructor() {
@@ -37,7 +37,7 @@ class App extends Component {
     }
 
     componentDidMount() {
-        document.getElementById('capture').setAttribute('capture', 'user');
+        this.refs['capture'].setAttribute('capture', 'user');
     }
 
     render() {
@@ -63,7 +63,8 @@ class App extends Component {
                                         htmlFor={"capture"}>
                                     <label htmlFor={"capture"}>快速自拍</label>
                                     <input type={"file"} name={"capture"}
-                                           onChange={() => this.onPhotoSelected(this, "capture")} accept={"image/*"} ref={"capture"}
+                                           onChange={() => this.onPhotoSelected(this, "capture")} accept={"image/*"}
+                                           ref={"capture"}
                                            id={"capture"} style={{display: "none"}} capture={this.state.capture}/>
                                 </Button>
                                 <Button.Or/>
