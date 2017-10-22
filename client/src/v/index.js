@@ -15,8 +15,9 @@ import socket from '../socket.js';
 import {browserHistory} from 'react-router';
 import Client from '../Client';
 import OrderStatus from '../../../bll/orderStatus';
-import {Modal, Form} from 'semantic-ui-react';
+import {Form, Modal} from 'semantic-ui-react';
 import BackgroundColorSelector from './background-color-selector';
+import SelectPaymentMethodsModal from '../payment/select-payment-methods-modal';
 
 let maxXRange = 0;
 let maxYRange = 0;
@@ -188,7 +189,7 @@ class VApp extends Component {
             self.setState({loading: false});
         };
 
-        this.removeQRCode = function () {
+        this.createOrder = function () {
             self.setState({loading: true});
             socket.emit('order-qr-remove', {
                 message: 'create'
@@ -212,6 +213,9 @@ class VApp extends Component {
                     openOrderPage(results[1]);
                 });
             }
+        };
+        this.removeQRCode = function () {
+            self.showPaymentModal();
         };
 
         this.download = function () {
@@ -657,9 +661,28 @@ class VApp extends Component {
         }
     }
 
-    render() {
-        const open = this.state.open;
+    showPaymentModal() {
+        this.setState({
+            selectPaymentMethodOpen: true
+        });
+    }
 
+    closePaymentModal() {
+        this.setState({
+            selectPaymentMethodOpen: false
+        });
+    }
+
+    pay(method) {
+        if (method === 'wechat-pay') {
+            self.closePaymentModal();
+            self.createOrder(method);
+        } else {
+            alert('暂不支持此支付方式：' + method);
+        }
+    }
+
+    render() {
         return (
             <div
                 className="App">
@@ -726,7 +749,8 @@ class VApp extends Component {
                                                 清除
                                             </button>
                                             <div className="ui or"></div>
-                                            <button type={"button"} className={"ui button"} onClick={this.edit}>调整</button>
+                                            <button type={"button"} className={"ui button"} onClick={this.edit}>调整
+                                            </button>
                                         </div>
                                     </div>
                                     :
@@ -756,7 +780,10 @@ class VApp extends Component {
                     </form>
                 </div>
 
-                <Modal size={'fullscreen'} open={open} onClose={this.cancel} onMount={this.modalDidMount}
+                <SelectPaymentMethodsModal open={this.state.selectPaymentMethodOpen}
+                                           onClose={() => this.closePaymentModal()} pay={this.pay}/>
+
+                <Modal size={'fullscreen'} open={this.state.open} onClose={this.cancel} onMount={this.modalDidMount}
                        onOpen={() => {
                            this.modalOpen();
                        }} className={classNames({'loading': this.state.rotating})}>
