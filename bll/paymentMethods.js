@@ -1,6 +1,6 @@
 'use strict';
 
-let m = {
+module.exports = {
     wechatPay: {
         method: 'wechat-pay',
         image: '/icons/wechat-pay.jpg',
@@ -9,6 +9,7 @@ let m = {
         displayName: '微信支付',
         receiverImage: '/images/wechat-pay.jpg'
     },
+    'wechat-pay': this.wechatPay,
     alipay: {
         method: 'alipay',
         image: '/icons/alipay.jpg',
@@ -26,7 +27,3 @@ let m = {
         receiverImage: '/images/bitcoin.png'
     }
 };
-
-m['wechat-pay'] = m.wechatPay;
-
-module.exports = m;
