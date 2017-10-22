@@ -9,7 +9,14 @@ module.exports = {
         displayName: '微信支付',
         receiverImage: '/images/wechat-pay.jpg'
     },
-    'wechat-pay': this.wechatPay,
+    'wechat-pay': {
+        method: 'wechat-pay',
+        image: '/icons/wechat-pay.jpg',
+        icon: 'wechat',
+        activeColor: 'green',
+        displayName: '微信支付',
+        receiverImage: '/images/wechat-pay.jpg'
+    },
     alipay: {
         method: 'alipay',
         image: '/icons/alipay.jpg',

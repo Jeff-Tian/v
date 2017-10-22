@@ -24,6 +24,10 @@ class Orders extends React.Component {
             return browserHistory.push(`/v/local-image`);
         }
 
+        if (order.status === OrderStatus.paid) {
+            return browserHistory.push(`/v/local-image/${order.orderId}`);
+        }
+
         this.setState({
             order: order
         });
@@ -118,7 +122,7 @@ class Orders extends React.Component {
                         <div className={"header"}>订单号：{this.state.order.orderId}</div>
                         <div className={"meta"}>
                             状态: {this.state.order.status}
-                            {this.state.order.paymentMethod ? (
+                            {this.state.order.paymentMethod && PaymentMethods[this.state.order.paymentMethod] ? (
                                 <Icon name={PaymentMethods[this.state.order.paymentMethod].icon}
                                       color={PaymentMethods[this.state.order.paymentMethod].activeColor}/>) : ''}
                         </div>
@@ -139,8 +143,10 @@ class Orders extends React.Component {
                                             : (<button className="ui disabled button">等待主人审核中……</button>)
                                     )
                             }
-                            <Button secondary floated="right"
-                                    onClick={() => this.cancelPayment(this.state.order.orderId)}>放弃付款</Button>
+                            {this.state.order.status === OrderStatus.pendingPay ? (
+                                <Button secondary floated="right"
+                                        onClick={() => this.cancelPayment(this.state.order.orderId)}>放弃付款</Button>
+                            ) : ''}
                         </div>
                     </div>
                     <div className={"extra content"}>
