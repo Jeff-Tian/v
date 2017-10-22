@@ -1,10 +1,10 @@
 import React from 'react';
 import Client from '../Client';
-import wechatPaymentQrCode from '../../public/images/wechat-pay.jpg';
 import socket from '../socket';
 import OrderStatus from '../../../bll/orderStatus';
 import {browserHistory} from 'react-router';
-import {Button} from 'semantic-ui-react';
+import {Button, Icon, Segment, Feed, Header} from 'semantic-ui-react';
+import PaymentMethods from '../../../bll/paymentMethods';
 
 const _ = require('lodash');
 
@@ -77,7 +77,7 @@ class Orders extends React.Component {
             }
 
             if (true || navigator.userAgent.indexOf('MicroMessenger') >= 0) {
-                browserHistory.push(`/v/local-image/${msg.order.orderId}`);
+                browserHistory.push(`/v/local-image/${msg.order ? msg.order.orderId : msg.orderId}`);
             } else {
                 window.close();
             }
@@ -89,12 +89,35 @@ class Orders extends React.Component {
             <div className="ui container">
                 <div className="ui fluid card">
                     <div className="image">
-                        <img src={wechatPaymentQrCode} alt="微信付款二维码"/>
+                        <img
+                            src={PaymentMethods[this.state.order.paymentMethod] ? PaymentMethods[this.state.order.paymentMethod].receiverImage : PaymentMethods.wechatPay.receiverImage}
+                            alt="付款二维码"/>
+                        {
+                            this.state.order.paymentMethod === PaymentMethods.bitcoin.method ?
+                                (
+                                    <Segment>
+                                        <Header size="medium">付款信息</Header>
+                                        <Feed>
+                                            <Feed.Event date="URI: "
+                                                        summary="bitcoin:16jag4GRKxoN8RGA5izzFHeVWfdofR5wHL?amount=1.00000000&label=pa-pa-pa&message=pa-pa-pa"
+                                                        style={{wordBreak: 'break-all'}}/>
+                                            <Feed.Event date="地址: " summary="16jag4GRKxoN8RGA5izzFHeVWfdofR5wHL"/>
+                                            <Feed.Event date="金额: " summary="1.00000000 BTC"/>
+                                            <Feed.Event date="标签: " summary="pa-pa-pa"/>
+                                            <Feed.Event date="消息: " summary="pa-pa-pa"/>
+                                        </Feed>
+                                    </Segment>
+                                )
+                                : ('')
+                        }
                     </div>
                     <div className={"content"}>
                         <div className={"header"}>订单号：{this.state.order.orderId}</div>
                         <div className={"meta"}>
                             状态: {this.state.order.status}
+                            {this.state.order.paymentMethod ? (
+                                <Icon name={PaymentMethods[this.state.order.paymentMethod].icon}
+                                      color={PaymentMethods[this.state.order.paymentMethod].activeColor}/>) : ''}
                         </div>
                         <div className={"description"}>
                             请长按识别或者扫描以上二维码，完成转账。在审核通过后即可使用所有高级功能！

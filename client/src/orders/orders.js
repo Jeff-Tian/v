@@ -32,14 +32,35 @@ class Orders extends React.Component {
         });
 
         socket.on('order-qr-remove', function (msg) {
-            if (typeof msg === 'object') {
+            if (typeof msg === 'object' && msg.orderId) {
                 console.log('new order created: ', msg);
 
-                self.setState(prevState => ({
-                    orders: [msg, ...self.state.orders]
-                }));
+                self.upsertOrder(msg);
+            }
+
+            if (typeof msg === 'object' && msg.order) {
+                console.log('order updated');
+
+                self.upsertOrder(msg.order);
             }
         });
+    }
+
+    upsertOrder(order) {
+        let self = this;
+
+        let index = self.state.orders.findIndex(o => o.orderId === order.orderId);
+
+        if (index >= 0) {
+            console.log('updating...');
+            self.setState(prevState => ({
+                orders: self.state.orders.map(o => o.orderId === order.orderId ? Object.assign({}, o, order) : o)
+            }));
+        } else {
+            self.setState(prevState => ({
+                orders: [order, ...self.state.orders]
+            }));
+        }
     }
 
     async markAsPaid(orderId) {
@@ -58,16 +79,17 @@ class Orders extends React.Component {
                         this.state.orders.length
                             ? this.state.orders.map(o => {
                                 return (
-                                    <div className={"item"} key={o.orderId}>
+                                    <div className={"item"} key={o.orderId || 'unknown'}>
                                         <div className={"content"}>
                                             <div className={"header"}>{o.orderId}</div>
                                             <div className={"meta"}>
-                                                {[OrderStatus.pendingPay, OrderStatus.claimPaid].indexOf(o.status) >= 0
+                                                {this.state.icons[o.paymentMethod] && [OrderStatus.pendingPay, OrderStatus.claimPaid].indexOf(o.status) >= 0
                                                     ? (
                                                         <Icon name={this.state.icons[o.paymentMethod].name}
                                                               color={this.state.icons[o.paymentMethod].activeColor}/>
                                                     )
-                                                    : <Icon name={this.state.icons[o.paymentMethod].name}/>
+                                                    : <Icon
+                                                        name={this.state.icons[o.paymentMethod] ? this.state.icons[o.paymentMethod].name : 'question circle'}/>
                                                 }
                                                 <span className={"cinema"}>{o.type}</span>
                                                 <span className={"cinema"}>{o.status}</span>

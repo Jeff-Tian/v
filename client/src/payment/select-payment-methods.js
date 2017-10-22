@@ -27,6 +27,7 @@ class SelectPaymentMethods extends Component {
     }
 
     componentDidMount() {
+        this.select(this.state.methodList[0]);
     }
 
     select(m) {
@@ -50,7 +51,8 @@ class SelectPaymentMethods extends Component {
                                 <Image size="mini" src={m.icon} verticalAlign="middle" spaced="right"/>
                                 <span>{m.displayName}</span>
 
-                                {m.selected ? (<Icon size="big" color="blue" name="checkmark box" style={{float: "right"}}/>) : ''}
+                                {m.selected ? (
+                                    <Icon size="big" color="blue" name="checkmark box" style={{float: "right"}}/>) : ''}
                             </Segment>
                         );
                     })

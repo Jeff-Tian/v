@@ -15,6 +15,7 @@ import socket from '../socket.js';
 import {browserHistory} from 'react-router';
 import Client from '../Client';
 import OrderStatus from '../../../bll/orderStatus';
+import PaymentMethods from '../../../bll/paymentMethods';
 import {Form, Modal} from 'semantic-ui-react';
 import BackgroundColorSelector from './background-color-selector';
 import SelectPaymentMethodsModal from '../payment/select-payment-methods-modal';
@@ -675,7 +676,7 @@ class VApp extends Component {
     }
 
     pay(method) {
-        if (method === 'wechat-pay') {
+        if ([PaymentMethods.wechatPay.method, PaymentMethods.bitcoin.method].indexOf(method) >= 0) {
             self.closePaymentModal();
             self.createOrder(method);
         } else {
