@@ -676,7 +676,7 @@ class VApp extends Component {
     }
 
     pay(method) {
-        if ([PaymentMethods.wechatPay.method, PaymentMethods.bitcoin.method].indexOf(method) >= 0) {
+        if ([PaymentMethods.wechatPay.method, PaymentMethods.bitcoin.method, PaymentMethods.alipay.method].indexOf(method) >= 0) {
             self.closePaymentModal();
             self.createOrder(method);
         } else {

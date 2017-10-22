@@ -10,7 +10,7 @@ let m = {
     alipay: {
         method: 'alipay',
         image: '/icons/alipay.jpg',
-        icon: 'fonts',
+        icon: 'font',
         activeColor: 'blue',
         displayName: '支付宝',
         receiverImage: '/images/alipay.jpg'
