@@ -86,15 +86,25 @@ function socketIO(app, router, render, server) {
         socket.on('order-qr-remove', function (msg) {
             if (typeof msg === 'object') {
                 if (msg.message === 'create') {
-                    io.emit('order-qr-remove', order.create('qr-remove', msg));
+                    io.emit('order-qr-remove', order.create('qr-remove', msg.paymentMethod));
                 }
 
-                if (msg.message === 'claim-paid') {
+                if (msg.message === OrderStatus.claimPaid) {
                     let theOrder = order.get(msg.orderId);
                     theOrder.status = OrderStatus.claimPaid;
 
                     io.emit('order-qr-remove', {
-                        message: 'claim-paid',
+                        message: OrderStatus.claimPaid,
+                        order: theOrder
+                    });
+                }
+
+                if (msg.message === OrderStatus.cancelled) {
+                    let theOrder = order.get(msg.orderId);
+                    theOrder.status = OrderStatus.cancelled;
+
+                    io.emit('order-qr-remove', {
+                        message: OrderStatus.cancelled,
                         order: theOrder
                     });
                 }

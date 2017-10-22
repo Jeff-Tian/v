@@ -4,6 +4,9 @@ import wechatPaymentQrCode from '../../public/images/wechat-pay.jpg';
 import socket from '../socket';
 import OrderStatus from '../../../bll/orderStatus';
 import {browserHistory} from 'react-router';
+import {Button} from 'semantic-ui-react';
+
+const _ = require('lodash');
 
 class Orders extends React.Component {
     constructor(props, context) {
@@ -16,6 +19,10 @@ class Orders extends React.Component {
 
     async componentDidMount() {
         let order = await Client.fetchOrder(this.props.params.orderId);
+
+        if (_.isEmpty(order)) {
+            return browserHistory.push(`/v/local-image`);
+        }
 
         this.setState({
             order: order
@@ -33,7 +40,7 @@ class Orders extends React.Component {
                     order: msg
                 });
 
-                if (navigator.userAgent.indexOf('MicroMessenger') >= 0) {
+                if (true || navigator.userAgent.indexOf('MicroMessenger') >= 0) {
                     // browserHistory.push(`/v/local-image?orderId=${self.props.params.orderId}`);
                     browserHistory.push(`/v/local-image/${self.props.params.orderId}`);
                 } else {
@@ -57,6 +64,26 @@ class Orders extends React.Component {
         });
     }
 
+    cancelPayment(orderId) {
+        socket.emit('order-qr-remove', {message: 'cancelled', orderId: orderId, status: OrderStatus.cancelled});
+
+        let self = this;
+        socket.on('order-qr-remove', function (msg) {
+            console.log('order-qr-remove:', msg);
+            if (msg.message && msg.message === OrderStatus.cancelled) {
+                self.setState({
+                    order: msg.order
+                });
+            }
+
+            if (true || navigator.userAgent.indexOf('MicroMessenger') >= 0) {
+                browserHistory.push(`/v/local-image/${msg.order.orderId}`);
+            } else {
+                window.close();
+            }
+        });
+    }
+
     render() {
         return (
             <div className="ui container">
@@ -70,7 +97,7 @@ class Orders extends React.Component {
                             状态: {this.state.order.status}
                         </div>
                         <div className={"description"}>
-                            请长按识别或者扫描以上二维码，完成转账。在审核通过后即可下载不带二维码的加 V 图片啦！
+                            请长按识别或者扫描以上二维码，完成转账。在审核通过后即可使用所有高级功能！
                             <br/>
 
                             {
@@ -86,6 +113,8 @@ class Orders extends React.Component {
                                             : (<button className="ui disabled button">等待主人审核中……</button>)
                                     )
                             }
+                            <Button secondary floated="right"
+                                    onClick={() => this.cancelPayment(this.state.order.orderId)}>放弃付款</Button>
                         </div>
                     </div>
                     <div className={"extra content"}>

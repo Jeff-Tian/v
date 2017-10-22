@@ -75,7 +75,16 @@ router
         orderBll.notifyClient(o);
 
         this.body = o;
-    });
+    })
+    .delete('/api/orders/:orderId', function* (next) {
+        let o = orderBll.get(this.params.orderId);
+        o.status = orderStatus.cancelled;
+
+        orderBll.notifyClient(o);
+
+        this.body = o;
+    })
+;
 
 app
     .use(router.routes())

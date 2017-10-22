@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button, Card, Image} from 'semantic-ui-react';
+import {Button, Card, Image, Segment, Icon} from 'semantic-ui-react';
 
 class SelectPaymentMethods extends Component {
 
@@ -7,58 +7,55 @@ class SelectPaymentMethods extends Component {
         super();
 
         this.state = {
-            selected: 'wechat-pay',
+            methodList: [{
+                method: 'wechat-pay',
+                icon: '/icons/wechat-pay.jpg',
+                displayName: '微信支付',
+                selected: true
+            }, {
+                method: 'alipay',
+                icon: '/icons/alipay.jpg',
+                displayName: '支付宝',
+                selected: false
+            }, {
+                method: 'bitcoin',
+                icon: '/icons/bitcoin.jpg',
+                displayName: '比特币',
+                selected: false
+            }]
         };
     }
 
-    payBy(method) {
-        this.props.pay(method);
+    componentDidMount() {
+    }
+
+    select(m) {
+        this.state.methodList.map(m => m.selected = false);
+        m.selected = true;
+        this.setState({
+            methodList: this.state.methodList
+        });
+
+        this.props.select(m.method);
     }
 
     render() {
         return (
 
-            <Card.Group>
-                <Card>
-                    <Card.Content>
-                        <Image floated="right" size="tiny" src='/icons/wechat-pay.jpg'/>
-                        <Card.Header>微信支付</Card.Header>
-                        <Card.Meta>推荐使用</Card.Meta>
-                    </Card.Content>
+            <Segment.Group piled>
+                {
+                    this.state.methodList.map((m) => {
+                        return (
+                            <Segment onClick={() => this.select(m)} key={m.method}>
+                                <Image size="mini" src={m.icon} verticalAlign="middle" spaced="right"/>
+                                <span>{m.displayName}</span>
 
-                    <Card.Content extra>
-                        <Button primary onClick={() => this.payBy('wechat-pay')}>
-                            去支付
-                        </Button>
-                    </Card.Content>
-                </Card>
-                <Card>
-                    <Card.Content>
-                        <Image floated="right" size="tiny" src='/icons/alipay.png'/>
-                        <Card.Header>支付宝</Card.Header>
-                        <Card.Meta>支付</Card.Meta>
-                    </Card.Content>
-
-                    <Card.Content extra>
-                        <Button primary onClick={() => this.payBy('alipay')}>
-                            去支付
-                        </Button>
-                    </Card.Content>
-                </Card>
-                <Card>
-                    <Card.Content>
-                        <Image floated="right" size="tiny" src='/icons/bitcoin.jpg'/>
-                        <Card.Header>比特币</Card.Header>
-                        <Card.Meta></Card.Meta>
-                    </Card.Content>
-
-                    <Card.Content extra>
-                        <Button primary onClick={() => this.payBy('bitcoin')}>
-                            支付
-                        </Button>
-                    </Card.Content>
-                </Card>
-            </Card.Group>
+                                {m.selected ? (<Icon size="big" color="blue" name="checkmark box" style={{float: "right"}}/>) : ''}
+                            </Segment>
+                        );
+                    })
+                }
+            </Segment.Group>
         );
     }
 }

@@ -2,6 +2,7 @@ import React from 'react';
 import Client from '../Client';
 import OrderStatus from '../../../bll/orderStatus';
 import socket from '../socket';
+import {Button, Icon, Image as ImageComponent, Item, Label} from 'semantic-ui-react';
 
 class Orders extends React.Component {
     constructor(props, context) {
@@ -54,7 +55,7 @@ class Orders extends React.Component {
                                 return (
                                     <div className={"item"} key={o.orderId}>
                                         <div className={"image"}>
-                                            <img src={""} alt={""}/>
+                                            <img src={"/icons/" + o.paymentMethod + ".jpg"} alt={o.paymentMethod}/>
                                         </div>
                                         <div className={"content"}>
                                             <div className={"header"}>{o.orderId}</div>

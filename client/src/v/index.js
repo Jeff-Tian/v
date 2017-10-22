@@ -88,6 +88,10 @@ function convertToJpeg(canvas, context) {
 }
 
 class VApp extends Component {
+    componentWillUnmount() {
+        this.unmounting = true;
+    }
+
     constructor(props) {
         super();
 
@@ -134,10 +138,6 @@ class VApp extends Component {
             if (msg === 'ok') {
                 self.setState({paid: true});
                 await self.generateImage();
-            } else if (msg === 'pending-pay') {
-                alert(msg);
-            } else {
-                self.setState({loading: false});
             }
         });
 
@@ -189,12 +189,13 @@ class VApp extends Component {
             self.setState({loading: false});
         };
 
-        this.createOrder = function () {
+        this.createOrder = function (method) {
             self.setState({loading: true});
             socket.emit('order-qr-remove', {
-                message: 'create'
+                message: 'create',
+                paymentMethod: method
             });
-            if (navigator.userAgent.indexOf('MicroMessenger') >= 0) {
+            if (true || navigator.userAgent.indexOf('MicroMessenger') >= 0) {
                 newOrderCreated().then(function (order) {
                     browserHistory.push(`/order/${order.orderId}`);
                 });
@@ -786,7 +787,7 @@ class VApp extends Component {
                 <Modal size={'fullscreen'} open={this.state.open} onClose={this.cancel} onMount={this.modalDidMount}
                        onOpen={() => {
                            this.modalOpen();
-                       }} className={classNames({'loading': this.state.rotating})}>
+                       }} className={classNames({'loading': this.state.rotating})} dimmer="blurring">
                     <Modal.Content image scrolling>
                         <div id="the-image-wrapper" style={
                             {
