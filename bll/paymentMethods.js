@@ -1,3 +1,5 @@
+'use strict';
+
 let m = {
     wechatPay: {
         method: 'wechat-pay',

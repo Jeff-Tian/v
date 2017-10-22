@@ -3,7 +3,7 @@ import Client from '../Client';
 import socket from '../socket';
 import OrderStatus from '../../../bll/orderStatus';
 import {browserHistory} from 'react-router';
-import {Button, Icon, Segment, Feed, Header} from 'semantic-ui-react';
+import {Button, Icon, Segment, Feed, Header, Container} from 'semantic-ui-react';
 import PaymentMethods from '../../../bll/paymentMethods';
 
 const _ = require('lodash');
@@ -88,6 +88,9 @@ class Orders extends React.Component {
         return (
             <div className="ui container">
                 <div className="ui fluid card">
+                    <Container fluid>
+                        <Header size="large" color="red" as="h3">在付款后请不要关闭本页面，在验证通过后本页面会自动关闭！</Header>
+                    </Container>
                     <div className="image">
                         <img
                             src={PaymentMethods[this.state.order.paymentMethod] ? PaymentMethods[this.state.order.paymentMethod].receiverImage : PaymentMethods.wechatPay.receiverImage}
