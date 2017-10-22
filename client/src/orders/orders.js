@@ -2,14 +2,19 @@ import React from 'react';
 import Client from '../Client';
 import OrderStatus from '../../../bll/orderStatus';
 import socket from '../socket';
-import {Button, Icon, Image as ImageComponent, Item, Label} from 'semantic-ui-react';
+import {Button, Image as ImageComponent, Item, Label, Icon} from 'semantic-ui-react';
 
 class Orders extends React.Component {
     constructor(props, context) {
         super(props, context);
 
         this.state = {
-            orders: []
+            orders: [],
+            icons: {
+                'wechat-pay': {name: 'wechat', activeColor: 'green'},
+                'alipay': {name: 'font', activeColor: 'blue'},
+                'bitcoin': {name: 'bitcoin', activeColor: 'yellow'}
+            }
         };
     }
 
@@ -54,12 +59,16 @@ class Orders extends React.Component {
                             ? this.state.orders.map(o => {
                                 return (
                                     <div className={"item"} key={o.orderId}>
-                                        <div className={"image"}>
-                                            <img src={"/icons/" + o.paymentMethod + ".jpg"} alt={o.paymentMethod}/>
-                                        </div>
                                         <div className={"content"}>
                                             <div className={"header"}>{o.orderId}</div>
                                             <div className={"meta"}>
+                                                {[OrderStatus.pendingPay, OrderStatus.claimPaid].indexOf(o.status) >= 0
+                                                    ? (
+                                                        <Icon name={this.state.icons[o.paymentMethod].name}
+                                                              color={this.state.icons[o.paymentMethod].activeColor}/>
+                                                    )
+                                                    : <Icon name={this.state.icons[o.paymentMethod].name}/>
+                                                }
                                                 <span className={"cinema"}>{o.type}</span>
                                                 <span className={"cinema"}>{o.status}</span>
                                             </div>
