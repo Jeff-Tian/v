@@ -1,3 +1,4 @@
 module.exports = {
-    cdn: ''
+    cdn: '',
+    trustMode: true,
 };
