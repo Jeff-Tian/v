@@ -4,7 +4,7 @@ import App from './App';
 import './index.css';
 import {Router, Route, browserHistory} from 'react-router';
 import LoginPage from './auth/login-page';
-import Orders from './orders/orders';
+import Orders from './admin/orders';
 import OrderDetail from './orders/order-detail';
 import V from './v/index';
 import Auth from './auth/auth';

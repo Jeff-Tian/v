@@ -9,9 +9,11 @@ const config = require('../../config');
 const parse = require('co-body');
 const orderStatus = require('../../bll/orderStatus');
 
-router.get('/order/:orderId', function* (next) {
-    this.body = orderBll.get(this.params.orderId);
-});
+router
+    .get('/order/:orderId', function* (next) {
+        this.body = orderBll.get(this.params.orderId);
+    })
+;
 
 app
     .use(router.routes())

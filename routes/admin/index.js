@@ -5,7 +5,7 @@ const router = require('koa-router')();
 const orderBll = require('../../bll/order');
 const readFile = require('../../common/readFile');
 const path = require('path');
-const config = require('../../config');
+let config = require('../../config');
 const parse = require('co-body');
 const orderStatus = require('../../bll/orderStatus');
 
@@ -44,6 +44,7 @@ app.use(function* (next) {
                 ex.message = authPath;
                 this.throw(ex);
             } else {
+                console.log("redirecting to ", authPath);
                 this.redirect(authPath);
             }
         } else {
@@ -83,6 +84,16 @@ router
         orderBll.notifyClient(o);
 
         this.body = o;
+    })
+
+    .get('/api/config', function* (next) {
+        this.body = config;
+    })
+    .put('/api/config', function* (next) {
+        let data = yield parse(this.request);
+        config = Object.assign(config, data);
+
+        this.body = config;
     })
 ;
 

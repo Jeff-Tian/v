@@ -2,7 +2,8 @@ import React from 'react';
 import Client from '../Client';
 import OrderStatus from '../../../bll/orderStatus';
 import socket from '../socket';
-import {Button, Image as ImageComponent, Item, Label, Icon} from 'semantic-ui-react';
+import {Icon} from 'semantic-ui-react';
+import AdminMenus from './menu';
 
 class Orders extends React.Component {
     constructor(props, context) {
@@ -74,6 +75,7 @@ class Orders extends React.Component {
     render() {
         return (
             <div className="ui container">
+                <AdminMenus/>
                 <div className={"ui divided items"}>
                     {
                         this.state.orders.length
@@ -119,6 +121,6 @@ class Orders extends React.Component {
             </div>
         );
     }
-};
+}
 
 export default Orders;

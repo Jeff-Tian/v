@@ -21,6 +21,8 @@ module.exports = function (opts) {
                 throw new Error(`Auth failed`);
             }
         } catch (ex) {
+            console.error(ex);
+            console.log("throwing 401...");
             this.throw(401, ex);
         }
     };
