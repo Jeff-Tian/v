@@ -5,7 +5,7 @@ import './App.css';
 import fs from './fs/fs';
 import classNames from 'classnames';
 import {browserHistory} from 'react-router';
-import {Button, Form} from 'semantic-ui-react';
+import {Button, Form, Message} from 'semantic-ui-react';
 
 class App extends Component {
     constructor() {
@@ -21,15 +21,24 @@ class App extends Component {
             self.state.loading = true;
             let photoFile = target.refs[ref];
             fs.loadImageFromFile(photoFile, function (dataURL, exifData) {
-                localStorage.setItem('image', dataURL);
-                localStorage.setItem('exif', JSON.stringify(exifData));
-                if (exifData.exif && exifData.exif.get) {
-                    localStorage.setItem('orientation', exifData.exif.get('Orientation'));
+                try {
+                    localStorage.setItem('image', dataURL);
+                    localStorage.setItem('exif', JSON.stringify(exifData));
+                    if (exifData.exif && exifData.exif.get) {
+                        localStorage.setItem('orientation', exifData.exif.get('Orientation'));
+                    }
+
+                    console.log(exifData);
+
+                    browserHistory.push(`/v/local-image`);
+                } catch (ex) {
+                    self.setState({
+                        error: '操作失败，请尝试选择一张更小的照片试一试。'
+                    });
+
+                    self.setState({loading: false});
+                } finally {
                 }
-
-                console.log(exifData);
-
-                browserHistory.push(`/v/local-image`);
             });
         };
 
@@ -55,8 +64,14 @@ class App extends Component {
 
                 <div className="ui container">
                     <form name="photoForm" className={classNames({
-                        'ui': true, 'form': true, loading: this.state.loading
+                        'ui': true, 'form': true, loading: this.state.loading, error: !!this.state.error
                     })}>
+                        {
+                            this.state.error ?
+                                (
+                                    <Message error header="出错啦" list={[this.state.error]}/>
+                                ) : ''
+                        }
                         <Form.Field>
                             <Button.Group size={'huge'} className={"label-button"}>
                                 <Button className={"ui primary button"} primary={true} type={"button"}

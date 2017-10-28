@@ -3,7 +3,7 @@ import Client from '../Client';
 import socket from '../socket';
 import OrderStatus from '../../../bll/orderStatus';
 import {browserHistory} from 'react-router';
-import {Button, Icon, Segment, Feed, Header, Container} from 'semantic-ui-react';
+import {Button, Container, Feed, Header, Icon, Segment} from 'semantic-ui-react';
 import PaymentMethods from '../../../bll/paymentMethods';
 
 const _ = require('lodash');
@@ -78,12 +78,12 @@ class Orders extends React.Component {
                 self.setState({
                     order: msg.order
                 });
-            }
 
-            if (true || navigator.userAgent.indexOf('MicroMessenger') >= 0) {
-                browserHistory.push(`/v/local-image/${msg.order ? msg.order.orderId : msg.orderId}`);
-            } else {
-                window.close();
+                if (true || navigator.userAgent.indexOf('MicroMessenger') >= 0) {
+                    browserHistory.push(`/v/local-image/${msg.order ? msg.order.orderId : msg.orderId}`);
+                } else {
+                    window.close();
+                }
             }
         });
     }
