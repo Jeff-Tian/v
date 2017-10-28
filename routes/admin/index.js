@@ -57,7 +57,7 @@ const credentials = {name: process.env.V_ADMIN, pass: process.env.V_PWD};
 
 app.use(auth(credentials));
 
-if (process.env.NODE_ENV === 'prd') {
+if (['production', 'prd'].indexOf(process.env.NODE_ENV) >= 0) {
     router.get('/orders', function* (next) {
         let p = path.join(__dirname, `../../client/build`, `/index.html`);
         this.body = yield readFile.thunk(p);

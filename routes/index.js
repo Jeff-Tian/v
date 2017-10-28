@@ -40,7 +40,7 @@ function* renderIndexResponse() {
 }
 
 function publicRouter(app, router, render) {
-    if (process.env.NODE_ENV === 'prd') {
+    if (['production', 'prd'].indexOf(process.env.NODE_ENV) >= 0) {
         app.use(serveStatic('client/build', {
             gzip: true,
             maxage: 1000 * 60 * 60 * 24 * 360
