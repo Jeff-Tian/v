@@ -37,7 +37,7 @@
     "client-test": "cd client && npm test && cd ..",
     "dev": "echo \"This command has been deprecated. Use 'npm start'\" && exit 1",
     "build": "cd client && npm run build && cd ..",
-    "prd": "NODE_ENV=prd babel-node app.js",
+    "prd": "NODE_ENV=production babel-node app.js",
     "e2e": "protractor ./tests/config.js",
     "e2e-driver": "webdriver-manager start"
   },

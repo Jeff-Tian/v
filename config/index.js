@@ -25,13 +25,13 @@ function getConfig() {
 
         if (process.env.NODE_ENV === 'production') {
             if (['prd'].indexOf(process.env.REACT_APP_BUILT_BY) >= 0) {
-                configPath = util.format('./config_%s.js', 'prd');
+                configPath = util.format('./config_%s.js', 'production');
             } else {
                 configPath = util.format('./config_%s.js', 'uat');
             }
         }
 
-        if (['producation', 'prd', 'uat', 'qa'].indexOf(process.env.NODE_ENV) >= 0) {
+        if (['producation', 'uat', 'qa'].indexOf(process.env.NODE_ENV) >= 0) {
             config.publicFolder = 'client/build';
         }
 
