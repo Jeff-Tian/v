@@ -3,7 +3,7 @@ import {Label} from 'semantic-ui-react';
 
 const colorMap = {
     白: 'white',
-    '灰': '#f5f5f5',
+    '灰': '#ebebeb'
     // '透明': 'transparent'
 };
 

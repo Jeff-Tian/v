@@ -426,12 +426,16 @@ class VApp extends Component {
 
             open: false,
 
-            backgroundColor: '#f5f5f5',
+            backgroundColor: '#ebebeb',
             paid: false
         };
     }
 
     updateImagePosition(dragData) {
+        if (!dragData || !dragData.theCroppingImageStyle || !dragData.theImageMaskStyle) {
+            return;
+        }
+
         self.setState({
             theCroppingImageStyle: Object.assign({}, self.state.theCroppingImageStyle, {
                 top: parseFloat(dragData.theCroppingImageStyle.top || 0) + dragData.delta.y,
