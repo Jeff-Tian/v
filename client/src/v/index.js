@@ -37,6 +37,19 @@ let context = null;
 let imageScaleX = 1;
 let imageScaleY = 1;
 
+function saveCurrentState() {
+    localStorage.setItem('state', JSON.stringify({
+        maxXRange: maxXRange,
+        maxYRange: maxYRange,
+        canvasOffsetX: canvasOffsetX,
+        canvasOffsetY: canvasOffsetY,
+        rotated: rotated,
+        dragData: dragData,
+        imageScaleX: imageScaleX,
+        imageScaleY: imageScaleY
+    }));
+}
+
 function resetAllVars() {
     maxXRange = 0;
     maxYRange = 0;
@@ -54,6 +67,23 @@ function resetAllVars() {
 
     imageScaleX = 1;
     imageScaleY = 1;
+
+    try {
+        let state = JSON.parse(localStorage.getItem('state'));
+
+        if (state) {
+            maxXRange = state.maxXRange;
+            maxYRange = state.maxYRange;
+            canvasOffsetX = state.canvasOffsetX;
+            canvasOffsetY = state.canvasOffsetY;
+            rotated = state.rotated;
+            dragData = state.dragData;
+            imageScaleX = state.imageScaleX;
+            imageScaleY = state.imageScaleY;
+        }
+    } catch (ex) {
+        console.error(ex);
+    }
 }
 
 
@@ -89,10 +119,6 @@ function convertToJpeg(canvas, context) {
 }
 
 class VApp extends Component {
-    componentWillUnmount() {
-        this.unmounting = true;
-    }
-
     constructor(props) {
         super();
 
@@ -198,6 +224,7 @@ class VApp extends Component {
             });
             if (true || navigator.userAgent.indexOf('MicroMessenger') >= 0) {
                 newOrderCreated().then(function (order) {
+                    saveCurrentState();
                     browserHistory.push(`/order/${order.orderId}`);
                 });
             } else {
@@ -251,6 +278,10 @@ class VApp extends Component {
 
             await vDecorator.decorateV(canvas, context, c, v);
         }
+    }
+
+    componentWillUnmount() {
+        this.unmounting = true;
     }
 
     hideModal() {
@@ -649,6 +680,7 @@ class VApp extends Component {
     }
 
     edit() {
+        self.updateImagePosition(dragData);
         self.showModal();
     }
 

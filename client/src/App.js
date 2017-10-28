@@ -16,6 +16,7 @@ class App extends Component {
         localStorage.removeItem('image');
         localStorage.removeItem('exif');
         localStorage.removeItem('orientation');
+        localStorage.removeItem('state');
 
         this.onPhotoSelected = function (target, ref) {
             self.state.loading = true;
