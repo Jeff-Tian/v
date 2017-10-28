@@ -91,7 +91,9 @@ router
     })
     .put('/api/config', function* (next) {
         let data = yield parse(this.request);
-        config = Object.assign(config, data);
+        let newConfig = Object.assign(config, data);
+
+        config.update(newConfig);
 
         this.body = config;
     })

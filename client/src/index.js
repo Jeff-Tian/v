@@ -10,6 +10,7 @@ import V from './v/index';
 import Auth from './auth/auth';
 import NotFound404 from './errors/404';
 import Settings from './admin/settings';
+import Config from './admin/config';
 
 function isUserAuthenticated(nextState, replaceState) {
     if (!Auth.isUserAuthenticated()) {
@@ -28,6 +29,7 @@ ReactDOM.render((
         <Route path="/sign-in" component={LoginPage}/>
         <Route path="/admin/orders" component={Orders} onEnter={isUserAuthenticated}/>
         <Route path="/admin/settings" component={Settings} onEnter={isUserAuthenticated}/>
+        <Route path="/admin/api/config" component={Config} onEnter={isUserAuthenticated}/>
         <Route path="/*" component={NotFound404}/>
     </Router>
 ), document.getElementById('root'));

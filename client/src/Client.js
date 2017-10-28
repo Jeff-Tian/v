@@ -72,5 +72,47 @@ export default {
         } catch (ex) {
             await handleError(ex);
         }
+    },
+
+    updateConfig: async function (newConfig) {
+        let authHeader = {
+            Authorization: `Basic ${Auth.getToken()}`
+        };
+
+        try {
+            let response = await fetch(`/admin/api/config`, {
+                method: 'PUT',
+                accept: 'application/json',
+                headers: Object.assign(authHeader, {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                }),
+                body: JSON.stringify(newConfig)
+            });
+
+            return (await checkStatus(response)).json();
+        } catch (ex) {
+            await handleError(ex);
+            throw ex;
+        }
+    },
+
+    getConfig: async function () {
+        let authHeader = {
+            Authorization: `Basic ${Auth.getToken()}`
+        };
+
+        try {
+            let response = await fetch(`/admin/api/config`, {
+                method: 'GET',
+                accept: 'application/json',
+                headers: authHeader
+            });
+
+            return (await checkStatus(response)).json();
+        } catch (ex) {
+            await handleError(ex);
+            throw ex;
+        }
     }
 }

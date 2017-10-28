@@ -36,7 +36,6 @@ function renderIndex() {
 }
 
 function* renderIndexResponse() {
-    console.log('render index file');
     this.body = yield renderIndex();
 }
 
@@ -60,7 +59,9 @@ function publicRouter(app, router, render) {
             .get('/v2.appcache', function* () {
                 this.set('Content-Type', 'text/cache-manifest');
                 this.body = 'CACHE MANIFEST\n';
-            });
+            })
+            .get('/sign-in', renderIndexResponse)
+        ;
     }
 
     app.use(mount('/node_modules', serveStatic('client/node_modules', {
