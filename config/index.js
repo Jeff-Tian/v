@@ -12,7 +12,7 @@ if (process.env.NODE_ENV === 'development') {
 console.log('~~~~~~~~~~~~~~~~~');
 console.log(process.env.NODE_ENV);
 console.log(process.env.REACT_APP_BUILT_BY);
-console.log('~~~~~~~~~~~~~~~~~');、
+console.log('~~~~~~~~~~~~~~~~~');
 
 var envConfig = require(configPath);
 
