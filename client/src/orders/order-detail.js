@@ -52,6 +52,14 @@ class Orders extends React.Component {
                 }
             }
         });
+
+        socket.on('order-pending', function (msg) {
+            if (msg.orderId === self.props.params.orderId) {
+                self.setState({
+                    order: msg
+                });
+            }
+        });
     }
 
     claimPaid(orderId) {

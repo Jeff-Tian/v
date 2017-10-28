@@ -71,7 +71,8 @@ router
     })
     .post('/api/orders/:orderId', function* (next) {
         let o = orderBll.get(this.params.orderId);
-        o.status = orderStatus.paid;
+        let data = yield parse(this.request);
+        o.status = data.status || orderStatus.paid;
 
         orderBll.notifyClient(o);
 

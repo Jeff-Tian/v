@@ -2,7 +2,7 @@ import React from 'react';
 import Client from '../Client';
 import OrderStatus from '../../../bll/orderStatus';
 import socket from '../socket';
-import {Icon} from 'semantic-ui-react';
+import {Button, Icon} from 'semantic-ui-react';
 import AdminMenus from './menu';
 
 class Orders extends React.Component {
@@ -27,6 +27,12 @@ class Orders extends React.Component {
 
         let self = this;
         socket.on('order-paid', function (msg) {
+            self.setState(prevState => ({
+                orders: self.state.orders.map(o => o.orderId === msg.orderId ? msg : o)
+            }));
+        });
+
+        socket.on('order-pending', function (msg) {
             self.setState(prevState => ({
                 orders: self.state.orders.map(o => o.orderId === msg.orderId ? msg : o)
             }));
@@ -72,6 +78,11 @@ class Orders extends React.Component {
         // });
     }
 
+    async markAsUnpaid(orderId) {
+        console.log('unpaid: ', orderId);
+        await Client.markAsUnpaid(orderId);
+    }
+
     render() {
         return (
             <div className="ui container">
@@ -106,6 +117,13 @@ class Orders extends React.Component {
                                                                 onClick={() => this.markAsPaid(o.orderId)}>
                                                             Mark as Paid
                                                         </button>
+                                                    ) : ''
+                                                }
+                                                {
+                                                    [OrderStatus.claimPaid].indexOf(o.status) >= 0 ? (
+                                                        <Button negative className="ui right floated"
+                                                                onClick={() => this.markAsUnpaid(o.orderId)}>Mark as
+                                                            unpaid</Button>
                                                     ) : ''
                                                 }
                                                 <div className={"ui label"}>{o.createdTime}</div>

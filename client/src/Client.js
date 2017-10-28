@@ -1,5 +1,6 @@
 import Auth from './auth/auth';
 import {browserHistory} from 'react-router';
+import OrderStatus from '../../bll/orderStatus';
 
 async function checkStatus(response) {
     if (response.status >= 200 && response.status < 300) {
@@ -62,10 +63,38 @@ export default {
         };
 
         try {
-            let response = await fetch(`/admin/api/orders/${orderId}/`, {
+            let response = await fetch(`/admin/api/orders/${orderId}`, {
                 method: 'POST',
                 accept: 'application/json',
-                headers: authHeader
+                headers: Object.assign(authHeader, {
+                    'Content-Type': 'application/json'
+                }),
+                body: JSON.stringify({
+                    status: OrderStatus.paid
+                })
+            });
+
+            return (await checkStatus(response)).json();
+        } catch (ex) {
+            await handleError(ex);
+        }
+    },
+
+    markAsUnpaid: async function (orderId) {
+        let authHeader = {
+            Authorization: `Basic ${Auth.getToken()}`
+        };
+
+        try {
+            let response = await fetch(`/admin/api/orders/${orderId}`, {
+                method: 'POST',
+                accept: 'application/json',
+                headers: Object.assign(authHeader, {
+                    'Content-Type': 'application/json'
+                }),
+                body: JSON.stringify({
+                    status: OrderStatus.pendingPay
+                })
             });
 
             return (await checkStatus(response)).json();

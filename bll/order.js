@@ -46,7 +46,13 @@ module.exports = {
             return;
         }
 
-        io.emit('order-paid', order);
+        if (order.status === orderStatus.paid) {
+            io.emit('order-paid', order);
+        }
+
+        if (order.status === orderStatus.pendingPay) {
+            io.emit('order-pending', order);
+        }
     },
 
     setIO: function (newIO) {
