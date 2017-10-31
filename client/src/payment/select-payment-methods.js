@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button, Card, Image, Segment, Icon} from 'semantic-ui-react';
+import {Image, Segment, Icon} from 'semantic-ui-react';
 
 class SelectPaymentMethods extends Component {
 

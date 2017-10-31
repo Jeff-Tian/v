@@ -762,7 +762,7 @@ class VApp extends Component {
                                         }
                                         <div
                                             className="ui buttons">
-                                            < button
+                                            <button
                                                 type="button"
                                                 className={
                                                     classNames({
