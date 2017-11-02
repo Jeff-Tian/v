@@ -11,6 +11,7 @@ import Auth from './auth/auth';
 import NotFound404 from './errors/404';
 import Settings from './admin/settings';
 import Config from './admin/config';
+import Homepage from './homepage/index';
 
 function isUserAuthenticated(nextState, replaceState) {
     if (!Auth.isUserAuthenticated()) {
@@ -30,6 +31,7 @@ ReactDOM.render((
         <Route path="/admin/orders" component={Orders} onEnter={isUserAuthenticated}/>
         <Route path="/admin/settings" component={Settings} onEnter={isUserAuthenticated}/>
         <Route path="/admin/api/config" component={Config} onEnter={isUserAuthenticated}/>
+        <Route path="/homepage" component={Homepage}/>
         <Route path="/*" component={NotFound404}/>
     </Router>
 ), document.getElementById('root'));
