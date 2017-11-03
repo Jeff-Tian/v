@@ -23,9 +23,13 @@ function isUserAuthenticated(nextState, replaceState) {
 }
 
 class Layout extends Component {
-    state = {visible: false};
+    state = {visible: false, activeItem: 'home'};
 
     toggleSidebarVisibility = () => this.setState({visible: !this.state.visible});
+    handleItemClick = (e, {name}) => {
+        this.setState({activeItem: name});
+        browserHistory.push(name);
+    };
 
     showSidebar = () => this.setState({visible: true});
     hideSidebar = () => this.setState({visible: false});
@@ -42,13 +46,13 @@ class Layout extends Component {
     }
 
     render() {
-        const {visible} = this.state;
+        const {visible, activeItem} = this.state;
 
         return (
             <Sidebar.Pushable as={Segment} basic>
                 <Sidebar as={Menu} animation='scale down' width='thin' visible={visible} icon='labeled' vertical
                          inverted>
-                    <Menu.Item name='home'>
+                    <Menu.Item name='/' active={activeItem === '/'} onClick={this.handleItemClick}>
                         <Icon.Group>
                             <Icon size="huge" name="thin circle"/>
                             <Icon size="big" name="user"/>
