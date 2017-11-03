@@ -1,13 +1,13 @@
 import React, {Component} from 'react';
-import logo from '../public/v/v.png';
+import logo from '../../public/v/v.png';
 import 'semantic-ui-css/semantic.min.css';
-import './App.css';
-import fs from './fs/fs';
+import '../App.css';
+import fs from '../fs/fs';
 import classNames from 'classnames';
 import {browserHistory} from 'react-router';
-import {Button, Form, Message} from 'semantic-ui-react';
+import {Button, Form, Message, Image, Header} from 'semantic-ui-react';
 
-class App extends Component {
+class Homepage extends Component {
     constructor() {
         super();
 
@@ -94,10 +94,14 @@ class App extends Component {
                             </Button.Group>
                         </Form.Field>
                     </form>
+                    <Header as="h2">普通自拍照瞬间变大V</Header>
+                    <label htmlFor="capture">
+                        <Image src="/images/add-v.jpg" fluid/>
+                    </label>
                 </div>
             </div>
         );
     }
 }
 
-export default App;
+export default Homepage;

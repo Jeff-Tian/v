@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import App from '../App';
+import Homepage from './homepage';
 import '../index.css';
 import {browserHistory, Route, Router} from 'react-router';
 import LoginPage from '../auth/login-page';
@@ -28,6 +28,7 @@ class Layout extends Component {
     toggleSidebarVisibility = () => this.setState({visible: !this.state.visible});
     handleItemClick = (e, {name}) => {
         this.setState({activeItem: name});
+        this.hideSidebar();
         browserHistory.push(name);
     };
 
@@ -37,12 +38,13 @@ class Layout extends Component {
     componentDidMount() {
         let hammertime = new window.Hammer(document.getElementById('root'), {});
         let self = this;
-        hammertime.on('swiperight', function (ev) {
+        hammertime.on('swiperight panright', function (ev) {
             self.showSidebar();
         });
-        hammertime.on('swipeleft', function (ev) {
+        hammertime.on('swipeleft panleft', function (ev) {
             self.hideSidebar();
         });
+
     }
 
     render() {
@@ -54,17 +56,16 @@ class Layout extends Component {
                          inverted>
                     <Menu.Item name='/' active={activeItem === '/'} onClick={this.handleItemClick}>
                         <Icon.Group>
-                            <Icon size="huge" name="thin circle"/>
-                            <Icon size="big" name="user"/>
-                            <Icon corner name="add"/>
+                            <Icon size="huge" name="user circle outline"/>
+                            <Icon corner name="viacoin"/>
                         </Icon.Group>
-                        <Divider hidden/>
+                        <br/>
                         加 v
                     </Menu.Item>
                 </Sidebar>
                 <Sidebar.Pusher>
                     <Router history={browserHistory}>
-                        <Route path="/" component={App}/>
+                        <Route path="/" component={Homepage}/>
                         <Route path="/v/:vid" component={V}/>
                         <Route path="/v/:vid/:orderId" component={V}/>
                         <Route path="/order/:orderId" component={OrderDetail}/>
