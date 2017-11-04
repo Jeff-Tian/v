@@ -46,7 +46,7 @@ function saveCurrentState() {
         rotated: rotated,
         dragData: dragData,
         imageScaleX: imageScaleX,
-        imageScaleY: imageScaleY
+        imageScaleY: imageScaleY,
     }));
 }
 
@@ -81,6 +81,8 @@ function resetAllVars() {
             imageScaleX = state.imageScaleX;
             imageScaleY = state.imageScaleY;
         }
+
+        console.log('init max:', maxXRange, maxYRange);
     } catch (ex) {
         console.error(ex);
     }
@@ -127,6 +129,7 @@ class VApp extends Component {
         self = this;
 
         this.state = this.initState();
+
         this.loading = true;
 
         function openOrderPage(orderInfo) {
@@ -175,6 +178,7 @@ class VApp extends Component {
             self.setState({loading: false});
         });
 
+        let croppingImageLoaded = false;
         this.onPhotoSelected = function (target) {
             self.state.loading = true;
             canvas = document.getElementById('photo-canvas');
@@ -182,11 +186,22 @@ class VApp extends Component {
 
             this.readPhotoFile(this.props, function () {
                 console.log('read photo file callback');
-                document.getElementById('cropping-image').onload = function () {
+                let handleCroppingImageLoaded = function () {
                     self.showModal();
+                    self.rotate();
                     self.setCropperStyles();
+                    self.updateImagePosition(dragData);
                     self.state.loading = false;
+
+                    croppingImageLoaded = true;
+
+                    console.log('handled cropping image loaded');
                 };
+                if (!croppingImageLoaded) {
+                    document.getElementById('cropping-image').onload = handleCroppingImageLoaded;
+                } else {
+                    handleCroppingImageLoaded();
+                }
             });
         };
 
@@ -446,6 +461,8 @@ class VApp extends Component {
                 left: parseFloat(dragData.theImageMaskStyle.left || 0) + dragData.delta.x
             })
         });
+
+        console.log(self.state);
     }
 
     restrictDrag(dragData) {
@@ -458,21 +475,7 @@ class VApp extends Component {
 
         console.log('restrict drag with (mx, my): ', maxXRange, maxYRange);
 
-        if (rotated === 0) {
-            this.restrict(dragData);
-        }
-
-        if (rotated === -90) {
-            this.restrictLeftRotated(dragData);
-        }
-
-        if (rotated === -180) {
-            this.restrict(dragData);
-        }
-
-        if (rotated === -270) {
-            this.restrictLeftRotated(dragData);
-        }
+        this.restrict(dragData);
 
         self.updateImagePosition(dragData);
     }
@@ -500,30 +503,6 @@ class VApp extends Component {
         console.log('restricted: ', canvasOffsetX, canvasOffsetY);
     }
 
-    restrictLeftRotated(dragData) {
-        if (canvasOffsetX > maxYRange) {
-            dragData.delta.x -= canvasOffsetX - maxYRange;
-            canvasOffsetX = maxYRange;
-        }
-
-        if (canvasOffsetX < -maxYRange) {
-            dragData.delta.x -= canvasOffsetX + maxYRange;
-            canvasOffsetX = -maxYRange;
-        }
-
-        if (canvasOffsetY > maxXRange) {
-            dragData.delta.y -= canvasOffsetY - maxXRange;
-            canvasOffsetY = maxXRange;
-        }
-
-        if (canvasOffsetY < -maxXRange) {
-            dragData.delta.y -= canvasOffsetY + maxXRange;
-            canvasOffsetY = -maxXRange;
-        }
-
-        console.log('left rotated restricted: ', canvasOffsetX, canvasOffsetY);
-    }
-
     setCropperStyles() {
         let imageMask = document.getElementById('the-image-mask-on-modal-canvas');
         let diameter = Math.min(imageMask.offsetWidth, imageMask.offsetHeight);
@@ -531,19 +510,10 @@ class VApp extends Component {
             width: diameter + 'px',
             height: diameter + 'px'
         };
+        this.setMaxRanges(imageMask);
 
-        let panRange = crop.getPanRange(imageMask, rotated);
-
-        console.log('panRange = ', panRange, rotated);
-
-        imageScaleX = imageMask.offsetWidth / imageMask.naturalWidth;
-        imageScaleY = imageMask.offsetHeight / imageMask.naturalHeight;
-
-        maxXRange = panRange.x * imageScaleX;
-        maxYRange = panRange.y * imageScaleY;
-
-        theImageCropStyle.left = maxXRange + 'px';
-        theImageCropStyle.top = maxYRange + 'px';
+        theImageCropStyle.left = (rotated === -90 || rotated === -270 ? maxYRange : maxXRange ) + 'px';
+        theImageCropStyle.top = (rotated === -90 || rotated === -270 ? maxXRange : maxYRange) + 'px';
 
         theImageCropStyle.top = 0;
         theImageCropStyle.bottom = 0;
@@ -563,6 +533,20 @@ class VApp extends Component {
         });
     }
 
+    setMaxRanges(imageMask) {
+        let panRange = crop.getPanRange(imageMask, rotated);
+
+        console.log('panRange = ', panRange, rotated);
+
+        imageScaleX = imageMask.offsetWidth / imageMask.naturalWidth;
+        imageScaleY = imageMask.offsetHeight / imageMask.naturalHeight;
+
+        maxXRange = panRange.x * imageScaleX;
+        maxYRange = panRange.y * imageScaleY;
+
+        console.log('setting cropper styles: ', maxXRange, maxYRange);
+    }
+
     rotate() {
         if (rotated === -360) {
             rotated = 0;
@@ -576,6 +560,8 @@ class VApp extends Component {
                 transform: 'rotate(' + rotated + 'deg)'
             })
         });
+
+        this.setMaxRanges(document.getElementById('the-image-mask-on-modal-canvas'));
 
         this.simulateDragAndRestrict();
     }
@@ -671,8 +657,6 @@ class VApp extends Component {
     }
 
     onTouchEnd(e) {
-        console.log('on touch end');
-        console.log('current offset = ', canvasOffsetX, canvasOffsetY);
         self.restrictDrag(dragData);
     }
 
@@ -684,7 +668,6 @@ class VApp extends Component {
     }
 
     edit() {
-        self.updateImagePosition(dragData);
         self.showModal();
     }
 
