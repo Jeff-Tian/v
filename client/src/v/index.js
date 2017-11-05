@@ -37,6 +37,8 @@ let context = null;
 let imageScaleX = 1;
 let imageScaleY = 1;
 
+let interactive = false;
+
 function saveCurrentState() {
     localStorage.setItem('state', JSON.stringify({
         maxXRange: maxXRange,
@@ -322,9 +324,11 @@ class VApp extends Component {
         }
 
         fs.loadImageFromURI(photoFile, function (image, exifData) {
-            setTimeout(function () {
-                self.initRotation(exifData);
-            }, 500);
+            if (!interactive) {
+                setTimeout(function () {
+                    self.initRotation(exifData);
+                }, 500);
+            }
 
             self.setState({
                 modalImageSrc: image
@@ -512,8 +516,8 @@ class VApp extends Component {
         };
         this.setMaxRanges(imageMask);
 
-        theImageCropStyle.left = (rotated === -90 || rotated === -270 ? maxYRange : maxXRange ) + 'px';
-        theImageCropStyle.top = (rotated === -90 || rotated === -270 ? maxXRange : maxYRange) + 'px';
+        theImageCropStyle.left = this.getRotationHandledLeft() + 'px';
+        theImageCropStyle.top = this.getRotationHandledTop() + 'px';
 
         theImageCropStyle.top = 0;
         theImageCropStyle.bottom = 0;
@@ -523,14 +527,22 @@ class VApp extends Component {
             theCroppingImageStyle: Object.assign({}, this.state.theCroppingImageStyle, {
                 width: imageMask.offsetWidth + 'px',
                 height: imageMask.offsetHeight + 'px',
-                left: -maxXRange,
-                top: -maxYRange
+                left: -this.getRotationHandledLeft(),
+                top: -this.getRotationHandledTop()
             }),
             theImageMaskStyle: Object.assign({}, this.state.theImageMaskStyle, {
                 // left: -maxXRange,
-                top: -maxYRange
+                top: -this.getRotationHandledTop()
             })
         });
+    }
+
+    getRotationHandledTop() {
+        return (rotated === -90 || rotated === -270 ? maxXRange : maxYRange);
+    }
+
+    getRotationHandledLeft() {
+        return (rotated === -90 || rotated === -270 ? maxYRange : maxXRange );
     }
 
     setMaxRanges(imageMask) {
@@ -668,6 +680,7 @@ class VApp extends Component {
     }
 
     edit() {
+        interactive = true;
         self.showModal();
     }
 
