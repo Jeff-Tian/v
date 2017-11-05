@@ -10,7 +10,7 @@ import Auth from '../auth/auth';
 import NotFound404 from '../errors/404';
 import Settings from '../admin/settings';
 import Config from '../admin/config';
-import {Header, Icon, Menu, Segment, Sidebar, Divider} from 'semantic-ui-react';
+import {Icon, Menu, Segment, Sidebar} from 'semantic-ui-react';
 import '../../public/lib/hammer.min';
 import '../../public/lib/hammer-time.min';
 
@@ -38,13 +38,15 @@ class Layout extends Component {
     componentDidMount() {
         let hammertime = new window.Hammer(document.getElementById('root'), {});
         let self = this;
+
         hammertime.on('swiperight panright', function (ev) {
-            self.showSidebar();
+            if (window.location.pathname.indexOf('/order/') < 0) {
+                self.showSidebar();
+            }
         });
         hammertime.on('swipeleft panleft', function (ev) {
             self.hideSidebar();
         });
-
     }
 
     render() {

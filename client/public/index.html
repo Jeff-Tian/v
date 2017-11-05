@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html manifest="/v2.appcache">
 <head>
     <meta charset="utf-8">
 
@@ -36,23 +36,14 @@
         if (applicationCache.status === applicationCache.UPDATEREADY) {
             if (confirm('发现新版本，是否要更新？')) {
                 applicationCache.swapCache();
-                window.location.reload();
+                window.location.reload(true);
             }
         }
     }, false);
     applicationCache.addEventListener('obsolete', function (e) {
         applicationCache.swapCache();
-        window.location.reload();
+        window.location.reload(true);
     });
-</script>
-<!--<script type="text/javascript" src="/lib/hammer.min.js"></script>-->
-<!--<script type="text/javascript" src="/lib/hammer-time.min.js"></script>-->
-<script>
-    //    var hammertime = new Hammer(document.getElementById('root'), {});
-    //    hammertime.on('panright', function (ev) {
-    //        console.log(ev);
-    //        alert(ev);
-    //    });
 </script>
 </body>
 </html>
