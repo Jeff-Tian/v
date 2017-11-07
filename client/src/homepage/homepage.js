@@ -11,15 +11,13 @@ class Homepage extends Component {
     constructor() {
         super();
 
-        let self = this;
-
         localStorage.removeItem('image');
         localStorage.removeItem('exif');
         localStorage.removeItem('orientation');
         localStorage.removeItem('state');
 
         this.onPhotoSelected = this.onPhotoSelected.bind(this);
-
+        this.state = {error: null};
     }
 
     onPhotoSelected(dataURL, exifData) {
