@@ -2,10 +2,10 @@ import React, {Component} from 'react';
 import logo from '../../public/v/v.png';
 import 'semantic-ui-css/semantic.min.css';
 import '../App.css';
-import fs from '../fs/fs';
 import classNames from 'classnames';
 import {browserHistory} from 'react-router';
-import {Button, Form, Message, Image, Header} from 'semantic-ui-react';
+import {Form, Header, Image, Message} from 'semantic-ui-react';
+import GetPhoto from '../shared/getPhoto';
 
 class Homepage extends Component {
     constructor() {
@@ -18,36 +18,24 @@ class Homepage extends Component {
         localStorage.removeItem('orientation');
         localStorage.removeItem('state');
 
-        this.onPhotoSelected = function (target, ref) {
-            self.state.loading = true;
-            let photoFile = target.refs[ref];
-            fs.loadImageFromFile(photoFile, function (dataURL, exifData) {
-                try {
-                    localStorage.setItem('image', dataURL);
-                    localStorage.setItem('exif', JSON.stringify(exifData));
-                    if (exifData.exif && exifData.exif.get) {
-                        localStorage.setItem('orientation', exifData.exif.get('Orientation'));
-                    }
+        this.onPhotoSelected = this.onPhotoSelected.bind(this);
 
-                    console.log(exifData);
-
-                    browserHistory.push(`/v/local-image`);
-                } catch (ex) {
-                    self.setState({
-                        error: '操作失败，请尝试选择一张更小的照片试一试。'
-                    });
-
-                    self.setState({loading: false});
-                } finally {
-                }
-            });
-        };
-
-        this.state = {loading: false, capture: 'user'};
     }
 
-    componentDidMount() {
-        this.refs['capture'].setAttribute('capture', 'user');
+    onPhotoSelected(dataURL, exifData) {
+        try {
+            localStorage.setItem('image', dataURL);
+            localStorage.setItem('exif', JSON.stringify(exifData));
+            if (exifData.exif && exifData.exif.get) {
+                localStorage.setItem('orientation', exifData.exif.get('Orientation'));
+            }
+
+            browserHistory.push(`/v/local-image`);
+        } catch (ex) {
+            this.setState({
+                error: '操作失败，请尝试选择一张更小的照片试一试。'
+            });
+        }
     }
 
     render() {
@@ -65,7 +53,7 @@ class Homepage extends Component {
 
                 <div className="ui container">
                     <form name="photoForm" className={classNames({
-                        'ui': true, 'form': true, loading: this.state.loading, error: !!this.state.error
+                        'ui': true, 'form': true, error: !!this.state.error
                     })}>
                         {
                             this.state.error ?
@@ -74,24 +62,7 @@ class Homepage extends Component {
                                 ) : ''
                         }
                         <Form.Field>
-                            <Button.Group size={'huge'} className={"label-button"}>
-                                <Button className={"ui primary button"} primary={true} type={"button"}
-                                        htmlFor={"capture"}>
-                                    <label htmlFor={"capture"}>快速自拍</label>
-                                    <input type={"file"} name={"capture"}
-                                           onChange={() => this.onPhotoSelected(this, "capture")} accept={"image/*"}
-                                           ref={"capture"}
-                                           id={"capture"} style={{display: "none"}} capture={this.state.capture}/>
-                                </Button>
-                                <Button.Or/>
-                                <Button className={"ui secondary button"} secondary={true} type={"button"}
-                                        htmlFor={"photo-file"}>
-                                    <label htmlFor={"photo-file"}>从相册选择</label>
-                                    <input type={"file"} name={"photo"}
-                                           onChange={() => this.onPhotoSelected(this, "photo-file")} ref={"photo-file"}
-                                           accept={"image/*"} id={"photo-file"} style={{"display": "none"}}/>
-                                </Button>
-                            </Button.Group>
+                            <GetPhoto onPhotoGot={this.onPhotoSelected}/>
                         </Form.Field>
                     </form>
                     <Header as="h2">普通自拍照瞬间变大V</Header>

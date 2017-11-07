@@ -37,6 +37,19 @@ module.exports = {
         }
     },
 
+    loadImageFromFileAsync: async function (target) {
+        let self = this;
+
+        return new Promise((resolve, reject) => {
+            self.loadImageFromFile(target, function (dataURL, exif) {
+                resolve({
+                    dataURL: dataURL,
+                    exif: exif
+                });
+            });
+        });
+    },
+
     loadImageFromURI: function (uri, callback) {
         let i = new Image();
         i.setAttribute('crossOrigin', 'Anonymous');

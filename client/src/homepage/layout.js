@@ -5,6 +5,7 @@ import {browserHistory, Route, Router} from 'react-router';
 import LoginPage from '../auth/login-page';
 import Orders from '../admin/orders';
 import OrderDetail from '../orders/order-detail';
+import FakeFace from '../fake-face';
 import V from '../v/index';
 import Auth from '../auth/auth';
 import NotFound404 from '../errors/404';
@@ -23,7 +24,7 @@ function isUserAuthenticated(nextState, replaceState) {
 }
 
 class Layout extends Component {
-    state = {visible: false, activeItem: 'home'};
+    state = {visible: false, activeItem: window.location.pathname};
 
     toggleSidebarVisibility = () => this.setState({visible: !this.state.visible});
     handleItemClick = (e, {name}) => {
@@ -64,6 +65,10 @@ class Layout extends Component {
                         <br/>
                         加 v
                     </Menu.Item>
+                    <Menu.Item name="/fake-face" active={activeItem === '/fake-face'} onClick={this.handleItemClick}>
+                        <Icon size="huge" name="spy"/>
+                        换脸
+                    </Menu.Item>
                 </Sidebar>
                 <Sidebar.Pusher>
                     <Router history={browserHistory}>
@@ -71,6 +76,7 @@ class Layout extends Component {
                         <Route path="/v/:vid" component={V}/>
                         <Route path="/v/:vid/:orderId" component={V}/>
                         <Route path="/order/:orderId" component={OrderDetail}/>
+                        <Route path="/fake-face" component={FakeFace}/>
                         <Route path="/sign-in" component={LoginPage}/>
                         <Route path="/admin/orders" component={Orders} onEnter={isUserAuthenticated}/>
                         <Route path="/admin/settings" component={Settings} onEnter={isUserAuthenticated}/>
