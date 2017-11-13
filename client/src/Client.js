@@ -58,15 +58,11 @@ export default {
     },
 
     markAsPaid: async function (orderId) {
-        let authHeader = {
-            Authorization: `Basic ${Auth.getToken()}`
-        };
-
         try {
             let response = await fetch(`/admin/api/orders/${orderId}`, {
                 method: 'POST',
                 accept: 'application/json',
-                headers: Object.assign(authHeader, {
+                headers: Object.assign(Auth.getAutherizationHeader(), {
                     'Content-Type': 'application/json'
                 }),
                 body: JSON.stringify({
@@ -81,15 +77,11 @@ export default {
     },
 
     markAsUnpaid: async function (orderId) {
-        let authHeader = {
-            Authorization: `Basic ${Auth.getToken()}`
-        };
-
         try {
             let response = await fetch(`/admin/api/orders/${orderId}`, {
                 method: 'POST',
                 accept: 'application/json',
-                headers: Object.assign(authHeader, {
+                headers: Object.assign(Auth.getAutherizationHeader(), {
                     'Content-Type': 'application/json'
                 }),
                 body: JSON.stringify({
@@ -104,15 +96,11 @@ export default {
     },
 
     updateConfig: async function (newConfig) {
-        let authHeader = {
-            Authorization: `Basic ${Auth.getToken()}`
-        };
-
         try {
             let response = await fetch(`/admin/api/config`, {
                 method: 'PUT',
                 accept: 'application/json',
-                headers: Object.assign(authHeader, {
+                headers: Object.assign(Auth.getAutherizationHeader(), {
                     Accept: 'application/json',
                     'Content-Type': 'application/json'
                 }),
@@ -127,16 +115,27 @@ export default {
     },
 
     getConfig: async function () {
-        let authHeader = {
-            Authorization: `Basic ${Auth.getToken()}`
-        };
-
         try {
             let response = await fetch(`/admin/api/config`, {
                 method: 'GET',
                 accept: 'application/json',
-                headers: authHeader
+                headers: Auth.getAutherizationHeader()
             });
+
+            return (await checkStatus(response)).json();
+        } catch (ex) {
+            await handleError(ex);
+            throw ex;
+        }
+    },
+
+    proxy: async function (url, options) {
+        try {
+            let response = await fetch(url, Object.assign({
+                method: 'GET',
+                accept: 'application/json',
+                headers: Auth.getAutherizationHeader()
+            }, options));
 
             return (await checkStatus(response)).json();
         } catch (ex) {

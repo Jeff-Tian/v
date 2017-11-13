@@ -19,6 +19,7 @@ import PaymentMethods from '../../../bll/paymentMethods';
 import {Form, Modal} from 'semantic-ui-react';
 import BackgroundColorSelector from './background-color-selector';
 import SelectPaymentMethodsModal from '../payment/select-payment-methods-modal';
+import '../wechat/share';
 
 let maxXRange = 0;
 let maxYRange = 0;

@@ -1,4 +1,8 @@
 module.exports = {
     cdn: '',
-    trustMode: false
+    trustMode: false,
+    serviceCache: {
+        host: 'localhost',
+        port: 10123
+    }
 };

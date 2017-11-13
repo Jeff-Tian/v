@@ -1,18 +1,24 @@
 class Auth {
-    static authenticateUser(token){
+    static authenticateUser(token) {
         localStorage.setItem('token', token);
     }
 
-    static isUserAuthenticated(){
+    static isUserAuthenticated() {
         return localStorage.getItem('token') !== null;
     }
 
-    static deauthenticateUser(){
+    static deauthenticateUser() {
         localStorage.removeItem('token');
     }
 
-    static getToken(){
+    static getToken() {
         return localStorage.getItem('token');
+    }
+
+    static getAutherizationHeader() {
+        return {
+            Authorization: `Basic ${Auth.getToken()}`
+        };
     }
 }
 

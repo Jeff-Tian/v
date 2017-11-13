@@ -13,17 +13,17 @@ class AdminMenus extends React.Component {
         browserHistory.push(this.linkMap[name]);
     };
 
-    constructor(props, context) {
-        super(props, context);
-    }
-
     componentDidMount() {
         Object.keys(this.linkMap).map(i => {
             if (this.linkMap[i] === window.location.pathname) {
                 this.setState({
                     activeItem: i
                 });
+
+                return true;
             }
+
+            return false;
         });
     }
 

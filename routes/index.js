@@ -58,21 +58,7 @@ function publicRouter(app, router, render) {
         router
             .get('/v2.appcache', function* () {
                 this.set('Content-Type', 'text/cache-manifest');
-                this.body = 'CACHE MANIFEST\n\
-                \n\
-                \n\
-                \n\
-#version: 20171107\n\
-\n\
-FALLBACK:\n\
-/ /favicon.ico\n\
-\n\
-NETWORK:\n\
-\n*\
-\n\
-CACHE:\n\
-/favicon.ico\n\
-';
+                this.body = yield readFileThunk(__dirname + `/../public/v2.appcache`);
             })
             .get('/sign-in', renderIndexResponse)
         ;

@@ -1,5 +1,5 @@
 import React from 'react';
-import {Label, Icon, Button, Form, Segment, Modal, Input} from 'semantic-ui-react';
+import {Button, Segment, Modal, Input} from 'semantic-ui-react';
 
 class ColorPicker extends React.Component {
     constructor(props) {
