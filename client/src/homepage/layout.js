@@ -6,6 +6,7 @@ import LoginPage from '../auth/login-page';
 import Orders from '../admin/orders';
 import OrderDetail from '../orders/order-detail';
 import FakeFace from '../fake-face';
+import ImageBase64 from '../tools/image-base64';
 import V from '../v/index';
 import Auth from '../auth/auth';
 import NotFound404 from '../errors/404';
@@ -69,6 +70,11 @@ class Layout extends Component {
                         <Icon size="huge" name="spy"/>
                         换脸
                     </Menu.Item>
+                    <Menu.Item name="/tools/image-base64" active={activeItem === '/tools/image-base64'}
+                               onClick={this.handleItemClick}>
+                        <Icon size="huge" name="file image outline"/>
+                        Base64
+                    </Menu.Item>
                 </Sidebar>
                 <Sidebar.Pusher>
                     <Router history={browserHistory}>
@@ -77,6 +83,7 @@ class Layout extends Component {
                         <Route path="/v/:vid/:orderId" component={V}/>
                         <Route path="/order/:orderId" component={OrderDetail}/>
                         <Route path="/fake-face" component={FakeFace}/>
+                        <Route path="/tools/image-base64" component={ImageBase64}/>
                         <Route path="/sign-in" component={LoginPage}/>
                         <Route path="/admin/orders" component={Orders} onEnter={isUserAuthenticated}/>
                         <Route path="/admin/settings" component={Settings} onEnter={isUserAuthenticated}/>
