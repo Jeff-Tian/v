@@ -21,6 +21,12 @@ router
             method: 'GET'
         });
     })
+    .get('/proxy/:url', function* (next) {
+        this.body = yield asyncProxy({
+            url: this.params.url,
+            method: 'GET'
+        });
+    })
 ;
 
 app

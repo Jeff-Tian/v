@@ -31,7 +31,7 @@
   "scripts": {
     "start": "concurrently \"npm run server\" \"npm run client\"",
     "server": "set V_ADMIN=test&&set V_PWD=test&&babel-node app.js",
-    "client": "babel-node start-client.js",
+    "client": "set PORT=80&&babel-node start-client.js",
     "test": "set V_ADMIN=test&&set V_PWD=test&&mocha --harmony&&cd client&&npm test&&cd ..",
     "server-test": "set V_ADMIN=test&&set V_PWD=test&&mocha --harmony",
     "client-test": "cd client && npm test && cd ..",
