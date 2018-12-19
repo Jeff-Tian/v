@@ -32,21 +32,7 @@
   To begin the development, run `npm start`.
   To create a production bundle, use `npm run build`.
 -->
-<script type="text/javascript">
-    applicationCache.addEventListener('updateready', function (e) {
-        if (applicationCache.status === applicationCache.UPDATEREADY) {
-            if (confirm('发现新版本，是否要更新？')) {
-                applicationCache.swapCache();
-                window.location.reload(true);
-            }
-        }
-    }, false);
-    applicationCache.addEventListener('obsolete', function (e) {
-        applicationCache.swapCache();
-        window.location.reload(true);
-    });
-</script>
 <!--<script src="//res.wx.qq.com/open/js/jweixin-1.0.0.js" async defer-->
-        <!--onload="var event = document.createEvent('Event'); event.initEvent('wxLoad', true, true); document.dispatchEvent(event);"></script>-->
+<!--onload="var event = document.createEvent('Event'); event.initEvent('wxLoad', true, true); document.dispatchEvent(event);"></script>-->
 </body>
 </html>
