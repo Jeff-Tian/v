@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import logo from '../../public/v/v.png';
 import v from '../../public/v/v.png';
 import qr from '../../public/v/v-qr.png';
@@ -12,11 +12,11 @@ import background from '../image-decorators/background';
 import fs from '../fs/fs';
 import classNames from 'classnames';
 import socket from '../socket.js';
-import {browserHistory} from 'react-router';
+import { browserHistory } from 'react-router';
 import Client from '../Client';
 import OrderStatus from '../../../bll/orderStatus';
 import PaymentMethods from '../../../bll/paymentMethods';
-import {Form, Modal} from 'semantic-ui-react';
+import { Form, Modal } from 'semantic-ui-react';
 import BackgroundColorSelector from './background-color-selector';
 import SelectPaymentMethodsModal from '../payment/select-payment-methods-modal';
 import '../wechat/share';
@@ -169,16 +169,16 @@ class VApp extends Component {
 
         socket.on('order-qr-remove', async function (msg) {
             if (msg === 'ok') {
-                self.setState({paid: true});
+                self.setState({ paid: true });
                 await self.generateImage();
             }
         });
 
         socket.on('order-paid', async function (msg) {
             console.log(msg);
-            self.setState({paid: true});
+            self.setState({ paid: true });
             await self.generateImage();
-            self.setState({loading: false});
+            self.setState({ loading: false });
         });
 
         let croppingImageLoaded = false;
@@ -221,7 +221,7 @@ class VApp extends Component {
         };
 
         this.generateImage = async function () {
-            self.setState({loading: true});
+            self.setState({ loading: true });
 
             if (!self.state.paid) {
                 await cropAndDrawVAndQR(document.getElementById('uploaded-image'), context, canvas);
@@ -231,11 +231,11 @@ class VApp extends Component {
             convertToJpeg(canvas, context);
 
             self.hideModal();
-            self.setState({loading: false});
+            self.setState({ loading: false });
         };
 
         this.createOrder = function (method) {
-            self.setState({loading: true});
+            self.setState({ loading: true });
             socket.emit('order-qr-remove', {
                 message: 'create',
                 paymentMethod: method
@@ -266,7 +266,7 @@ class VApp extends Component {
         };
 
         this.download = function () {
-            self.setState({loading: true});
+            self.setState({ loading: true });
             alert('请长按下面图片，直到出现弹出菜单，选择保存即可。');
             try {
                 let a = document.createElement('a');
@@ -277,7 +277,7 @@ class VApp extends Component {
             } catch (ex) {
                 // alert(JSON.stringify(ex));
             } finally {
-                self.setState({loading: false});
+                self.setState({ loading: false });
             }
         };
 
@@ -303,11 +303,11 @@ class VApp extends Component {
     }
 
     hideModal() {
-        self.setState({open: false});
+        self.setState({ open: false });
     }
 
     showModal() {
-        self.setState({open: true})
+        self.setState({ open: true })
     }
 
     readPhotoFile(props, callback) {
@@ -392,20 +392,20 @@ class VApp extends Component {
         if (orderId) {
             self.state.loading = true;
 
-            this.setState({loading: true});
+            this.setState({ loading: true });
             let o = await Client.fetchOrder(orderId);
             console.log('order = ', o);
 
             if (o.status === OrderStatus.paid) {
-                self.setState({paid: true});
+                self.setState({ paid: true });
             } else {
-                self.setState({paid: false});
+                self.setState({ paid: false });
             }
 
-            self.setState({loading: true});
+            self.setState({ loading: true });
             setTimeout(async function () {
                 await self.generateImage();
-                self.setState({loading: false});
+                self.setState({ loading: false });
             }, 1000);
         }
     }
@@ -543,7 +543,7 @@ class VApp extends Component {
     }
 
     getRotationHandledLeft() {
-        return (rotated === -90 || rotated === -270 ? maxYRange : maxXRange );
+        return (rotated === -90 || rotated === -270 ? maxYRange : maxXRange);
     }
 
     setMaxRanges(imageMask) {
@@ -581,7 +581,7 @@ class VApp extends Component {
 
     simulateDragAndRestrict() {
         // todo: simulate a user drag to properly restrict it
-        self.setState({rotating: true});
+        self.setState({ rotating: true });
         setTimeout(function () {
             self.restrictDrag({
                 start: {
@@ -597,7 +597,7 @@ class VApp extends Component {
                 theImageMaskStyle: self.state.theImageMaskStyle
             });
 
-            self.setState({rotating: false});
+            self.setState({ rotating: false });
         }, 10);
     }
 
@@ -674,7 +674,7 @@ class VApp extends Component {
     }
 
     async selectColor(color) {
-        self.setState({backgroundColor: color});
+        self.setState({ backgroundColor: color });
         setTimeout(async function () {
             await self.generateImage();
         }, 1);
@@ -691,7 +691,7 @@ class VApp extends Component {
         if (!self.state.imgSrc) {
             browserHistory.push('/');
         } else {
-            self.setState({loading: false});
+            self.setState({ loading: false });
             self.hideModal();
         }
     }
@@ -728,7 +728,7 @@ class VApp extends Component {
                         <img
                             src={logo}
                             className="App-logo"
-                            alt="logo"/>
+                            alt="logo" />
                     </div>
                 </div>
                 < p
@@ -737,12 +737,12 @@ class VApp extends Component {
                 </p>
 
                 <img src={this.state.modalImageSrc} className={"ui fluid image"} alt={"v"} id={"uploaded-image"}
-                     style={{"display": "none"}}/>
+                    style={{ "display": "none" }} />
 
                 <div
                     className="ui container">
                     <form name="photoForm"
-                          className={classNames({'ui': true, 'form': true, loading: this.state.loading})}>
+                        className={classNames({ 'ui': true, 'form': true, loading: this.state.loading })}>
                         <div className="field">
                             {
                                 this.state.imgSrc ?
@@ -751,8 +751,8 @@ class VApp extends Component {
                                             !this.state.paid
                                                 ?
                                                 <button type="button"
-                                                        className={classNames("ui left floated button", {loading: this.state.loading})}
-                                                        onClick={this.removeQRCode}>
+                                                    className={classNames("ui left floated button", { loading: this.state.loading })}
+                                                    onClick={this.removeQRCode}>
                                                     去二维码
                                                 </button>
                                                 : ''
@@ -798,40 +798,42 @@ class VApp extends Component {
                             style={
                                 {
                                     position: 'relative', border:
-                                    'solid 1px black', minHeight:
-                                    '150px'
+                                        'solid 1px black', minHeight:
+                                        '150px'
                                 }
                             }>
-                            <div className="image mask" style={this.state.imgSrc ? {} : {display: 'none'}}
-                                 target="_blank">
+                            <div className="image mask" style={this.state.imgSrc ? {} : { display: 'none' }}
+                                target="_blank">
                                 <img src={this.state.imgSrc} alt="v"
-                                     style={{width: '100%', height: '100%', background: 'white', display: 'block'}}/>
+                                    style={{ width: '100%', height: '100%', background: 'white', display: 'block' }} />
                             </div>
                         </div>
                         <Form.Field>
                             <BackgroundColorSelector selected={this.state.backgroundColor}
-                                                     selectColor={this.selectColor}/>
+                                selectColor={this.selectColor} />
                         </Form.Field>
                     </form>
                 </div>
 
                 <SelectPaymentMethodsModal open={this.state.selectPaymentMethodOpen}
-                                           onClose={() => this.closePaymentModal()} pay={this.pay}/>
+                    onClose={() => this.closePaymentModal()} pay={this.pay} />
 
                 <Modal size={'fullscreen'} open={this.state.open} onClose={this.cancel} onMount={this.modalDidMount}
-                       onOpen={() => {
-                           this.modalOpen();
-                       }} className={classNames({'loading': this.state.rotating})} dimmer="blurring">
+                    onOpen={() => {
+                        this.modalOpen();
+                    }} className={classNames({ 'loading': this.state.rotating })} dimmer="blurring">
                     <Modal.Content image scrolling>
                         <div id="the-image-wrapper" style={
                             {
                                 "overflow": "hidden",
-                                "height": this.state.theImageCropStyle.height
+                                "height": this.state.theImageCropStyle.height,
+                                "width": this.state.theImageCropStyle.width,
+                                minWidth: '365px'
                             }
                         }>
                             <img id="the-image-mask-on-modal-canvas" className="image-mask"
-                                 src={this.state.modalImageSrc} alt="v"
-                                 style={this.state.theImageMaskStyle}/>
+                                src={this.state.modalImageSrc} alt="v"
+                                style={this.state.theImageMaskStyle} />
                             <div
                                 className="image-crop"
                                 id="image-crop"
@@ -845,11 +847,11 @@ class VApp extends Component {
                                 onTouchMove={this.onTouchMove}
                                 onTouchEnd={this.onTouchEnd}>
                                 <img id={"cropping-image"}
-                                     src={this.state.modalImageSrc
-                                     }
-                                     alt="v"
-                                     style={this.state.theCroppingImageStyle
-                                     }
+                                    src={this.state.modalImageSrc
+                                    }
+                                    alt="v"
+                                    style={this.state.theCroppingImageStyle
+                                    }
                                 />
                             </div>
                         </div>
@@ -893,7 +895,7 @@ class VApp extends Component {
                             }>
                             <
                                 i
-                                className="undo icon"/>
+                                className="undo icon" />
                             向左旋转
                         </div>
                         <div
@@ -911,7 +913,7 @@ class VApp extends Component {
                                 onClick={this.generateImage}>
                                 确定
                                 <i
-                                    className="checkmark icon"/>
+                                    className="checkmark icon" />
                             </div>
                         </div>
                     </Modal.Actions>
