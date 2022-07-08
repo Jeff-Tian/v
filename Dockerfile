@@ -7,5 +7,5 @@ RUN npm i \
     cd client \
     npm i
 
-EXPOSE 3000
-CMD npm start
+EXPOSE 16016
+CMD NODE_ENV=production npm run server
