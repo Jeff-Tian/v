@@ -37,7 +37,17 @@ jobs:
       - run: cd client
       - run: npm ci
       - run: echo "${{secrets.DOCKER_PASSWORD}}" | docker login -u "${{secrets.DOCKER_USERNAME}}" --password-stdin
-      - run: sh ci.sh
+      - run: npm run build
+      - run: docker build -t jefftian/v .
+      - run: docker images
+      - run: docker run --rm --network host -e CI=true -d -p 127.0.0.1:3000:3000 --name vvv jefftian/v
+      - run: docker ps | grep -q v
+      - run: docker ps -aqf "name=vvv$"
+      - run: docker push jefftian/v
+      - run: docker logs $(docker ps -aqf name=vvv$)
+      - run: curl localhost:3000 || docker logs $(docker ps -aqf name=vvv$)
+      - run: docker kill vvv || echo "vvv killed"
+      - run: docker rm vvv || echo "vvv removed"
 
   test:
 
