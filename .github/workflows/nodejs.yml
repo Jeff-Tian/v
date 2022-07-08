@@ -27,10 +27,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Use Node.js 16
+      - name: Use Node.js 12
         uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version: 12.x
           cache: 'npm'
       - run: npm ci
       - run: cd client
