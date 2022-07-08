@@ -12,6 +12,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    needs: build
     steps:
       - uses: actions/checkout@v3
       - run: curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
