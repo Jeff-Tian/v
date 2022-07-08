@@ -28,7 +28,7 @@ spec:
         deployedBy: deploy-node-app
     spec:
       containers:
-        - image: jefftian/v:latest
+        - image: jefftian/vvv:latest
           imagePullPolicy: Always
           name: v
           env:
