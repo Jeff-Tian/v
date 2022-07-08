@@ -55,7 +55,11 @@ export default class WechatShare extends React.Component {
     }
 
     async componentDidMount() {
-        // await talkWithWechatShare();
+        try {
+            await talkWithWechatShare();
+        } catch (ex) {
+            console.error('ex = ', ex)
+        }
     }
 
     render() {
