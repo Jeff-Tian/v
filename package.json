@@ -39,7 +39,8 @@
     "build": "cd client && npm run build && cd ..",
     "prd": "NODE_ENV=production babel-node app.js",
     "e2e": "protractor ./tests/config.js",
-    "e2e-driver": "webdriver-manager update && webdriver-manager start"
+    "e2e-driver": "webdriver-manager update && webdriver-manager start",
+    "okteto": "k8ss switch --cluster=okteto --namespace=jeff-tian&&kubectl apply -k k8s&&kubectl rollout restart deploy v"
   },
   "devDependencies": {
     "assert": "^1.4.1",
