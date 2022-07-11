@@ -37,6 +37,8 @@ class Layout extends Component {
     showSidebar = () => this.setState({visible: true});
     hideSidebar = () => this.setState({visible: false});
 
+    toggleSidebar = () => this.setState({visible: !this.state.visible})
+
     componentDidMount() {
         let hammertime = new window.Hammer(document.getElementById('root'), {});
         let self = this;
@@ -77,6 +79,7 @@ class Layout extends Component {
                     </Menu.Item>
                 </Sidebar>
                 <Sidebar.Pusher>
+                    <Icon name="sliders horizontal" size="huge" onClick={this.toggleSidebar}></Icon>
                     <Router history={browserHistory}>
                         <Route path="/" component={Homepage}/>
                         <Route path="/v/:vid" component={V}/>
