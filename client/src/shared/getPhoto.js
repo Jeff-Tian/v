@@ -10,6 +10,20 @@ export default class GetPhoto extends React.Component {
         this.state = {capture: 'user'}
     }
 
+    handlePasteAnywhere(event) {
+        const file = event.clipboardData.items[0].getAsFile()
+
+        if (file) {
+            this.onPhotoSelected({
+                refs: {
+                    'clipboard': {
+                        files: [file]
+                    }
+                }
+            }, 'clipboard');
+        }
+    }
+
     async onPhotoSelected(target, ref) {
         this.setState({loading: true});
         let photoFile = target.refs[ref];
@@ -20,6 +34,12 @@ export default class GetPhoto extends React.Component {
 
     componentDidMount() {
         this.refs['capture'].setAttribute('capture', 'user');
+
+        window.addEventListener('paste', this.handlePasteAnywhere.bind(this));
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('paste', this.handlePasteAnywhere.bind(this));
     }
 
     render() {
