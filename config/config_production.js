@@ -3,6 +3,6 @@ module.exports = {
     trustMode: true,
     serviceCache: {
         host: 'localhost',
-        port: 10123
+        port: 3000
     }
 };
