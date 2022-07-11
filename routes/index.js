@@ -54,6 +54,8 @@ function publicRouter(app, router, render) {
             .get('/order/:orderId', renderIndexResponse)
             .get('/v/:uri/:orderId?', renderIndexResponse)
             .get('/sign-in', renderIndexResponse);
+
+        router.get('/*', renderIndexResponse)
     } else {
         router
             .get('/v2.appcache', function* () {
