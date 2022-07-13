@@ -63,6 +63,11 @@ function publicRouter(app, router, render) {
             .get('/sign-in', renderIndexResponse);
 
         router.get('/*', function* (next) {
+            console.log('this = ', this);
+            console.log('app = ', app);
+            console.log('router = ', router);
+            console.log('render = ', render);
+            console.log('next = ', next);
             this.body = yield renderErrorInfo(this, app, router, render, next)
         });
     } else {
