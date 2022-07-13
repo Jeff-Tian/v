@@ -10,7 +10,6 @@ const views = require('co-views');
 const serveStatic = require('koa-static');
 const server = require('http').createServer(app.callback());
 const mount = require('koa-mount');
-const serverless = require('serverless-http');
 
 const render = views(path.join(__dirname, 'views'), {
     default: "pug",
@@ -30,5 +29,5 @@ if (!module.parent) {
     server.listen(port);
     console.log('Running %s site at: http://localhost:%d', config.mode || process.env.NODE_ENV, port);
 }else{
-    module.exports.handler = serverless(app);
+    module.exports = app
 }
