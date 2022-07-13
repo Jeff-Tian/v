@@ -5,7 +5,10 @@ const app = module.exports = new Koa();
 
 const config = require('./config');
 const path = require('path');
-const router = require('koa-router')();
+const Router = require('koa-router');
+const router = new Router({
+    prefix: process.env.ROUTER_PREFIX ? process.env.ROUTER_PREFIX : undefined
+});
 const logger = require('koa-logger');
 const views = require('co-views');
 const serveStatic = require('koa-static');
@@ -29,6 +32,6 @@ if (!module.parent) {
     var port = process.env.PORT || config.port || 16016;
     server.listen(port);
     console.log('Running %s site at: http://localhost:%d', config.mode || process.env.NODE_ENV, port);
-}else{
+} else {
     module.exports = app
 }

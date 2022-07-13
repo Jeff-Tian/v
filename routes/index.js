@@ -148,7 +148,7 @@ module.exports = function (app, router, render, server) {
             }
         } catch (err) {
             console.error('err = ', err.message);
-            ctx.body = renderErrorInfo(ctx, app, router, render, next);
+            ctx.body = util.inspect(err);
         }
     })
 };

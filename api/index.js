@@ -1,4 +1,7 @@
 const serverless = require('serverless-http');
+
+process.env.ROUTER_PREFIX = '/api';
+
 const app = require('../app');
 
 const handler = serverless(app);
