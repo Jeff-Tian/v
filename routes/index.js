@@ -63,7 +63,7 @@ function publicRouter(app, router, render) {
             .get('/sign-in', renderIndexResponse);
 
         router.get('/*', function* (next) {
-            this.body = renderErrorInfo(this, app, router, render, next)
+            this.body = yield renderErrorInfo(this, app, router, render, next)
         });
     } else {
         router
