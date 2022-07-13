@@ -1,6 +1,9 @@
 'use strict';
 
 const util = require('util');
+const devConf = require('./config_dev');
+const prodConf = require('./config_production');
+
 var config = null;
 
 var configPath = util.format('./config_%s.js', (process.env.NODE_ENV || 'dev'));
@@ -12,6 +15,9 @@ if (process.env.NODE_ENV === 'development') {
 console.log('~~~~~~~~~~~~~~~~~');
 console.log(process.env.NODE_ENV);
 console.log(process.env.REACT_APP_BUILT_BY);
+
+console.log(devConf);
+console.log('prodConf = ', prodConf);
 console.log('~~~~~~~~~~~~~~~~~');
 
 var envConfig = require(configPath);
