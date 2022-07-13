@@ -4,7 +4,6 @@ const koa = require('koa');
 const app = module.exports = koa();
 const config = require('./config');
 const path = require('path');
-const fs = require('fs');
 const router = require('koa-router')();
 const logger = require('koa-logger');
 const views = require('co-views');
