@@ -1,6 +1,6 @@
 const auth = require('./auth');
-const koa = require('koa');
-const app = koa();
+const Koa = require('koa');
+const app = new Koa();
 const router = require('koa-router')();
 const orderBll = require('../../bll/order');
 const readFile = require('../../common/readFile');
@@ -25,16 +25,16 @@ function authenticateUser(ctx, username, password, returnUrl) {
     throw new Error('fuck you!');
 }
 
-app.use(function* (next) {
+app.use(async function (ctx, next) {
     try {
         if (this.path === '/api/sign-in' && this.method === 'POST') {
-            let data = yield  parse(this.request);
+            let data = await parse(this.request);
             console.log(`Authenticating...`);
             console.log(data);
             return this.body = authenticateUser(this, data.username, data.password, data.returnUrl);
         }
 
-        yield next;
+        await next;
     } catch (ex) {
         console.error('ahhhhhhhhhhhh!   ---', this.path, ex);
         if (ex.status === 401) {
@@ -58,45 +58,45 @@ const credentials = {name: process.env.V_ADMIN, pass: process.env.V_PWD};
 app.use(auth(credentials));
 
 if (['production'].indexOf(process.env.NODE_ENV) >= 0) {
-    router.get('/orders', function* (next) {
+    router.get('/orders', async function (ctx, next) {
         let p = path.join(__dirname, `../../client/build`, `/index.html`);
-        this.body = yield readFile.thunk(p);
+        ctx.body = await readFile.thunk(p);
     });
 }
 
 router
-    .get('/api/orders', function* (next) {
+    .get('/api/orders', async function (ctx, next) {
         console.log('fetching orders...');
-        this.body = orderBll.list();
+        ctx.body = orderBll.list();
     })
-    .post('/api/orders/:orderId', function* (next) {
+    .post('/api/orders/:orderId',async function (ctx, next) {
         let o = orderBll.get(this.params.orderId);
-        let data = yield parse(this.request);
+        let data = await parse(this.request);
         o.status = data.status || orderStatus.paid;
 
         orderBll.notifyClient(o);
 
-        this.body = o;
+        ctx.body = o;
     })
-    .delete('/api/orders/:orderId', function* (next) {
+    .delete('/api/orders/:orderId', async function (ctx, next) {
         let o = orderBll.get(this.params.orderId);
         o.status = orderStatus.cancelled;
 
         orderBll.notifyClient(o);
 
-        this.body = o;
+        ctx.body = o;
     })
 
-    .get('/api/config', function* (next) {
-        this.body = config;
+    .get('/api/config', async function (ctx, next) {
+        ctx.body = config;
     })
-    .put('/api/config', function* (next) {
-        let data = yield parse(this.request);
+    .put('/api/config', async function (ctx, next) {
+        let data = await parse(this.request);
         let newConfig = Object.assign(config, data);
 
         config.update(newConfig);
 
-        this.body = config;
+        ctx.body = config;
     })
 ;
 

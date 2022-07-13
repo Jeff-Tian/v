@@ -1,7 +1,8 @@
 'use strict';
 
-const koa = require('koa');
-const app = module.exports = koa();
+const Koa = require('koa');
+const app = module.exports = new Koa();
+
 const config = require('./config');
 const path = require('path');
 const router = require('koa-router')();

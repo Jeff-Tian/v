@@ -22,8 +22,8 @@ let readFileThunk = function (src) {
 
 function helper(app, router, render) {
     router
-        .get('/healthcheck', function* (next) {
-            this.body = {
+        .get('/healthcheck', function (ctx, next) {
+            ctx.body = {
                 everything: 'is ok',
                 time: new Date(),
                 nev: '' + process.env.NODE_ENV
@@ -42,8 +42,8 @@ function renderErrorInfo(self, app, router, render, next) {
     }
 }
 
-function* renderIndexResponse() {
-    this.body = yield renderIndex();
+async function renderIndexResponse(ctx) {
+    ctx.body = await renderIndex();
 }
 
 function publicRouter(app, router, render) {
@@ -54,27 +54,27 @@ function publicRouter(app, router, render) {
         }));
 
         router
-            .get('/v2.appcache', function* () {
-                this.set('Content-Type', 'text/cache-manifest');
-                this.body = yield readFileThunk(__dirname + `/../public/v2.appcache`);
+            .get('/v2.appcache', async function (ctx) {
+                ctx.set('Content-Type', 'text/cache-manifest');
+                ctx.body = await readFileThunk(__dirname + `/../public/v2.appcache`);
             })
             .get('/order/:orderId', renderIndexResponse)
             .get('/v/:uri/:orderId?', renderIndexResponse)
             .get('/sign-in', renderIndexResponse);
 
-        router.get('/*', function* (next) {
+        router.get('/*', async function (ctx, next) {
             console.log('this = ', this);
             console.log('app = ', app);
             console.log('router = ', router);
             console.log('render = ', render);
             console.log('next = ', next);
-            this.body = yield renderErrorInfo(this, app, router, render, next)
+            ctx.body = renderErrorInfo(this, app, router, render, next)
         });
     } else {
         router
-            .get('/v2.appcache', function* () {
-                this.set('Content-Type', 'text/cache-manifest');
-                this.body = yield readFileThunk(__dirname + `/../public/v2.appcache`);
+            .get('/v2.appcache', async function (ctx) {
+                ctx.set('Content-Type', 'text/cache-manifest');
+                ctx.body = await readFileThunk(__dirname + `/../public/v2.appcache`);
             })
             .get('/sign-in', renderIndexResponse)
         ;

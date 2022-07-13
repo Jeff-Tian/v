@@ -13,7 +13,7 @@ function composeUrl(host, port, path) {
  *  Always pass host and port to avoid host or port undefined error
  * @returns {*}
  */
-function* proxy(settings) {
+async function proxy(settings) {
     let option = {
         uri: settings.url || composeUrl(settings.host, settings.port, settings.path),
         method: settings.method || 'POST'
@@ -26,7 +26,7 @@ function* proxy(settings) {
     }
 
     try {
-        let result = yield request(option);
+        let result = await request(option);
         return result.body;
     } catch (ex) {
         throw ex;
