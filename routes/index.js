@@ -62,14 +62,6 @@ function publicRouter(app, router, render) {
             .get('/v/:uri/:orderId?', renderIndexResponse)
             .get('/sign-in', renderIndexResponse);
 
-        router.get('/*', async function (ctx, next) {
-            console.log('this = ', this);
-            console.log('app = ', app);
-            console.log('router = ', router);
-            console.log('render = ', render);
-            console.log('next = ', next);
-            ctx.body = renderErrorInfo(this, app, router, render, next)
-        });
     } else {
         router
             .get('/v2.appcache', async function (ctx) {
@@ -147,4 +139,15 @@ module.exports = function (app, router, render, server) {
     app
         .use(router.routes())
         .use(router.allowedMethods());
+
+    app.use(async (ctx, next) => {
+        try {
+            await next()
+            if (ctx.status === 404) {
+                ctx.body = renderErrorInfo(ctx, app, router, render, next);
+            }
+        } catch (err) {
+            console.error('err = ', err);
+        }
+    })
 };
