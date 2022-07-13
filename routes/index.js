@@ -4,9 +4,9 @@ const config = require('../config');
 const mount = require('koa-mount');
 const serveStatic = require('koa-static');
 const fs = require('fs');
-const coBody = require('co-body');
 const order = require('../bll/order');
 const OrderStatus = require('../bll/orderStatus');
+const util = require('util');
 
 let readFileThunk = function (src) {
     return new Promise(function (resolve, reject) {
@@ -35,6 +35,13 @@ function renderIndex() {
     return readFileThunk(__dirname + '/../client/build/index.html');
 }
 
+function renderErrorInfo(self, app, router, render, next) {
+    return {
+        message: 'all the predefined routes are not hit',
+        info: util.inspect({self: self, app: app, router: router, render: render, next: next})
+    }
+}
+
 function* renderIndexResponse() {
     this.body = yield renderIndex();
 }
@@ -55,7 +62,9 @@ function publicRouter(app, router, render) {
             .get('/v/:uri/:orderId?', renderIndexResponse)
             .get('/sign-in', renderIndexResponse);
 
-        router.get('/*', renderIndexResponse)
+        router.get('/*', function* (next) {
+            this.body = renderErrorInfo(this, app, router, render, next)
+        });
     } else {
         router
             .get('/v2.appcache', function* () {
@@ -121,18 +130,6 @@ function socketIO(app, router, render, server) {
             }
 
             io.emit('qr', '权限还未开放，敬请期待。');
-        });
-    });
-}
-
-function routeFolder(folder, app, router, render, server) {
-    fs.readdir(__dirname + `/${folder}`, function (err, results) {
-        if (err) {
-            throw err;
-        }
-
-        results.forEach(fileName => {
-            require(`./${folder}/` + fileName)(app, router, render, server);
         });
     });
 }
