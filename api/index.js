@@ -1,16 +1,17 @@
 const serverless = require('serverless-http');
+const k2e = require('koa-to-express');
+
+const koaMiddleware = (ctx, next) => {
+    ctx.body = 'hello';
+    return next();
+}
 
 process.env.ROUTER_PREFIX = '/api';
 
 const app = require('../app');
 
-const handler = serverless(app);
+const expressApp = require('express')();
 
-export default async function (req, res) {
-    // you can do other things here
-    const result = await handler({}, {req, res});
+expressApp.use(koaMiddleware);
 
-    console.log('result = ', result);
-    // and here
-    res.send(result.body)
-};
+module.exports = expressApp;
