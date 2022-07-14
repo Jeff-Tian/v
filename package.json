@@ -26,7 +26,6 @@
     "koa-router": "11.0.1",
     "koa-static": "5.0.0",
     "koa-to-express": "^3.1.4",
-    "serverless-http": "^3.0.1",
     "socket.io": "^2.4.0",
     "sql.js": "^0.3.2",
     "uuid": "^3.1.0"
