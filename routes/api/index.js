@@ -7,18 +7,18 @@ const asyncProxy = require('../../common/async-proxy');
 
 router
     .get('/order/:orderId', async function (ctx, next) {
-        ctx.body = orderBll.get(this.params.orderId);
+        ctx.body = orderBll.get(ctx.params.orderId);
     })
 
     .get('/wechat-api/sign', async function (ctx, next) {
         ctx.body = await asyncProxy({
-            url: `http://${config.serviceCache.host}:${config.serviceCache.port}/sign/buzz?url=${this.query.url}`,
+            url: `http://${config.serviceCache.host}:${config.serviceCache.port}/sign/buzz?url=${ctx.query.url}`,
             method: 'GET'
         });
     })
     .get('/proxy/:url', async function (ctx, next) {
         ctx.body = await asyncProxy({
-            url: this.params.url,
+            url: ctx.params.url,
             method: 'GET'
         });
     })

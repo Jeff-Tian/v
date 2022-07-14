@@ -133,8 +133,8 @@ function socketIO(app, router, render, server) {
 
 module.exports = function (app, router, render, server) {
     helper(app, router, render);
-    // publicRouter(app, router, render);
-    // socketIO(app, router, render, server);
+    publicRouter(app, router, render);
+    socketIO(app, router, render, server);
 
     app
         .use(router.routes())
