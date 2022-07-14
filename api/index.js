@@ -11,6 +11,8 @@ export default async function (event, context) {
     // console.log('context = ', context);
     // you can do other things here
     const result = await handler(event, context);
+
+    console.log('result = ', result);
     // and here
     return result;
 };
