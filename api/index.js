@@ -12,6 +12,6 @@ const app = require('../app');
 
 const expressApp = require('express')();
 
-expressApp.use(koaMiddleware);
+expressApp.use(k2e(koaMiddleware));
 
 module.exports = expressApp;
