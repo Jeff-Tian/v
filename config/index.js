@@ -7,6 +7,7 @@ const prodConf = require('./config_production');
 var config = null;
 
 var configPath = util.format('./config_%s.js', (process.env.NODE_ENV || 'dev'));
+console.log('configPath = ', configPath);
 
 if (process.env.NODE_ENV === 'development') {
     configPath = util.format('./config_%s.js', 'dev');

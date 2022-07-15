@@ -168,6 +168,7 @@ class VApp extends Component {
         }
 
         socket.on('order-qr-remove', async function (msg) {
+            console.log("socket message of order-qr-remove: ", msg);
             if (msg === 'ok') {
                 self.setState({ paid: true });
                 await self.generateImage();
@@ -175,7 +176,7 @@ class VApp extends Component {
         });
 
         socket.on('order-paid', async function (msg) {
-            console.log(msg);
+            console.log('socket message order-paid: ', msg);
             self.setState({ paid: true });
             await self.generateImage();
             self.setState({ loading: false });
@@ -235,11 +236,13 @@ class VApp extends Component {
         };
 
         this.createOrder = function (method) {
+            console.log("creating order...");
             self.setState({ loading: true });
             socket.emit('order-qr-remove', {
                 message: 'create',
                 paymentMethod: method
             });
+            console.log('order-qr-remove socket emit...');
             if (true || navigator.userAgent.indexOf('MicroMessenger') >= 0) {
                 newOrderCreated().then(function (order) {
                     saveCurrentState();

@@ -85,6 +85,7 @@ function publicRouter(app, router, render) {
 function socketIO(app, router, render, server) {
     const io = require('socket.io')(server);
     order.setIO(io);
+    console.log("socket io set");
     io.on('connection', function (socket) {
         console.log('user connected');
 
