@@ -27,7 +27,7 @@ function getConfig() {
     if (!config) {
         config = {
             version: '1.0.0-' + Date.now(),
-            publicFolder: 'client/public'
+            publicFolder: 'client/build'
         };
 
         if (process.env.NODE_ENV === 'production') {
