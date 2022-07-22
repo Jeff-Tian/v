@@ -36,7 +36,7 @@ app.use(async function (ctx, next) {
 
         await next;
     } catch (ex) {
-        console.error('ahhhhhhhhhhhh!   ---', this.path, ex.message);
+        console.error('ahhhhhhhhhhhh!   ---', ctx.path, ex.message);
         if (ex.status === 401) {
             let authPath = '/sign-in';
 
