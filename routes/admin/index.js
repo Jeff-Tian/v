@@ -27,7 +27,7 @@ function authenticateUser(ctx, username, password, returnUrl) {
 
 app.use(async function (ctx, next) {
     try {
-        if (this.path === '/api/sign-in' && this.method === 'POST') {
+        if (ctx.path === '/api/sign-in' && this.method === 'POST') {
             let data = await parse(this.request);
             console.log(`Authenticating...`);
             console.log(data);
