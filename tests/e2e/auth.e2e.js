@@ -5,7 +5,7 @@ describe('Login', () => {
     })
 
     it('should have correct title', () => {
-        expect(browser.getTitle()).to.eventually.equal("啪啪加 V - 上传图片自动加 V")
+        expect(browser.getTitle()).to.eventually.equal("啪啪米 - 一款装逼神器")
     })
 
     it('display error message if bad username or password attempts', () => {

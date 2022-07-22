@@ -27,6 +27,7 @@ function authenticateUser(ctx, username, password, returnUrl) {
 
 app.use(async function (ctx, next) {
     try {
+        console.log('admin path = ', ctx.path);
         if (ctx.path === '/api/sign-in' && ctx.method === 'POST') {
             let data = await parse(ctx.request);
             console.log(`Authenticating...`);
@@ -34,7 +35,7 @@ app.use(async function (ctx, next) {
             return ctx.body = authenticateUser(ctx, data.username, data.password, data.returnUrl);
         }
 
-        await next;
+        await next();
     } catch (ex) {
         console.error('ahhhhhhhhhhhh!   ---', ctx.path, ex.message);
         if (ex.status === 401) {

@@ -12,10 +12,10 @@ module.exports = function (opts) {
 
     return async function simpleFormAuth(ctx, next) {
         try {
-            let user = basicAuth(this) || auth(this);
+            let user = basicAuth(ctx) || auth(ctx);
 
             if (user && user.name === opts.name && user.pass === opts.pass) {
-                await next;
+                await next();
             } else {
                 console.error(`Auth failed. Tried with ${user.name}:${user.pass} to match ${opts.name}:${opts.pass}`);
                 throw new Error(`Auth failed`);

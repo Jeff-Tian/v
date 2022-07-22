@@ -22,7 +22,7 @@ const render = views(path.join(__dirname, 'views'), {
 
 app.use(logger());
 app.use(mount('/admin', require('./routes/admin/index.js')));
-app.use(mount('/api', require('./routes/api/index.js')));
+// app.use(mount('/api', require('./routes/api/index.js')));
 
 require('./routes')(app, router, render, server);
 

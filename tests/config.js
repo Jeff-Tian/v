@@ -1,7 +1,7 @@
 exports.config = {
     framework: 'mocha',
     seleniumAddress: 'http://localhost:4444/wd/hub',
-    baseUrl: 'http://localhost:3000',
+    baseUrl: 'http://localhost',
     specs: ['e2e/**/*.js'],
     onPrepare: () => {
         browser.ignoreSynchronization = true
@@ -19,15 +19,15 @@ exports.config = {
 
     browserstackUser: 'browserstackuser',
     browserstackKey: 'browserstackkey',
-    multiCapabilities: [
-        {
-            browserName: 'Chrome',
-            browser_version: '54.0',
-            os: 'OS X',
-            os_version: 'Yosemite',
-            resolution: '1920x1080',
-            'browserstack.local': true,
-        }
-    ],
+    // multiCapabilities: [
+    //     {
+    //         browserName: 'Chrome',
+    //         browser_version: '54.0',
+    //         os: 'OS X',
+    //         os_version: 'Yosemite',
+    //         resolution: '1920x1080',
+    //         'browserstack.local': true,
+    //     }
+    // ],
 
 }

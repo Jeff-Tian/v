@@ -24,9 +24,7 @@ function helper(app, router, render) {
     router
         .get('/healthcheck', function (ctx, next) {
             ctx.body = {
-                everything: 'is ok',
-                time: new Date(),
-                nev: '' + process.env.NODE_ENV
+                everything: 'is ok', time: new Date(), nev: '' + process.env.NODE_ENV
             };
         });
 }
@@ -49,8 +47,7 @@ async function renderIndexResponse(ctx) {
 function publicRouter(app, router, render) {
     if (['production'].indexOf(process.env.NODE_ENV) >= 0) {
         app.use(serveStatic('client/build', {
-            gzip: true,
-            maxage: 1000 * 60 * 60 * 24 * 360
+            gzip: true, maxage: 1000 * 60 * 60 * 24 * 360
         }));
 
         router
@@ -68,17 +65,14 @@ function publicRouter(app, router, render) {
                 ctx.set('Content-Type', 'text/cache-manifest');
                 ctx.body = await readFileThunk(__dirname + `/../public/v2.appcache`);
             })
-            .get('/sign-in', renderIndexResponse)
-        ;
+            .get('/sign-in', renderIndexResponse);
     }
 
     app.use(mount('/node_modules', serveStatic('client/node_modules', {
-        gzip: true,
-        maxage: 1000 * 60 * 60 * 24 * 360
+        gzip: true, maxage: 1000 * 60 * 60 * 24 * 360
     })));
     app.use(mount('/src', serveStatic('client/src', {
-        gzip: true,
-        maxage: 1000 * 60 * 60 * 24 * 360
+        gzip: true, maxage: 1000 * 60 * 60 * 24 * 360
     })));
 }
 
@@ -104,8 +98,7 @@ function socketIO(app, router, render, server) {
                     theOrder.status = OrderStatus.claimPaid;
 
                     io.emit('order-qr-remove', {
-                        message: OrderStatus.claimPaid,
-                        order: theOrder
+                        message: OrderStatus.claimPaid, order: theOrder
                     });
                 }
 
@@ -121,8 +114,7 @@ function socketIO(app, router, render, server) {
                     theOrder.status = OrderStatus.cancelled;
 
                     io.emit('order-qr-remove', {
-                        message: OrderStatus.cancelled,
-                        order: theOrder
+                        message: OrderStatus.cancelled, order: theOrder
                     });
                 }
             }
@@ -146,9 +138,10 @@ module.exports = function (app, router, render, server) {
             await next()
             if (ctx.status === 404) {
                 ctx.body = renderErrorInfo(ctx, app, router, render, next);
+            } else {
             }
         } catch (err) {
-            console.error('err = ', err.message);
+            console.error('err = ', err.message, err);
             ctx.body = util.inspect(err);
         }
     })
