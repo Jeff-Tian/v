@@ -89,7 +89,7 @@ class Orders extends React.Component {
                 <AdminMenus/>
                 <div className={"ui divided items"}>
                     {
-                        this.state.orders.length
+                        (this.state.orders || []).length
                             ? this.state.orders.map(o => {
                                 return (
                                     <div className={"item"} key={o.orderId || 'unknown'}>

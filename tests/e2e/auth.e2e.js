@@ -1,7 +1,7 @@
 describe('Login', () => {
 
     beforeEach(() => {
-        browser.get('/admin/sign-in')
+        browser.get('/sign-in')
     })
 
     it('should have correct title', () => {
@@ -12,7 +12,7 @@ describe('Login', () => {
         element(by.id('username')).sendKeys('badguy');
         element(by.id('password')).sendKeys('nopass');
         browser.findElement(by.className('primary')).click();
-        browser.sleep(2000);
+        browser.sleep(1000);
 
         expect(element(by.className('error message')).getText())
             .to.eventually.equal('fuck you!');
@@ -24,8 +24,8 @@ describe('Login', () => {
         browser.findElement(by.className('primary')).click();
         browser.sleep(1000);
 
-        expect(element(by.className('success message')).getText())
-            .to.eventually.equal('welcome');
+        expect(element(by.className('ui divided items')).getText())
+            .to.eventually.contains('订单');
     })
 
 })

@@ -37,7 +37,7 @@ class SelectPaymentMethods extends Component {
             methodList: this.state.methodList
         });
 
-        this.props.select(m.method);
+        this.props.select && this.props.select(m.method);
     }
 
     render() {

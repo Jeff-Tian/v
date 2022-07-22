@@ -39,9 +39,11 @@ class LoginPage extends React.Component {
 
         const xhr = new XMLHttpRequest();
         xhr.open('post', '/admin/api/sign-in');
+        console.log('signing requesting...')
         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
         xhr.addEventListener('load', () => {
             if (xhr.status === 200) {
+                console.log('xhr = ', xhr);
                 try {
                     let json = JSON.parse(xhr.response);
 
@@ -57,7 +59,7 @@ class LoginPage extends React.Component {
                     browserHistory.push(returnUrl);
                     console.log('should redirect');
                 } catch (ex) {
-                    console.error(ex);
+                    console.error('ex = ', ex);
                     const errors = ex.message || JSON.stringify(ex);
 
                     self.setState({
@@ -65,6 +67,7 @@ class LoginPage extends React.Component {
                     });
                 }
             } else {
+                console.error('err = ', xhr.response);
                 const errors = xhr.response.errors ? xhr.response.errors : {};
                 errors.summary = xhr.response.message || xhr.response;
 
@@ -80,7 +83,6 @@ class LoginPage extends React.Component {
         const field = event.target.name;
         const user = this.state.user;
         user[field] = event.target.value;
-
         this.setState({
             user
         });

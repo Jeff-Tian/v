@@ -1,4 +1,4 @@
-import {shallow, mount} from 'enzyme';
+import Enzyme, {shallow, mount} from 'enzyme';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
@@ -6,6 +6,31 @@ import Auth from '../../src/auth/login-page';
 // import Client from '../../src/Client';
 
 // jest.mock('../src/../Client');
+
+const xhrMock = function () {
+
+}
+
+xhrMock.prototype.open = () => {
+    console.log('request sent');
+}
+xhrMock.prototype.setRequestHeader = () => {
+    console.log('header set')
+}
+xhrMock.prototype.addEventListener = function (_, func) {
+    console.log('event happend')
+    this.func = func;
+}
+xhrMock.prototype.send = function () {
+    console.log('sending...')
+    this.status = 401;
+    this.response = 'fuck you!';
+
+    this.func();
+}
+
+window.XMLHttpRequest = xhrMock;
+
 describe('Auth Basic', () => {
     it('renders without crashing', () => {
         const div = document.createElement('div');
@@ -32,20 +57,26 @@ describe('Auth', () => {
         ).toBe(1);
     });
 
-    it('should fail login when input is bad', () => {
-        let input = wrapper.find('input').first();
-        input.simulate('change', {
-            target: {value: 'badguy'}
+    it('should fail login when input is bad', async () => {
+        const username = wrapper.find('input[name="name"]');
+        username.simulate('change', {
+            target: {name: 'name', value: 'badguy'}
         });
 
-        input = wrapper.find('input[name="password"]').first();
-        input.simulate('change', {
-            target: {value: 'nopass'}
+        const password = wrapper.find('input[name="password"]');
+        password.simulate('change', {
+            target: {name: 'password', value: 'nopass2'}
         });
 
-        let button = wrapper.find('button').first();
-        button.simulate('click');
+        wrapper.find('form').simulate('submit', {
+            preventDefault() {
+            }
+        });
 
-        expect(wrapper.state().errors).toEqual({summary: '请验证身份'});
+        wrapper.update();
+
+        console.log('stage = ', wrapper.state())
+
+        expect(wrapper.state().errors).toEqual({summary: 'fuck you!'});
     })
 });

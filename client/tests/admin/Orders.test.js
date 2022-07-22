@@ -1,6 +1,7 @@
-import {shallow} from 'enzyme';
+import Enzyme, {shallow} from 'enzyme';
 import React from 'react';
 import Orders from '../../src/admin/orders';
+
 // import Client from '../../src/Client';
 
 // jest.mock('../src/../Client');
