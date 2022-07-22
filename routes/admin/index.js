@@ -27,11 +27,11 @@ function authenticateUser(ctx, username, password, returnUrl) {
 
 app.use(async function (ctx, next) {
     try {
-        if (ctx.path === '/api/sign-in' && this.method === 'POST') {
-            let data = await parse(this.request);
+        if (ctx.path === '/api/sign-in' && ctx.method === 'POST') {
+            let data = await parse(ctx.request);
             console.log(`Authenticating...`);
             console.log(data);
-            return this.body = authenticateUser(this, data.username, data.password, data.returnUrl);
+            return ctx.body = authenticateUser(ctx, data.username, data.password, data.returnUrl);
         }
 
         await next;
@@ -40,15 +40,15 @@ app.use(async function (ctx, next) {
         if (ex.status === 401) {
             let authPath = '/sign-in';
 
-            if (this.headers.fetch) {
+            if (ctx.headers.fetch) {
                 ex.message = authPath;
-                this.throw(ex);
+                ctx.throw(ex);
             } else {
                 console.log("redirecting to ", authPath);
-                this.redirect(authPath);
+                ctx.redirect(authPath);
             }
         } else {
-            this.throw(401, ex);
+            ctx.throw(401, ex);
         }
     }
 });
@@ -70,8 +70,8 @@ router
         ctx.body = orderBll.list();
     })
     .post('/api/orders/:orderId',async function (ctx, next) {
-        let o = orderBll.get(this.params.orderId);
-        let data = await parse(this.request);
+        let o = orderBll.get(ctx.params.orderId);
+        let data = await parse(ctx.request);
         o.status = data.status || orderStatus.paid;
 
         orderBll.notifyClient(o);
@@ -79,7 +79,7 @@ router
         ctx.body = o;
     })
     .delete('/api/orders/:orderId', async function (ctx, next) {
-        let o = orderBll.get(this.params.orderId);
+        let o = orderBll.get(ctx.params.orderId);
         o.status = orderStatus.cancelled;
 
         orderBll.notifyClient(o);
@@ -91,7 +91,7 @@ router
         ctx.body = config;
     })
     .put('/api/config', async function (ctx, next) {
-        let data = await parse(this.request);
+        let data = await parse(ctx.request);
         let newConfig = Object.assign(config, data);
 
         config.update(newConfig);
