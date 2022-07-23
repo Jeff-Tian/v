@@ -1,3 +1,4 @@
+const {authErrorMessage} = require("../../client/share/constants");
 describe('Login', () => {
 
     beforeEach(() => {
@@ -15,7 +16,7 @@ describe('Login', () => {
         browser.sleep(1000);
 
         expect(element(by.className('error message')).getText())
-            .to.eventually.equal('fuck you!');
+            .to.eventually.equal(authErrorMessage);
     })
 
     it('fills out username and password and logged in', () => {

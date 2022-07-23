@@ -8,6 +8,7 @@ const path = require('path');
 let config = require('../../config');
 const parse = require('co-body');
 const orderStatus = require('../../bll/orderStatus');
+const {authErrorMessage} = require("../../client/share/constants");
 
 function authenticateUser(ctx, username, password, returnUrl) {
     if (username === credentials.name && password === credentials.pass) {
@@ -22,7 +23,7 @@ function authenticateUser(ctx, username, password, returnUrl) {
         return {token: token, returnUrl: returnUrl || '/'};
     }
 
-    throw new Error('fuck you!');
+    throw new Error(authErrorMessage);
 }
 
 app.use(async function (ctx, next) {

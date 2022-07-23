@@ -28,10 +28,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Use Node.js 12
+      - name: Use Node.js 16.10.0
         uses: actions/setup-node@v3
         with:
-          node-version: 12.x
+          node-version: 16.10.0
           cache: 'npm'
       - run: npm i
       - run: cd client && npm i
@@ -54,7 +54,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [12.x]
+        node-version: [16.10.0]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:

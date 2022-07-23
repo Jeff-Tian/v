@@ -1,8 +1,9 @@
-import Enzyme, {shallow, mount} from 'enzyme';
+import {mount} from 'enzyme';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
 import Auth from '../../src/auth/login-page';
+import {authErrorMessage} from "../../share/constants";
 // import Client from '../../src/Client';
 
 // jest.mock('../src/../Client');
@@ -24,7 +25,7 @@ xhrMock.prototype.addEventListener = function (_, func) {
 xhrMock.prototype.send = function () {
     console.log('sending...')
     this.status = 401;
-    this.response = 'fuck you!';
+    this.response = authErrorMessage;
 
     this.func();
 }
@@ -77,6 +78,6 @@ describe('Auth', () => {
 
         console.log('stage = ', wrapper.state())
 
-        expect(wrapper.state().errors).toEqual({summary: 'fuck you!'});
+        expect(wrapper.state().errors).toEqual({summary: authErrorMessage});
     })
 });

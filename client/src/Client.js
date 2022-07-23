@@ -1,6 +1,7 @@
 import Auth from './auth/auth';
 import {browserHistory} from 'react-router';
 import OrderStatus from '../../bll/orderStatus';
+import {authErrorMessage} from "../share/constants";
 
 async function checkStatus(response) {
     if (response.status >= 200 && response.status < 300) {
@@ -19,7 +20,7 @@ async function handleError(ex) {
         if (ex.authPath) {
             browserHistory.push(ex.authPath);
         } else {
-            console.error('fuck you!');
+            console.error(authErrorMessage);
         }
     }
 
