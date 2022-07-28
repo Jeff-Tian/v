@@ -21,14 +21,17 @@ let readFileThunk = function (src) {
 };
 
 function helper(app, router, render) {
+    const healthcheck = function (ctx, next) {
+        ctx.cookies.set('z_c0', '2')
+        ctx.cookies.set('KLBRSID', 'e42')
+        ctx.body = {
+            everything: 'is ok', time: new Date(), nev: '' + process.env.NODE_ENV
+        };
+    };
+
     router
-        .get('/healthcheck', function (ctx, next) {
-            ctx.cookies.set('z_c0', '2')
-            ctx.cookies.set('KLBRSID', 'e42')
-            ctx.body = {
-                everything: 'is ok', time: new Date(), nev: '' + process.env.NODE_ENV
-            };
-        });
+        .get('/healthcheck', healthcheck)
+        .post('/healthcheck', healthcheck)
 }
 
 function renderIndex() {

@@ -3,8 +3,9 @@
 let prepare = require('./helper/prepare');
 let It = prepare.It;
 
-describe('buzz admin server', function () {
+describe('server healthcheck', function () {
     It.get('/healthcheck', {}, 200, /is ok/);
+    It.post('/healthcheck', {}, 200, /is ok/);
 
     // It.get('/sign-in', {}, 200, /Buzz buzz English Admin/i);
 
