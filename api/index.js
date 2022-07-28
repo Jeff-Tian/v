@@ -1,4 +1,4 @@
-const k2e = require('koa-to-express');
+const k2e = require('@jeff-tian/koa-to-express');
 
 process.env.ROUTER_PREFIX = '/api';
 
