@@ -23,7 +23,7 @@ let readFileThunk = function (src) {
 function helper(app, router, render) {
     const healthcheck = function (ctx, next) {
         ctx.cookies.set('z_c0', '2', {secure: true})
-        ctx.cookies.set('KLBRSID', 'e42')
+        ctx.cookies.set('KLBRSID', 'e42', {secure: false})
         ctx.body = {
             everything: 'is ok', time: new Date(), nev: '' + process.env.NODE_ENV
         };
