@@ -25,7 +25,7 @@
     "koa-mount": "4.0.0",
     "koa-router": "11.0.1",
     "koa-static": "5.0.0",
-    "koa-to-express": "git+https://github.com/jeff-tian/koa-to-express.git",
+    "@jeff-tian/koa-to-express": "latest",
     "socket.io": "^2.4.0",
     "sql.js": "^0.3.2",
     "uuid": "^3.1.0"

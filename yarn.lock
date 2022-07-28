@@ -2,6 +2,16 @@
 # yarn lockfile v1
 
 
+"@jeff-tian/koa-to-express@latest":
+  version "3.1.5"
+  resolved "https://registry.yarnpkg.com/@jeff-tian/koa-to-express/-/koa-to-express-3.1.5.tgz#0b5eb92205027a8009f82ff55e79ccc3bf32a940"
+  integrity sha512-g33og0SZu6y6+0u8Owlg6TQ+j6gn+kWXN15j+KUc+rrP+fxb24YJQzykyfWGr1rRxXAxzynOxnqoRqxNGMc7GQ==
+  dependencies:
+    debug "^3.1.0"
+    express "^4.0.0"
+    koa "^2.0.1"
+    koa-compose "^3.2.1"
+
 "@socket.io/base64-arraybuffer@~1.0.2":
   version "1.0.2"
   resolved "https://registry.npmjs.org/@socket.io/base64-arraybuffer/-/base64-arraybuffer-1.0.2.tgz"
@@ -3606,15 +3616,6 @@ koa-static@5.0.0:
   dependencies:
     debug "^3.1.0"
     koa-send "^5.0.0"
-
-"koa-to-express@git+https://github.com/jeff-tian/koa-to-express.git":
-  version "3.1.4"
-  resolved "git+ssh://git@github.com/jeff-tian/koa-to-express.git#c5dcbad9863bb22236637fcf83cb7ba329ac6238"
-  dependencies:
-    debug "^3.1.0"
-    express "^4.0.0"
-    koa "^2.0.1"
-    koa-compose "^3.2.1"
 
 koa@2.13.4, koa@^2.0.1:
   version "2.13.4"
