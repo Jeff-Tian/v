@@ -1,7 +1,7 @@
 'use strict';
 
 const Koa = require('koa');
-const app = module.exports = new Koa();
+const app = module.exports = new Koa({proxy: true});
 
 const config = require('./config');
 const path = require('path');
