@@ -45,7 +45,7 @@ module.exports = {
         };
 
         const res = await axios.post('http://uni-orders:3000/orders', {
-            cents: 1,
+            cents: 2,
             remark: `v-order`,
             type,
             paymentMethod
@@ -57,23 +57,11 @@ module.exports = {
     },
 
     list: function () {
-        let orderList = Object.keys(orders).map(orderId => orders[orderId]);
-
-        return orderList.sort((o1, o2) => {
-            if (o1.createdTime > o2.createdTime) {
-                return -1;
-            }
-
-            if (o1.createdTime < o2.createdTime) {
-                return 1;
-            }
-
-            return 0;
-        });
+        return axios.get(`http://uni-orders:3000/orders`).then(({data: orders}) => orders.map(this.convertUniOrderToVOrder))
     },
 
     get: function (orderId) {
-        return orders[orderId] || {};
+        return axios.get(`http://uni-orders:3000/orders/${orderId}`).then(({data: order}) => this.convertUniOrderToVOrder(order))
     },
 
     notifyClient: function (order) {
