@@ -15,7 +15,7 @@ let server = app.listen();
 
 describe('admin order features', function () {
     // const scope = nock('https://uni-orders-jeff-tian.cloud.okteto.net').persist()
-    const scope = nock('http://uni-orders:3000').persist()
+    const scope = nock('http://uni-orders:3000')
 
     it('requires log on for accessing admin api orders', function* () {
         yield  request(server).get('/admin/api/orders')
@@ -23,27 +23,34 @@ describe('admin order features', function () {
             .end();
     });
 
-    it('lists all orders', function* () {
-        scope.post('/orders', "{\"cents\":1,\"remark\":\"v-order\",\"type\":\"qr-remove\"}").reply(200,
-            {
-                "id": 5,
-                "number": "2022-08-02-16294579",
-                "cents": 1,
-                "randomDiscountCents": 1,
-                "status": 0,
-                "created_at": "2022-08-02T04:58:14.579Z",
-                "paid_at": null,
-                "cancelled_at": null,
-                "timeout_at": null,
-                "remark": "v-order"
-            })
+    it('lists all orders', async function () {
+        const fakeOrder = {
+            "id": 5,
+            "number": "2022-08-02-16294579",
+            "cents": 1,
+            "randomDiscountCents": 1,
+            "status": 0,
+            "created_at": "2022-08-02T04:58:14.579Z",
+            "paid_at": null,
+            "cancelled_at": null,
+            "timeout_at": null,
+            "remark": "v-order"
+        };
 
-        orderBLL.create('qr-remove');
-        orderBLL.create('qr-remove');
+        scope
+            .persist()
+            .post('/orders', "{\"cents\":2,\"remark\":\"v-order\",\"type\":\"qr-remove\"}")
+            .reply(200,
+            fakeOrder)
 
-        expect(orderBLL.list().length).to.be(2);
+        scope.persist().get('/orders').reply(200, [fakeOrder, fakeOrder])
 
-        yield request(server).get('/admin/api/orders')
+        // await orderBLL.create('qr-remove');
+        await orderBLL.create('qr-remove');
+
+        expect((await orderBLL.list()).length).to.be(2);
+
+        await request(server).get('/admin/api/orders')
             .auth(process.env.V_ADMIN, process.env.V_PWD)
             .expect(200)
             .expect('Content-Type', /json/)

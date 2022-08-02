@@ -56,8 +56,8 @@ module.exports = {
         return this.convertUniOrderToVOrder(res.data);
     },
 
-    list: function () {
-        return axios.get(`http://uni-orders:3000/orders`).then(({data: orders}) => orders.map(this.convertUniOrderToVOrder))
+    list: async function () {
+        return axios.get(`http://uni-orders:3000/orders`).then(({data: orders}) => orders.map(this.convertUniOrderToVOrder.bind(this)))
     },
 
     get: async function (orderId) {
