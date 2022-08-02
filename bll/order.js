@@ -32,7 +32,7 @@ module.exports = {
         }
     },
 
-    create: function (type, paymentMethod) {
+    create: async function (type, paymentMethod) {
         let orderId = uuidv1();
 
         orders[orderId] = {
@@ -44,12 +44,16 @@ module.exports = {
             orderId: orderId
         };
 
-        return axios.post('https://uni-orders-jeff-tian.cloud.okteto.net/orders', {
+        const res = await axios.post('https://uni-orders-jeff-tian.cloud.okteto.net/orders', {
             cents: 1,
             remark: `v-order`,
             type,
             paymentMethod
         })
+
+        console.log('res = ', res);
+
+        return res;
     },
 
     list: function () {

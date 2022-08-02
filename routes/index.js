@@ -90,10 +90,10 @@ function socketIO(app, router, render, server) {
             console.log('user disconnected');
         });
 
-        socket.on('order-qr-remove', function (msg) {
+        socket.on('order-qr-remove', async function (msg) {
             if (typeof msg === 'object') {
                 if (msg.message === 'create') {
-                    io.emit('order-qr-remove', order.create('qr-remove', msg.paymentMethod));
+                    io.emit('order-qr-remove', await order.create('qr-remove', msg.paymentMethod));
                 }
 
                 if (msg.message === OrderStatus.claimPaid) {
