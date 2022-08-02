@@ -51,9 +51,9 @@ module.exports = {
             paymentMethod
         })
 
-        console.log('res = ', res);
+        console.log('res = ', res.data);
 
-        return res;
+        return res.data;
     },
 
     list: function () {
