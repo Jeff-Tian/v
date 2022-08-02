@@ -24,7 +24,19 @@ describe('admin order features', function () {
     });
 
     it('lists all orders', function* () {
-        scope.post('/orders', "{\"cents\":1,\"remark\":\"v-order\",\"type\":\"qr-remove\"}").reply(200, {})
+        scope.post('/orders', "{\"cents\":1,\"remark\":\"v-order\",\"type\":\"qr-remove\"}").reply(200,
+            {
+                "id": 5,
+                "number": "2022-08-02-16294579",
+                "cents": 1,
+                "randomDiscountCents": 1,
+                "status": 0,
+                "created_at": "2022-08-02T04:58:14.579Z",
+                "paid_at": null,
+                "cancelled_at": null,
+                "timeout_at": null,
+                "remark": "v-order"
+            })
 
         orderBLL.create('qr-remove');
         orderBLL.create('qr-remove');
