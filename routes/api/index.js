@@ -7,7 +7,7 @@ const asyncProxy = require('../../common/async-proxy');
 
 router
     .get('/order/:orderId', async function (ctx, next) {
-        ctx.body = orderBll.get(ctx.params.orderId);
+        ctx.body = await orderBll.get(ctx.params.orderId);
     })
 
     .get('/wechat-api/sign', async function (ctx, next) {

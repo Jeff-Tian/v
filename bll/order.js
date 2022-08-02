@@ -60,8 +60,10 @@ module.exports = {
         return axios.get(`http://uni-orders:3000/orders`).then(({data: orders}) => orders.map(this.convertUniOrderToVOrder))
     },
 
-    get: function (orderId) {
-        return axios.get(`http://uni-orders:3000/orders/${orderId}`).then(({data: order}) => this.convertUniOrderToVOrder(order))
+    get: async function (orderId) {
+        const {data: order} = await axios.get(`http://uni-orders:3000/orders/${orderId}`)
+        console.log('uniorder = ', order)
+        return this.convertUniOrderToVOrder(order)
     },
 
     notifyClient: function (order) {
