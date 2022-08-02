@@ -53,7 +53,7 @@ module.exports = {
 
         console.log('res = ', res.data);
 
-        return res.data;
+        return this.convertUniOrderToVOrder(res.data);
     },
 
     list: function () {
