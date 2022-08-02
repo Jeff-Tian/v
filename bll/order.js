@@ -1,10 +1,37 @@
 const uuidv1 = require('uuid/v1');
 const orderStatus = require('./orderStatus');
+const axios = require("axios");
 
 let orders = {};
 let io = null;
 
 module.exports = {
+    convertUniOrderStatusToVOrderStatus(uniOrderStatus) {
+        switch (uniOrderStatus) {
+            case 0:
+                return orderStatus.pendingPay
+            case 1:
+                return orderStatus.paid
+            case 2:
+                return orderStatus.cancelled
+            case 3:
+                return orderStatus.pendingPay
+            default:
+                throw new Error(`unrecognized uniOrderStatus: ${uniOrderStatus}`)
+        }
+    },
+
+    convertUniOrderToVOrder(uniOrder) {
+        return {
+            status: this.convertUniOrderStatusToVOrderStatus(uniOrder.status),
+            createdTime: uniOrder.created_at,
+            updatedTime: uniOrder.created_at,
+            type: uniOrder.remark,
+            paymentMethod: 'uniOrder',
+            orderId: uniOrder.id
+        }
+    },
+
     create: function (type, paymentMethod) {
         let orderId = uuidv1();
 
@@ -17,7 +44,12 @@ module.exports = {
             orderId: orderId
         };
 
-        return orders[orderId];
+        return axios.post('https://uni-orders-jeff-tian.cloud.okteto.net/orders', {
+            cents: 1,
+            remark: `v-order`,
+            type,
+            paymentMethod
+        })
     },
 
     list: function () {

@@ -30,7 +30,7 @@ describe('admin config api features', function () {
             .auth(process.env.V_ADMIN, process.env.V_PWD)
             .expect(200)
             .expect('Content-Type', /json/)
-            .expect(config)
+            .expect(JSON.stringify(config))
             .end();
     });
 
@@ -42,7 +42,7 @@ describe('admin config api features', function () {
             })
             .expect(200)
             .expect('Content-Type', /json/)
-            .expect(config)
+            .expect({...JSON.parse(JSON.stringify(config)), test: 'test'})
             .end();
 
         assert.equal(config.test, 'test');
