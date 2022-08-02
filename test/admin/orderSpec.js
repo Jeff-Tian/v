@@ -14,7 +14,8 @@ const nock = require("nock");
 let server = app.listen();
 
 describe('admin order features', function () {
-    const scope = nock('https://uni-orders-jeff-tian.cloud.okteto.net:443').persist()
+    // const scope = nock('https://uni-orders-jeff-tian.cloud.okteto.net').persist()
+    const scope = nock('http://uni-orders:3000').persist()
 
     it('requires log on for accessing admin api orders', function* () {
         yield  request(server).get('/admin/api/orders')

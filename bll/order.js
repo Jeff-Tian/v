@@ -44,7 +44,7 @@ module.exports = {
             orderId: orderId
         };
 
-        const res = await axios.post('https://uni-orders-jeff-tian.cloud.okteto.net/orders', {
+        const res = await axios.post('http://uni-orders:3000/orders', {
             cents: 1,
             remark: `v-order`,
             type,
