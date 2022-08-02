@@ -97,7 +97,7 @@ function socketIO(app, router, render, server) {
                 }
 
                 if (msg.message === OrderStatus.claimPaid) {
-                    let theOrder = order.get(msg.orderId);
+                    let theOrder = await order.get(msg.orderId);
                     theOrder.status = OrderStatus.claimPaid;
 
                     io.emit('order-qr-remove', {
@@ -106,14 +106,14 @@ function socketIO(app, router, render, server) {
                 }
 
                 if (config.trustMode) {
-                    let theOrder = order.get(msg.orderId);
+                    let theOrder = await order.get(msg.orderId);
                     theOrder.status = OrderStatus.paid;
 
                     order.notifyClient(theOrder);
                 }
 
                 if (msg.message === OrderStatus.cancelled) {
-                    let theOrder = order.get(msg.orderId);
+                    let theOrder = await order.get(msg.orderId);
                     theOrder.status = OrderStatus.cancelled;
 
                     io.emit('order-qr-remove', {
