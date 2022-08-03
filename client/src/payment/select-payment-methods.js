@@ -8,21 +8,27 @@ class SelectPaymentMethods extends Component {
 
         this.state = {
             methodList: [{
-                method: 'wechat-pay',
-                icon: '/icons/wechat-pay.jpg',
-                displayName: '微信支付',
+                method: 'wecom-pay',
+                icon: '/icons/wecom-pay.png',
+                displayName: '企业微信支付',
                 selected: true
-            }, {
-                method: 'alipay',
-                icon: '/icons/alipay.jpg',
-                displayName: '支付宝',
-                selected: false
-            }, {
-                method: 'bitcoin',
-                icon: '/icons/bitcoin.jpg',
-                displayName: '比特币',
-                selected: false
-            }]
+            },
+                {
+                    method: 'wechat-pay',
+                    icon: '/icons/wechat-pay.jpg',
+                    displayName: '微信支付',
+                    selected: false
+                }, {
+                    method: 'alipay',
+                    icon: '/icons/alipay.jpg',
+                    displayName: '支付宝',
+                    selected: false
+                }, {
+                    method: 'bitcoin',
+                    icon: '/icons/bitcoin.jpg',
+                    displayName: '比特币',
+                    selected: false
+                }]
         };
     }
 

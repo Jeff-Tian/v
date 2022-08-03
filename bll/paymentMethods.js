@@ -1,6 +1,14 @@
 'use strict';
 
 module.exports = {
+    'wecom-pay': {
+        method: 'wecom-pay',
+        image: '/icons/wecom-pay.png',
+        icon: 'wecom',
+        activeColor: 'green',
+        displayName: '企业微信支付',
+        receiverImage: '/images/we-com-pay.png'
+    },
     wechatPay: {
         method: 'wechat-pay',
         image: '/icons/wechat-pay.jpg',
