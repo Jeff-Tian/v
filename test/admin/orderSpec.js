@@ -73,14 +73,15 @@ describe('admin order features', function () {
                 "paid_at": null,
                 "cancelled_at": null,
                 "timeout_at": null,
-                "remark": "创世订单"
+                "remark": "创世订单",
+                "paymentMethod": "wecom-pay",
             }
 
             const vOrder = order.convertUniOrderToVOrder(uniOrder)
             assert.deepStrictEqual(vOrder, {
                 "createdTime": "2020-12-29T11:38:19.524Z",
                 "orderId": 4,
-                "paymentMethod": "uniOrder",
+                "paymentMethod": "wecom-pay",
                 "status": "pending-pay",
                 "type": "创世订单",
                 "updatedTime": "2020-12-29T11:38:19.524Z"

@@ -1,11 +1,11 @@
-FROM node:12
+FROM node:16
 RUN mkdir -p /home/server
 WORKDIR /home/server
 COPY . /home/server
 
-RUN npm i \
+RUN npm i --force \
     cd client \
-    npm i \
+    npm i --force \
     npm run build
 
 EXPOSE 3000
