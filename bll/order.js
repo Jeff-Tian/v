@@ -27,7 +27,7 @@ module.exports = {
             createdTime: uniOrder.created_at,
             updatedTime: uniOrder.created_at,
             type: uniOrder.remark,
-            paymentMethod: 'uniOrder',
+            paymentMethod: uniOrder.paymentMethod ?? 'uniOrder',
             orderId: uniOrder.id
         }
     },
