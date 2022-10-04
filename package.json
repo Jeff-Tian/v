@@ -45,7 +45,8 @@
     "prd": "NODE_ENV=production babel-node app.js",
     "e2e": "protractor ./tests/config.js",
     "e2e-driver": "webdriver-manager update && webdriver-manager start",
-    "okteto": "k8ss switch --cluster=okteto --namespace=jeff-tian&&kubectl apply -k k8s&&kubectl rollout restart deploy v",
+    "k8s": "kubectl apply -k k8s&&kubectl rollout restart deploy v",
+    "okteto": "k8ss switch --cluster=okteto --namespace=jeff-tian&&npm run k8s",
     "serverless": "V_ADMIN=test V_PWD=test node api/v.js"
   },
   "devDependencies": {
