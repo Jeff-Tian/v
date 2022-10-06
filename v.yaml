@@ -1,0 +1,22 @@
+apiVersion: core.oam.dev/v1beta1
+kind: Application
+metadata:
+  name: v
+  annotations: # include optional annotations and/or labels.
+    version: v1.0.0
+    description: "v"
+spec:
+  components:
+    - name: v
+      type: webservice
+      properties:
+        image: jefftian/vvv:latest
+        ports:
+          - port: 3000
+            expose: true
+      traits:
+        - type: napptive-ingress # a napptive-ingress trait to get a public endpoint
+          properties:
+            name: v
+            port: 3000
+            path: /
