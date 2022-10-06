@@ -91,6 +91,8 @@ function socketIO(app, router, render, server) {
         });
 
         socket.on('order-qr-remove', async function (msg) {
+            console.log('order-qr-remove message = ', msg);
+
             if (typeof msg === 'object') {
                 if (msg.message === 'create') {
                     io.emit('order-qr-remove', await order.create('qr-remove', msg.paymentMethod));
@@ -105,7 +107,7 @@ function socketIO(app, router, render, server) {
                     });
                 }
 
-                if (config.trustMode) {
+                if (config.trustMode && msg.orderId) {
                     let theOrder = await order.get(msg.orderId);
                     theOrder.status = OrderStatus.paid;
 

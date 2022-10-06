@@ -41,7 +41,7 @@ describe('admin order features', function () {
             .persist()
             .post('/orders', "{\"cents\":2,\"remark\":\"v-order\",\"type\":\"qr-remove\"}")
             .reply(200,
-            fakeOrder)
+                fakeOrder)
 
         scope.persist().get('/orders').reply(200, [fakeOrder, fakeOrder])
 
@@ -85,6 +85,31 @@ describe('admin order features', function () {
                 "status": "pending-pay",
                 "type": "创世订单",
                 "updatedTime": "2020-12-29T11:38:19.524Z"
+            })
+
+            const uOrder = {
+                number: '2022-10-06-51663370',
+                cents: 2,
+                randomDiscountCents: 1,
+                status: 0,
+                created_at: '2022-10-06T10:21:03.370Z',
+                remark: 'v-order',
+                type: 'qr-remove',
+                paymentMethod: 'wecom-pay',
+                paid_at: null,
+                cancelled_at: null,
+                timeout_at: null,
+                id: 21
+            }
+
+            const res2 = order.convertUniOrderToVOrder(uOrder)
+            assert.deepStrictEqual(res2, {
+                "createdTime": "2022-10-06T10:21:03.370Z",
+                "orderId": 21,
+                "paymentMethod": "wecom-pay",
+                "status": "pending-pay",
+                "type": "v-order",
+                "updatedTime": "2022-10-06T10:21:03.370Z"
             })
         })
 
