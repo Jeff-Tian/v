@@ -42,8 +42,7 @@ jobs:
           echo "Update image... ${IMAGE}"
           export PATCH='{"spec":{"workload":{"spec":{"containers":\ [{"name":"v", "image":"${IMAGE}"}]}}}}'
           echo "patch = ${PATCH}"
-          kubectl --kubeconfig ~/.napptive/default/napptive-kubeconfig patch deploy v --patch 
-          '{"spec":{"template":{"spec":{"containers":[{"image":"jefftian/vvv","name":"v"}]}}}}' --type=merge
+          kubectl --kubeconfig ~/.napptive/default/napptive-kubeconfig patch deploy v --patch '{"spec":{"template":{"spec":{"containers":[{"image":"jefftian/vvv","name":"v"}]}}}}' --type=merge
 
   deploy-napptive:
     runs-on: ubuntu-latest
