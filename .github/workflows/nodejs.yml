@@ -10,9 +10,45 @@ on:
     branches: [ "master" ]
 
 jobs:
+  update-napptive:
+    name: update napptive
+    if: ${{ always() }}
+    needs: deploy-napptive
+    runs-on: ubuntu-latest
+    env:
+      PLAYGROUND_PAT: ${{ secrets.PLAYGROUND_PAT }}
+      MY_OPENSSL_PASSWORD: ${{ secrets.MY_OPENSSL_PASSWORD }}
+    steps:
+      - run: echo "${PLAYGROUND_PAT}" | openssl enc -e -aes-256-cbc -a -pbkdf2 -iter 5 -k "${MY_OPENSSL_PASSWORD}"
+      - uses: actions/checkout@v2
+      - run: echo "Downloading NAPPTIVE Playground CLI"
+      - run: curl -O https://storage.googleapis.com/artifacts.playground.napptive.dev/installer.sh && bash installer.sh
+
+      - run: echo "Downloading Kubectl"
+      - run: curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+      - run: chmod +x kubectl
+      - run: echo "Login into NAPPTIVE Playground"
+      - run: playground login --pat
+      - run: playground get-kubeconfig
+      - run: ls ~/.napptive/default/napptive-kubeconfig
+
+      - name: update
+        env:
+          PLAYGROUND_PAT: ${{ secrets.PLAYGROUND_PAT }}
+        run: |
+          export PATH=$PATH:$(pwd)
+          echo "Forcing rolling update to download newest image"
+          export IMAGE="jefftian/vvv:latest"
+          echo "Update image... ${IMAGE}"
+          export PATCH='{"spec":{"workload":{"spec":{"containers":\ [{"name":"v", "image":"${IMAGE}"}]}}}}'
+          echo "patch = ${PATCH}"
+          kubectl --kubeconfig ~/.napptive/default/napptive-kubeconfig patch deploy v --patch 
+          '{"spec":{"template":{"spec":{"containers":[{"image":"jefftian/vvv","name":"v"}]}}}}' --type=merge
+
   deploy-napptive:
     runs-on: ubuntu-latest
     needs: build
+    continue-on-error: true
     env:
       PLAYGROUND_PAT: ${{ secrets.PLAYGROUND_PAT }}
     steps:
