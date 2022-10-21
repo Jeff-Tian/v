@@ -84,7 +84,10 @@ describe('admin order features', function () {
                 "paymentMethod": "wecom-pay",
                 "status": "pending-pay",
                 "type": "创世订单",
-                "updatedTime": "2020-12-29T11:38:19.524Z"
+                "updatedTime": "2020-12-29T11:38:19.524Z",
+                "cents": 100,
+                "finalCents": 78,
+                "randomDiscountCents": 22,
             })
 
             const uOrder = {
@@ -109,7 +112,10 @@ describe('admin order features', function () {
                 "paymentMethod": "wecom-pay",
                 "status": "pending-pay",
                 "type": "v-order",
-                "updatedTime": "2022-10-06T10:21:03.370Z"
+                "updatedTime": "2022-10-06T10:21:03.370Z",
+                "cents": 2,
+                "finalCents": 1,
+                "randomDiscountCents": 1
             })
         })
 

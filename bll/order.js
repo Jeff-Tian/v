@@ -28,7 +28,10 @@ module.exports = {
             updatedTime: uniOrder.created_at,
             type: uniOrder.remark,
             paymentMethod: uniOrder.paymentMethod || 'uniOrder',
-            orderId: uniOrder.id
+            orderId: uniOrder.id,
+            cents: uniOrder.cents,
+            randomDiscountCents: uniOrder.randomDiscountCents,
+            finalCents: uniOrder.cents - uniOrder.randomDiscountCents
         }
     },
 
