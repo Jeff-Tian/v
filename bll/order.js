@@ -48,8 +48,8 @@ module.exports = {
             orderId: orderId
         };
 
-        const res = await axios.post('http://uni-orders:3000/orders', {
-            cents: 2,
+        const res = await axios.post(`${config.uniOrders.url}/orders`, {
+            cents: 100,
             remark: `v-order`,
             type,
             paymentMethod

@@ -129,13 +129,13 @@ class Orders extends React.Component {
                     <div className={"content"}>
                         <div className={"header"}>订单号：{this.state.order.orderId}</div>
                         <div>
-                            原价： {this.state.order.cents}
+                            原价： {this.state.order.cents / 100} 元
                         </div>
                         <div>
-                            随机优惠： {this.state.order.randomDiscountCents}
+                            随机优惠： {this.state.order.randomDiscountCents / 100}元
                         </div>
                         <div>
-                            优惠后价格： {this.state.order.finalCents}
+                            优惠后价格： {this.state.order.finalCents / 100} 元
                         </div>
                         <div className={"meta"}>
                             状态: {this.state.order.status}
