@@ -38,7 +38,7 @@ function getConfig() {
             }
         }
 
-        if (['producation', 'uat', 'qa'].indexOf(process.env.NODE_ENV) >= 0) {
+        if (['production', 'uat', 'qa'].indexOf(process.env.NODE_ENV) >= 0) {
             config.publicFolder = 'client/build';
         }
 
