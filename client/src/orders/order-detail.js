@@ -5,8 +5,8 @@ import OrderStatus from '../../../bll/orderStatus';
 import {browserHistory} from 'react-router';
 import {Button, Container, Feed, Header, Icon, Segment} from 'semantic-ui-react';
 import PaymentMethods from '../../../bll/paymentMethods';
-
-const _ = require('lodash');
+import {getPaymentQrForOrder} from "../payment/payment-qr";
+import _ from "lodash";
 
 class Orders extends React.Component {
     constructor(props, context) {
@@ -105,7 +105,7 @@ class Orders extends React.Component {
                     </Container>
                     <div className="image">
                         <img
-                            src={PaymentMethods[this.state.order.paymentMethod] ? PaymentMethods[this.state.order.paymentMethod].receiverImage : PaymentMethods.wechatPay.receiverImage}
+                            src={getPaymentQrForOrder(this.state.order)}
                             alt="付款二维码"/>
                         {
                             this.state.order.paymentMethod === PaymentMethods.bitcoin.method ?
@@ -128,6 +128,15 @@ class Orders extends React.Component {
                     </div>
                     <div className={"content"}>
                         <div className={"header"}>订单号：{this.state.order.orderId}</div>
+                        <div>
+                            原价： {this.state.order.cents}
+                        </div>
+                        <div>
+                            随机优惠： {this.state.order.randomDiscountCents}
+                        </div>
+                        <div>
+                            优惠后价格： {this.state.order.finalCents}
+                        </div>
                         <div className={"meta"}>
                             状态: {this.state.order.status}
                             {this.state.order.paymentMethod && PaymentMethods[this.state.order.paymentMethod] ? (

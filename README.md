@@ -17,3 +17,8 @@ cd ..
 npm start
 ```
 
+## Run in local
+
+```shell
+NODE_ENV=local yarn start
+```

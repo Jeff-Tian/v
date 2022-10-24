@@ -1,6 +1,7 @@
 const uuidv1 = require('uuid/v1');
 const orderStatus = require('./orderStatus');
 const axios = require("axios");
+const config = require('../config')
 
 let orders = {};
 let io = null;
@@ -15,7 +16,7 @@ module.exports = {
             case 2:
                 return orderStatus.cancelled
             case 3:
-                return orderStatus.pendingPay
+                return orderStatus.timeout
             default:
                 throw new Error(`unrecognized uniOrderStatus: ${uniOrderStatus}`)
         }
@@ -64,7 +65,7 @@ module.exports = {
     },
 
     get: async function (orderId) {
-        const {data: order} = await axios.get(`http://uni-orders:3000/orders/${orderId}`)
+        const {data: order} = await axios.get(`${config.uniOrders.url}/orders/${orderId}`)
         console.log('uniorder = ', order)
         return this.convertUniOrderToVOrder(order)
     },

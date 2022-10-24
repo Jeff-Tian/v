@@ -1,11 +1,11 @@
 module.exports = {
     cdn: '',
-    trustMode: true,
+    trustMode: false,
     serviceCache: {
         host: 'localhost',
         port: 3000
     },
     uniOrders: {
-        url: 'http://uni-orders:3000',
+        url: 'https://uni-orders-jeff-tian.cloud.okteto.net',
     }
 };
