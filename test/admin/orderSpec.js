@@ -15,7 +15,7 @@ let server = app.listen();
 
 describe('admin order features', function () {
     // const scope = nock('https://uni-orders-jeff-tian.cloud.okteto.net').persist()
-    const scope = nock('http://uni-orders:3000')
+    const scope = nock('http://uni-orders:3000').persist()
 
     it('requires log on for accessing admin api orders', function* () {
         yield  request(server).get('/admin/api/orders')
@@ -38,8 +38,7 @@ describe('admin order features', function () {
         };
 
         scope
-            .persist()
-            .post('/orders', "{\"cents\":2,\"remark\":\"v-order\",\"type\":\"qr-remove\"}")
+            .post('/orders', "{\"cents\":100,\"remark\":\"v-order\",\"type\":\"qr-remove\"}")
             .reply(200,
                 fakeOrder)
 
@@ -82,7 +81,7 @@ describe('admin order features', function () {
                 "createdTime": "2020-12-29T11:38:19.524Z",
                 "orderId": 4,
                 "paymentMethod": "wecom-pay",
-                "status": "pending-pay",
+                "status": "timeout",
                 "type": "创世订单",
                 "updatedTime": "2020-12-29T11:38:19.524Z",
                 "cents": 100,
@@ -134,7 +133,7 @@ describe('admin order features', function () {
             })
 
             it('timeout --> timeout', () => {
-                assert.equal(order.convertUniOrderStatusToVOrderStatus(3), orderStatus.pendingPay)
+                assert.equal(order.convertUniOrderStatusToVOrderStatus(3), orderStatus.timeout)
             })
         })
     })
