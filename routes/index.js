@@ -38,8 +38,9 @@ function renderIndex() {
 
 function renderErrorInfo(self, app, router, render, next) {
     return {
-        message: 'all the predefined routes are not hit',
-        info: util.inspect({self: self, app: app, router: router, render: render, next: next})
+        message: 'all the predefined routes are not hit, please double check the file name, it\'s case sensitive!',
+        info: util.inspect({self: self, app: app, router: router, render: render, next: next}),
+        NODE_ENV: process.env.NODE_ENV
     }
 }
 
@@ -61,7 +62,6 @@ function publicRouter(app, router, render) {
             .get('/order/:orderId', renderIndexResponse)
             .get('/v/:uri/:orderId?', renderIndexResponse)
             .get('/sign-in', renderIndexResponse);
-
     } else {
         router
             .get('/v2.appcache', async function (ctx) {
