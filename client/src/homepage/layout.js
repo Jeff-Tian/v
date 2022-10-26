@@ -15,6 +15,7 @@ import Config from '../admin/config';
 import {Icon, Menu, Segment, Sidebar} from 'semantic-ui-react';
 import '../../public/lib/hammer.min';
 import '../../public/lib/hammer-time.min';
+import OrderList from "../orders/list";
 
 function isUserAuthenticated(nextState, replaceState) {
     if (!Auth.isUserAuthenticated()) {
@@ -60,6 +61,11 @@ class Layout extends Component {
             <Sidebar.Pushable as={Segment} basic>
                 <Sidebar as={Menu} animation='scale down' width='thin' visible={visible} icon='labeled' vertical
                          inverted>
+                    <Menu.Item name='/orders' active={activeItem === '/orders'}
+                               onClick={this.handleItemClick}>
+                        <Icon size="huge" name="yen sign"/>
+                        Wall of fame
+                    </Menu.Item>
                     <Menu.Item name='/' active={activeItem === '/'} onClick={this.handleItemClick}>
                         <Icon.Group>
                             <Icon size="huge" name="user circle outline"/>
@@ -81,6 +87,7 @@ class Layout extends Component {
                 <Sidebar.Pusher>
                     <Icon name="sliders horizontal" size="huge" onClick={this.toggleSidebar}></Icon>
                     <Router history={browserHistory}>
+                        <Route path="/orders" component={OrderList}/>
                         <Route path="/" component={Homepage}/>
                         <Route path="/v/:vid" component={V}/>
                         <Route path="/v/:vid/:orderId" component={V}/>
