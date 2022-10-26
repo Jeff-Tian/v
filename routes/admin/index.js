@@ -2,13 +2,13 @@ const auth = require('./auth');
 const Koa = require('koa');
 const app = new Koa();
 const router = require('koa-router')();
-const orderBll = require('../../bll/order');
+const orderBll = require('../../client/src/bll/order');
 const readFile = require('../../common/readFile');
 const path = require('path');
-let config = require('../../config');
+let config = require('../../client/src/config');
 const parse = require('co-body');
-const orderStatus = require('../../bll/orderStatus');
-const {authErrorMessage} = require("../../client/share/constants");
+const orderStatus = require('../../client/src/bll/orderStatus');
+const {authErrorMessage} = require("../../client/src/share/constants");
 
 function authenticateUser(ctx, username, password, returnUrl) {
     if (username === credentials.name && password === credentials.pass) {

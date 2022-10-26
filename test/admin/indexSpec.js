@@ -3,7 +3,7 @@
 let assert = require('assert'),
     request = require('co-supertest'),
     app = require('../../app'),
-    orderBLL = require('../../bll/order');
+    orderBLL = require('../../client/src/bll/order');
 
 require('co-mocha');
 let expect = require('expect.js');

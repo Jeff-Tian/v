@@ -3,7 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import Auth from '../../src/auth/login-page';
-import {authErrorMessage} from "../../share/constants";
+import {authErrorMessage} from "../../src/share/constants";
 // import Client from '../../src/Client';
 
 // jest.mock('../src/../Client');

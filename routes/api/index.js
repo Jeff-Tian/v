@@ -1,8 +1,8 @@
 const Koa = require('koa');
 const app = new Koa();
 const router = require('koa-router')();
-const orderBll = require('../../bll/order');
-const config = require('../../config');
+const orderBll = require('../../client/src/bll/order');
+const config = require('../../client/src/config');
 const asyncProxy = require('../../common/async-proxy');
 
 router

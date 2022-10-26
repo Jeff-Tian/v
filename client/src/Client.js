@@ -1,7 +1,7 @@
 import Auth from './auth/auth';
 import {browserHistory} from 'react-router';
-import OrderStatus from '../../bll/orderStatus';
-import {authErrorMessage} from "../share/constants";
+import OrderStatus from './bll/orderStatus';
+import {authErrorMessage} from "./share/constants";
 
 async function checkStatus(response) {
     if (response.status >= 200 && response.status < 300) {

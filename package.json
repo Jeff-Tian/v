@@ -34,7 +34,7 @@
   "scripts": {
     "start": "concurrently \"npm run server\" \"npm run client\"",
     "server": "V_ADMIN=test V_PWD=test babel-node app.js",
-    "client": "PORT=80 babel-node start-client.js",
+    "client": "PORT=8088 babel-node start-client.js",
     "test": "npm run server-test&&cd client&&npm test&&cd .. ",
     "e2e-test": "concurrently \"yarn e2e-driver\" \"yarn start\" \"sleep 10 && yarn e2e\" \"sleep 20 && killall node\"",
     "server-test": "V_ADMIN=test V_PWD=test mocha --recursive --harmony",

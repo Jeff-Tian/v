@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import logo from '../../public/v/v.png';
+import logo from '../v/v.png';
 import 'semantic-ui-css/semantic.min.css';
 import '../App.css';
 import classNames from 'classnames';

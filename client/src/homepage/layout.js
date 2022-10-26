@@ -13,8 +13,6 @@ import NotFound404 from '../errors/404';
 import Settings from '../admin/settings';
 import Config from '../admin/config';
 import {Icon, Menu, Segment, Sidebar} from 'semantic-ui-react';
-import '../../public/lib/hammer.min';
-import '../../public/lib/hammer-time.min';
 import OrderList from "../orders/list";
 
 function isUserAuthenticated(nextState, replaceState) {

@@ -12,7 +12,7 @@ function convertImageToDataURL(img) {
     return dataURL;
 }
 
-module.exports = {
+const exports = {
     readImageFromFile: function (target, callback) {
         if (target.files && target.files[0]) {
             let fr = new FileReader();
@@ -63,3 +63,5 @@ module.exports = {
         };
     }
 };
+
+export default exports;

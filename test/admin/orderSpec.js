@@ -3,12 +3,12 @@
 let assert = require('assert'),
     request = require('co-supertest'),
     app = require('../../app'),
-    orderBLL = require('../../bll/order');
+    orderBLL = require('../../client/src/bll/order');
 
 require('co-mocha');
 let expect = require('expect.js');
-const order = require("../../bll/order");
-const orderStatus = require("../../bll/orderStatus");
+const order = require("../../client/src/bll/order");
+const orderStatus = require("../../client/src/bll/orderStatus");
 const nock = require("nock");
 
 let server = app.listen();

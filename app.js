@@ -3,7 +3,7 @@
 const Koa = require('koa');
 const app = module.exports = new Koa({proxy: true});
 
-const config = require('./config');
+const config = require('./client/src/config');
 const path = require('path');
 const Router = require('koa-router');
 const router = new Router({

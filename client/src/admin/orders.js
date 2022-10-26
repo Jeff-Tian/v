@@ -1,6 +1,6 @@
 import React from 'react';
 import Client from '../Client';
-import OrderStatus from '../../../bll/orderStatus';
+import OrderStatus from '../bll/orderStatus';
 import socket from '../socket';
 import {Button, Icon} from 'semantic-ui-react';
 import AdminMenus from './menu';

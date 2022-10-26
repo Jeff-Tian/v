@@ -1,6 +1,6 @@
 import React from 'react';
 import AdminMenus from './menu';
-import config from '../../../config';
+import config from '../config';
 import {Checkbox, Container, Message, Segment} from 'semantic-ui-react';
 import Client from '../Client';
 

@@ -4,7 +4,7 @@ let assert = require('assert'),
     request = require('co-supertest'),
     app = require('../../app');
 
-let config = require('../../config');
+let config = require('../../client/src/config');
 
 require('co-mocha');
 let expect = require('expect.js');

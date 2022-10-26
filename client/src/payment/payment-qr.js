@@ -1,4 +1,4 @@
-import PaymentMethods from "../../../bll/paymentMethods";
+import PaymentMethods from "../bll/paymentMethods";
 
 export const getPaymentQrForOrder = (order) => {
     if(order.paymentMethod === 'wecom-pay') {

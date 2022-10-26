@@ -1,5 +1,5 @@
 import React from 'react';
-import config from '../../../config';
+import config from '../config';
 import Client from '../Client';
 import {Container} from 'semantic-ui-react';
 

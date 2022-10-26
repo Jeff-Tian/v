@@ -53,7 +53,7 @@ function getOffset(img, offsetX, offsetY, rotated) {
     };
 }
 
-module.exports = {
+const exports = {
     circleCropImageToCanvas: function (img, canvas, context, offsetX, offsetY, scaleX, scaleY, rotated) {
         let min = Math.min(img.naturalWidth, img.naturalHeight);
 
@@ -83,3 +83,5 @@ module.exports = {
 
     getPanRange: getPanRange
 };
+
+export default exports;

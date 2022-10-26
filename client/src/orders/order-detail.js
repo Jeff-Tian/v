@@ -1,10 +1,10 @@
 import React from 'react';
 import Client from '../Client';
 import socket from '../socket';
-import OrderStatus from '../../../bll/orderStatus';
+import OrderStatus from '../bll/orderStatus';
 import {browserHistory} from 'react-router';
 import {Button, Container, Feed, Header, Icon, Segment} from 'semantic-ui-react';
-import PaymentMethods from '../../../bll/paymentMethods';
+import PaymentMethods from '../bll/paymentMethods';
 import {getPaymentQrForOrder} from "../payment/payment-qr";
 import _ from "lodash";
 

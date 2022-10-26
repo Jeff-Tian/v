@@ -1,4 +1,4 @@
-module.exports = {
+const exports = {
     decorateV: async function (canvas, context, theInscribedCircle, v) {
         return new Promise(
             (resolve, reject) => {
@@ -19,3 +19,5 @@ module.exports = {
         );
     }
 };
+
+export default exports;

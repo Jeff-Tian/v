@@ -1,4 +1,4 @@
-module.exports = {
+const exports = {
     decorateQR: async function (canvas, context, theInscribedCircle, qr) {
         return new Promise((resolve, reject) => {
             const img = new Image();
@@ -14,3 +14,5 @@ module.exports = {
         });
     }
 };
+
+export default exports;

@@ -20,8 +20,9 @@ console.log(process.env.REACT_APP_BUILT_BY);
 console.log(devConf);
 console.log('prodConf = ', prodConf);
 console.log('~~~~~~~~~~~~~~~~~');
+console.log('configPath = ', configPath);
 
-var envConfig = require(configPath);
+// var envConfig = require(configPath === '.' ? './index.js' : configPath);
 
 function getConfig() {
     if (!config) {
@@ -42,7 +43,7 @@ function getConfig() {
             config.publicFolder = 'client/build';
         }
 
-        config = Object.assign(config, envConfig);
+        // config = Object.assign(config, envConfig);
     }
 
     return config;

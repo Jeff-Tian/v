@@ -1,11 +1,11 @@
 'use strict';
 
-const config = require('../config');
+const config = require('../client/src/config');
 const mount = require('koa-mount');
 const serveStatic = require('koa-static');
 const fs = require('fs');
-const order = require('../bll/order');
-const OrderStatus = require('../bll/orderStatus');
+const order = require('../client/src/bll/order');
+const OrderStatus = require('../client/src/bll/orderStatus');
 const util = require('util');
 
 let readFileThunk = function (src) {

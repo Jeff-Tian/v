@@ -1,4 +1,4 @@
-const {authErrorMessage} = require("../../client/share/constants");
+const {authErrorMessage} = require("../../client/src/share/constants");
 describe('Login', () => {
 
     beforeEach(() => {
