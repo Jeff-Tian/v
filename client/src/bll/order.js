@@ -1,4 +1,4 @@
-const uuidv1 = require('uuid/v1');
+const {v1: uuidv1} = require('uuid');
 const orderStatus = require('./orderStatus');
 const axios = require("axios");
 const config = require('../config')
