@@ -12,7 +12,7 @@
     "react": "16.8.6",
     "react-dom": "16.8.6",
     "react-router": "3.2.6",
-    "semantic-ui-css": "git+https://github.com/Jeff-Tian/Semantic-UI-CSS.git#withoutGoogle",
+    "semantic-ui-css": "2.5.0",
     "semantic-ui-react": "1.1.1",
     "socket.io": "^2.4.0"
   },

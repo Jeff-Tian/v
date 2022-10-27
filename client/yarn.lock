@@ -10033,10 +10033,10 @@ selfsigned@^1.10.8:
   dependencies:
     node-forge "^0.10.0"
 
-"semantic-ui-css@git+https://github.com/Jeff-Tian/Semantic-UI-CSS.git#withoutGoogle":
-  version "2.2.13"
-  resolved "git+ssh://git@github.com/Jeff-Tian/Semantic-UI-CSS.git#a17874e985e4a123821172ceb38eb02680e4b8eb"
-  integrity sha512-6LneHmdvS6gF6fkbOBNLug1F9bohbN2E50U4gWUs5aRSH4WdBGu5s1xhTcoNB6KEgePxXHNGKByU4t1km+zcxA==
+semantic-ui-css@2.5.0:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/semantic-ui-css/-/semantic-ui-css-2.5.0.tgz#b3b7b58b5ffbe6d6fb6549beded16e79a9aa64eb"
+  integrity sha512-jIWn3WXXE2uSaWCcB+gVJVRG3masIKtTMNEP2X8Aw909H2rHpXGneYOxzO3hT8TpyvB5/dEEo9mBFCitGwoj1A==
   dependencies:
     jquery x.*
 
