@@ -8,13 +8,13 @@ v
 Use node 16.10.0:
 
 ```
-npm install  --registry=https://registry.npm.taobao.org
+yarn
 cd client
-npm install  --registry=https://registry.npm.taobao.org
+yarn
 
 cd ..
 
-npm start
+NODE_ENV=local yarn start
 ```
 
 ## Run in local
