@@ -22,7 +22,11 @@ console.log('prodConf = ', prodConf);
 console.log('~~~~~~~~~~~~~~~~~');
 console.log('configPath = ', configPath);
 
-// var envConfig = require(configPath === '.' ? './index.js' : configPath);
+let envConfig = {}
+if (process && process.title.endsWith('node')) {
+    envConfig = require(configPath === '.' ? './index.js' : configPath);
+    console.log('envConfig = ', envConfig);
+}
 
 function getConfig() {
     if (!config) {
@@ -43,7 +47,8 @@ function getConfig() {
             config.publicFolder = 'client/build';
         }
 
-        // config = Object.assign(config, envConfig);
+        config = Object.assign(config, envConfig);
+        console.log('config = ', config)
     }
 
     return config;

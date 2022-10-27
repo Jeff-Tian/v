@@ -4,7 +4,7 @@ import {useRequest} from "ahooks-v2";
 
 const OrderList = () => {
     const {loading, data: orders, error} = useRequest({
-        url: 'https://uni-orders-jeff-tian.cloud.okteto.net/orders',
+        url: '/api/orders',
         method: 'get'
     })
 

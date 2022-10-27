@@ -9,6 +9,9 @@ router
     .get('/order/:orderId', async function (ctx, next) {
         ctx.body = await orderBll.get(ctx.params.orderId);
     })
+    .get('/orders', async function (ctx, next) {
+        ctx.body = await orderBll.list();
+    })
 
     .get('/wechat-api/sign', async function (ctx, next) {
         ctx.body = await asyncProxy({

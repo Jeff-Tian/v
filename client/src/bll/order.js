@@ -32,7 +32,8 @@ module.exports = {
             orderId: uniOrder.id,
             cents: uniOrder.cents,
             randomDiscountCents: uniOrder.randomDiscountCents,
-            finalCents: uniOrder.cents - uniOrder.randomDiscountCents
+            finalCents: uniOrder.cents - uniOrder.randomDiscountCents,
+            orderNumber: uniOrder.number,
         }
     },
 
@@ -61,7 +62,7 @@ module.exports = {
     },
 
     list: async function () {
-        return axios.get(`http://uni-orders:3000/orders`).then(({data: orders}) => orders.map(this.convertUniOrderToVOrder.bind(this)))
+        return axios.get(`${config.uniOrders.url}/orders`).then(({data: {data: orders}}) => orders.map(this.convertUniOrderToVOrder.bind(this)))
     },
 
     get: async function (orderId) {

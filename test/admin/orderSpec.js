@@ -42,7 +42,7 @@ describe('admin order features', function () {
             .reply(200,
                 fakeOrder)
 
-        scope.persist().get('/orders').reply(200, [fakeOrder, fakeOrder])
+        scope.persist().get('/orders').reply(200, {data: [fakeOrder, fakeOrder]})
 
         // await orderBLL.create('qr-remove');
         await orderBLL.create('qr-remove');
@@ -87,6 +87,7 @@ describe('admin order features', function () {
                 "cents": 100,
                 "finalCents": 78,
                 "randomDiscountCents": 22,
+                "orderNumber": "2020-12-29-41899524"
             })
 
             const uOrder = {
@@ -114,7 +115,8 @@ describe('admin order features', function () {
                 "updatedTime": "2022-10-06T10:21:03.370Z",
                 "cents": 2,
                 "finalCents": 1,
-                "randomDiscountCents": 1
+                "randomDiscountCents": 1,
+                "orderNumber": "2022-10-06-51663370"
             })
         })
 
