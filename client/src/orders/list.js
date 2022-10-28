@@ -23,7 +23,8 @@ const OrderList = () => {
 
     return <div className="ui container">
         <div className="ui three doubled stackable cards">
-            {orders.map(order => <OrderCard key={order.id} order={order}/>)}
+            <OrderCard key={0} order={{orderId: 0}}/>
+            {orders.map(order => <OrderCard key={order.orderId} order={order}/>)}
         </div>
     </div>;
 }

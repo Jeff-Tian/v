@@ -59,6 +59,7 @@ function publicRouter(app, router, render) {
                 ctx.set('Content-Type', 'text/cache-manifest');
                 ctx.body = await readFileThunk(__dirname + `/../public/v2.appcache`);
             })
+            .get('/orders', renderIndexResponse)
             .get('/order/:orderId', renderIndexResponse)
             .get('/v/:uri/:orderId?', renderIndexResponse)
             .get('/sign-in', renderIndexResponse);
