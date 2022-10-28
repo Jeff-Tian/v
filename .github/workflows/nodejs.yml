@@ -80,7 +80,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16.10.0
-          cache: 'npm'
       - run: yarn
       - run: cd client && yarn
       - run: echo "${{secrets.DOCKER_PASSWORD}}" | docker login -u "${{secrets.DOCKER_USERNAME}}" --password-stdin
@@ -111,7 +110,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
       - run: yarn && cd client && yarn
       - run: yarn build --if-present
       - run: yarn run server-test
