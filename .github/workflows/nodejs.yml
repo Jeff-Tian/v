@@ -111,7 +111,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: yarn && cd client && yarn
-      - run: yarn build --if-present
+      - run: yarn build
       - run: yarn run server-test
       - run: yarn run client-test-exit
 #      - run: npm run test:e2e
