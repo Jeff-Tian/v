@@ -12,6 +12,9 @@ router
     .get('/orders', async function (ctx, next) {
         ctx.body = await orderBll.list();
     })
+    .post('/orders', async function(ctx, next) {
+        ctx.body = await orderBll.create(ctx.request.body.type, ctx.request.body.paymentMethod);
+    })
 
     .get('/wechat-api/sign', async function (ctx, next) {
         ctx.body = await asyncProxy({

@@ -8,12 +8,12 @@ const createOrder = async () => {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({type: 'wall-of-fame'})
+        body: JSON.stringify({type: 'wall-of-fame', paymentMethod: 'wecom-pay'})
     })
 
-    const {data: order} = await response.json()
+    const order = await response.json()
 
-    browserHistory.push(`/orders/${order.orderId}?redirect=/orders`)
+    browserHistory.push(`/order/${order.orderId}?redirect=/orders`)
 }
 
 const OrderPlaceholder = () => {
