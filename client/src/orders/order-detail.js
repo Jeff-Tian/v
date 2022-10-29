@@ -7,13 +7,17 @@ import {Button, Container, Feed, Header, Icon, Segment} from 'semantic-ui-react'
 import PaymentMethods from '../bll/paymentMethods';
 import {getPaymentQrForOrder} from "../payment/payment-qr";
 import _ from "lodash";
+import qs from 'querystring';
 
 class Orders extends React.Component {
     constructor(props, context) {
         super(props, context);
 
+        const redirect = props.location.search ? qs.parse(props.location.search)['?redirect'] : undefined;
+
         this.state = {
-            order: {}
+            order: {},
+            redirect,
         };
     }
 
@@ -24,7 +28,7 @@ class Orders extends React.Component {
             return browserHistory.push(`/v/local-image`);
         }
 
-        if (order.status === OrderStatus.paid) {
+        if (order.status === OrderStatus.paid && !this.state.redirect) {
             return browserHistory.push(`/v/local-image/${order.orderId}`);
         }
 
@@ -39,6 +43,7 @@ class Orders extends React.Component {
         let self = this;
         socket.on('order-paid', function (msg) {
             console.log('order-paid: ', msg);
+            alert(msg);
             if (msg.orderId === self.props.params.orderId) {
                 self.setState({
                     order: msg
@@ -50,6 +55,10 @@ class Orders extends React.Component {
                 } else {
                     window.close();
                 }
+            }
+
+            if (self.state.redirect) {
+                browserHistory.push(self.state.redirect);
             }
         });
 
