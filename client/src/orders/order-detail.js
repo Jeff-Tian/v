@@ -8,8 +8,9 @@ import PaymentMethods from '../bll/paymentMethods';
 import {getPaymentQrForOrder} from "../payment/payment-qr";
 import _ from "lodash";
 import qs from 'querystring';
+import OrderHeader from "./header";
 
-class Orders extends React.Component {
+class OrderDetail extends React.Component {
     constructor(props, context) {
         super(props, context);
 
@@ -110,7 +111,7 @@ class Orders extends React.Component {
             <div className="ui container">
                 <div className="ui fluid card">
                     <Container fluid>
-                        <Header size="large" color="red" as="h3">在付款后请不要关闭本页面，在验证通过后本页面会自动关闭！</Header>
+                        <OrderHeader order={this.state.order} redirect={this.state.redirect}/>
                     </Container>
                     <div className="image">
                         <img
@@ -189,4 +190,4 @@ class Orders extends React.Component {
     }
 }
 
-export default Orders;
+export default OrderDetail;
