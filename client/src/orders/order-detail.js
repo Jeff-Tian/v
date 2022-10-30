@@ -9,6 +9,7 @@ import {getPaymentQrForOrder} from "../payment/payment-qr";
 import _ from "lodash";
 import qs from 'querystring';
 import OrderHeader from "./header";
+import Redirect from "../redirect";
 
 class OrderDetail extends React.Component {
     constructor(props, context) {
@@ -33,7 +34,9 @@ class OrderDetail extends React.Component {
         }
 
         if (order.status === OrderStatus.paid && !this.state.redirect) {
-            return browserHistory.push(`/v/local-image/${order.orderId}`);
+            this.setState({
+                redirect: `/v/local-image/${order.orderId}`
+            })
         }
 
         this.setState({
@@ -112,6 +115,7 @@ class OrderDetail extends React.Component {
     render() {
         return (
             <div className="ui container">
+                <Redirect redirect={this.state.redirect}/>
                 <Dimmer active={this.state.loading}>
                     <Loader/>
                 </Dimmer>
