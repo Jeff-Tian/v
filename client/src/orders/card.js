@@ -1,5 +1,6 @@
 import React from 'react'
 import OrderPlaceholder from "./placeholder";
+import {Link} from "react-router";
 
 const OrderCard = ({order}) => {
     const {
@@ -15,7 +16,7 @@ const OrderCard = ({order}) => {
         <div className="content">
             <div className="ui sub header">{type}</div>
         </div>
-        <a href={`/order/${orderId}`} className="ui bottom attached button">查看订单详情</a>
+        <Link to={`/order/${orderId}?redirect=/orders`} className="ui bottom attached button">查看订单详情</Link>
     </div> : <OrderPlaceholder/>;
 }
 

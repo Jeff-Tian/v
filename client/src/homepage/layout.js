@@ -14,14 +14,8 @@ import Settings from '../admin/settings';
 import Config from '../admin/config';
 import {Icon, Menu, Segment, Sidebar} from 'semantic-ui-react';
 import OrderList from "../orders/list";
-
-function isUserAuthenticated(nextState, replaceState) {
-    if (!Auth.isUserAuthenticated()) {
-        replaceState({
-            nextPathname: nextState.location.pathname
-        }, '/sign-in');
-    }
-}
+import ErrorBoundary from "../error-boundary";
+import ClientRoutes from "../routes";
 
 class Layout extends Component {
     state = {visible: false, activeItem: window.location.pathname};
@@ -84,20 +78,7 @@ class Layout extends Component {
                 </Sidebar>
                 <Sidebar.Pusher>
                     <Icon name="sliders horizontal" size="huge" onClick={this.toggleSidebar}></Icon>
-                    <Router history={browserHistory}>
-                        <Route path="/orders" component={OrderList}/>
-                        <Route path="/" component={Homepage}/>
-                        <Route path="/v/:vid" component={V}/>
-                        <Route path="/v/:vid/:orderId" component={V}/>
-                        <Route path="/order/:orderId" component={OrderDetail}/>
-                        <Route path="/fake-face" component={FakeFace}/>
-                        <Route path="/tools/image-base64" component={ImageBase64}/>
-                        <Route path="/sign-in" component={LoginPage}/>
-                        <Route path="/admin/orders" component={Orders} onEnter={isUserAuthenticated}/>
-                        <Route path="/admin/settings" component={Settings} onEnter={isUserAuthenticated}/>
-                        <Route path="/admin/api/config" component={Config} onEnter={isUserAuthenticated}/>
-                        <Route path="/*" component={NotFound404}/>
-                    </Router>
+                    <ClientRoutes/>
                 </Sidebar.Pusher>
             </Sidebar.Pushable>
         );

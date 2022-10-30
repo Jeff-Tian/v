@@ -3,7 +3,7 @@ import Client from '../Client';
 import socket from '../socket';
 import OrderStatus from '../bll/orderStatus';
 import {browserHistory} from 'react-router';
-import {Button, Container, Feed, Header, Icon, Segment} from 'semantic-ui-react';
+import {Button, Container, Dimmer, Feed, Header, Icon, Loader, Segment} from 'semantic-ui-react';
 import PaymentMethods from '../bll/paymentMethods';
 import {getPaymentQrForOrder} from "../payment/payment-qr";
 import _ from "lodash";
@@ -19,11 +19,14 @@ class OrderDetail extends React.Component {
         this.state = {
             order: {},
             redirect,
+            loading: true
         };
     }
 
     async componentDidMount() {
         let order = await Client.fetchOrder(this.props.params.orderId);
+
+        this.setState({loading: false})
 
         if (_.isEmpty(order)) {
             return browserHistory.push(`/v/local-image`);
@@ -109,14 +112,22 @@ class OrderDetail extends React.Component {
     render() {
         return (
             <div className="ui container">
+                <Dimmer active={this.state.loading}>
+                    <Loader/>
+                </Dimmer>
                 <div className="ui fluid card">
                     <Container fluid>
                         <OrderHeader order={this.state.order} redirect={this.state.redirect}/>
                     </Container>
                     <div className="image">
-                        <img
-                            src={getPaymentQrForOrder(this.state.order)}
-                            alt="付款二维码"/>
+                        {this.state.order.status === OrderStatus.paid ?
+                            <Dimmer active>
+                                已支付
+                            </Dimmer> :
+                            <img
+                                src={getPaymentQrForOrder(this.state.order)}
+                                alt="付款二维码"/>
+                        }
                         {
                             this.state.order.paymentMethod === PaymentMethods.bitcoin.method ?
                                 (
