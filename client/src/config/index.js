@@ -26,7 +26,7 @@ let envConfig = {}
 if (process && process.title.endsWith('node')) {
     envConfig = require(configPath === '.' ? './index.js' : configPath);
 
-    if (process.env.VERCEL) {
+    if (process.env.VERCEL && process.env.NODE_ENV === 'production') {
         envConfig = require('./config_local.js');
     }
 
