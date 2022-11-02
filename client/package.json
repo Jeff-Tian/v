@@ -18,7 +18,8 @@
     "socket.io": "^2.4.0"
   },
   "devDependencies": {
-    "enzyme": "3.11.0",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.6",
     "react-scripts": "4.0.3",
     "react-test-renderer": "16.8.6"
   },
