@@ -25,14 +25,18 @@ console.log('configPath = ', configPath);
 let envConfig = {}
 if (process && process.title.endsWith('node')) {
     envConfig = require(configPath === '.' ? './index.js' : configPath);
+
+    if (process.env.VERCEL) {
+        envConfig = require('./config_local.js');
+    }
+
     console.log('envConfig = ', envConfig);
 }
 
 function getConfig() {
     if (!config) {
         config = {
-            version: '1.0.0-' + Date.now(),
-            publicFolder: 'client/build'
+            version: '1.0.0-' + Date.now(), publicFolder: 'client/build'
         };
 
         if (process.env.NODE_ENV === 'production') {
