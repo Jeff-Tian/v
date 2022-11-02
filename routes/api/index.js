@@ -1,17 +1,13 @@
 const Koa = require('koa');
+const bodyParser = require('koa-bodyparser');
 const app = new Koa();
+app.use(bodyParser());
 const router = require('koa-router')();
 const orderBll = require('../../client/src/bll/order');
 const config = require('../../client/src/config');
 const asyncProxy = require('../../common/async-proxy');
 
 router
-    .get('/node_env', async function (ctx, next) {
-        ctx.body = {
-            node_env: process.env.NODE_ENV,
-            config: config
-        }
-    })
     .get('/order/:orderId', async function (ctx, next) {
         ctx.body = await orderBll.get(ctx.params.orderId);
     })
