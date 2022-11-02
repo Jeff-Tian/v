@@ -6,7 +6,6 @@ const orderBll = require('../../client/src/bll/order');
 const readFile = require('../../common/readFile');
 const path = require('path');
 let config = require('../../client/src/config');
-const parse = require('co-body');
 const orderStatus = require('../../client/src/bll/orderStatus');
 const {authErrorMessage} = require("../../client/src/share/constants");
 
@@ -30,7 +29,7 @@ app.use(async function (ctx, next) {
     try {
         console.log('admin path = ', ctx.path);
         if (ctx.path === '/api/sign-in' && ctx.method === 'POST') {
-            let data = await parse(ctx.request);
+            let data = ctx.request.body
             console.log(`Authenticating...`);
             console.log(data);
             return ctx.body = authenticateUser(ctx, data.username, data.password, data.returnUrl);
@@ -71,9 +70,9 @@ router
         console.log('fetching orders...');
         ctx.body = orderBll.list();
     })
-    .post('/api/orders/:orderId',async function (ctx, next) {
+    .post('/api/orders/:orderId', async function (ctx, next) {
         let o = orderBll.get(ctx.params.orderId);
-        let data = await parse(ctx.request);
+        let data = ctx.request.body;
         o.status = data.status || orderStatus.paid;
 
         orderBll.notifyClient(o);
@@ -93,8 +92,7 @@ router
         ctx.body = config;
     })
     .put('/api/config', async function (ctx, next) {
-        let data = await parse(ctx.request);
-        let newConfig = Object.assign(config, data);
+        let newConfig = Object.assign(config, ctx.request.body);
 
         config.update(newConfig);
 
