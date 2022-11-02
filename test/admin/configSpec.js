@@ -7,7 +7,6 @@ let assert = require('assert'),
 let config = require('../../client/src/config');
 
 require('co-mocha');
-let expect = require('expect.js');
 
 let server = app.listen();
 

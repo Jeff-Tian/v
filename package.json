@@ -38,7 +38,7 @@
     "client": "PORT=8088 babel-node start-client.js",
     "test": "npm run server-test&&cd client&&npm test&&cd .. ",
     "e2e-test": "concurrently \"yarn e2e-driver\" \"yarn start\" \"sleep 10 && yarn e2e\" \"sleep 20 && killall node\"",
-    "server-test": "V_ADMIN=test V_PWD=test mocha --recursive --harmony",
+    "server-test": "V_ADMIN=test V_PWD=test mocha --recursive --harmony --timeout 10000",
     "client-test-exit": "yarn client-test & sleep 6 && killall node",
     "client-test": "cd client && npm run test-all && cd ..",
     "dev": "echo \"This command has been deprecated. Use 'npm start'\" && exit 1",
