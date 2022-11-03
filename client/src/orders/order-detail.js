@@ -26,13 +26,13 @@ class OrderDetail extends React.Component {
         console.log('polling order...')
         const order = await Client.fetchOrder(this.props.params.orderId);
         console.log('order = ', order);
-        
+
         if (!_.isEmpty(order)) {
             this.setState({order})
         }
 
         if (_.isEmpty(order) || order.status === OrderStatus.pendingPay) {
-            setTimeout(this.pollOrder, 1000);
+            setTimeout(this.pollOrder.bind(this), 1000);
         }
     }
 
