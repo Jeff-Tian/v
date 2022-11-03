@@ -1,3 +1,4 @@
+
 v
 ---
 
@@ -25,9 +26,19 @@ NODE_ENV=local yarn start
 NODE_ENV=local yarn start
 ```
 
-### Start using docker mode (to simulate the production environment)
+### Start using docker mode 
+
+To simulate the production environment deployed to kubernetes.
 
 ```shell
 docker build -t jefftian/vvv .
 docker run -d -p 127.0.0.1:3000:3000 --name vvv jefftian/vvv
+```
+
+### Start using vercel mode
+
+To simulate the production environment deployed to vercel.
+
+```shell
+V_ADMIN=test V_PWD=test NODE_ENV=local vercel dev
 ```

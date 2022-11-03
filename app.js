@@ -1,9 +1,7 @@
 'use strict';
 
 const Koa = require('koa');
-const bodyParser = require('koa-bodyparser');
 const app = module.exports = new Koa({proxy: true});
-app.use(bodyParser());
 
 const config = require('./client/src/config');
 const path = require('path');

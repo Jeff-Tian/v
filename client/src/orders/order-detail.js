@@ -115,7 +115,10 @@ class OrderDetail extends React.Component {
     render() {
         return (
             <div className="ui container">
-                <Redirect redirect={this.state.redirect}/>
+                {
+                    this.state.order.status === OrderStatus.paid && this.state.redirect &&
+                    <Redirect redirect={this.state.redirect}/>
+                }
                 <Dimmer active={this.state.loading}>
                     <Loader/>
                 </Dimmer>

@@ -51,12 +51,10 @@ module.exports = {
 
         const res = await axios.post(`${config.uniOrders.url}/orders`, {
             cents: 100,
-            remark: `v-order`,
+            remark: type || `v-order`,
             type,
             paymentMethod
         })
-
-        console.log('res = ', res.data);
 
         return this.convertUniOrderToVOrder(res.data);
     },
