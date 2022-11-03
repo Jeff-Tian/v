@@ -29,7 +29,7 @@ class OrderDetail extends React.Component {
         }
 
         if (order.status === OrderStatus.pendingPay) {
-            return this.pollOrder()
+            setTimeout(this.pollOrder, 1000);
         }
     }
 
