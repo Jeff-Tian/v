@@ -39,7 +39,7 @@
     "test": "npm run server-test&&cd client&&npm test&&cd .. ",
     "e2e-test": "concurrently \"yarn e2e-driver\" \"yarn start\" \"sleep 10 && yarn e2e\" \"sleep 20 && killall node\"",
     "server-test": "V_ADMIN=test V_PWD=test mocha --recursive --harmony --timeout 10000",
-    "client-test-exit": "yarn client-test & sleep 6 && killall node",
+    "client-test-exit": "(yarn client-test & sleep 10 && killall node) || echo 'tested'",
     "client-test": "cd client && npm run test-all && cd ..",
     "dev": "echo \"This command has been deprecated. Use 'npm start'\" && exit 1",
     "build": "cd client && npm run build && cd .. && cp vercel.json client/build/vercel.json",
