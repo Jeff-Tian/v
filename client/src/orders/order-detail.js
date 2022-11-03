@@ -18,9 +18,7 @@ class OrderDetail extends React.Component {
         const redirect = props.location.search ? qs.parse(props.location.search)['?redirect'] : undefined;
 
         this.state = {
-            order: {},
-            redirect,
-            loading: true
+            order: {}, redirect, loading: true
         };
     }
 
@@ -57,8 +55,9 @@ class OrderDetail extends React.Component {
                 });
 
                 if (true || navigator.userAgent.indexOf('MicroMessenger') >= 0) {
-                    // browserHistory.push(`/v/local-image?orderId=${self.props.params.orderId}`);
-                    browserHistory.push(`/v/local-image/${self.props.params.orderId}`);
+                    self.setState({
+                        redirect: `/v/local-image/${self.props.params.orderId}`
+                    })
                 } else {
                     window.close();
                 }
@@ -104,7 +103,9 @@ class OrderDetail extends React.Component {
                 });
 
                 if (true || navigator.userAgent.indexOf('MicroMessenger') >= 0) {
-                    browserHistory.push(`/v/local-image/${msg.order ? msg.order.orderId : msg.orderId}`);
+                    self.setState({
+                        redirect: `/v/local-image/${msg.order ? msg.order.orderId : msg.orderId}`
+                    })
                 } else {
                     window.close();
                 }
@@ -113,98 +114,75 @@ class OrderDetail extends React.Component {
     }
 
     render() {
-        return (
-            <div className="ui container">
-                {
-                    this.state.order.status === OrderStatus.paid && this.state.redirect &&
-                    <Redirect redirect={this.state.redirect}/>
-                }
-                <Dimmer active={this.state.loading}>
-                    <Loader/>
-                </Dimmer>
-                <div className="ui fluid card">
-                    <Container fluid>
-                        <OrderHeader order={this.state.order} redirect={this.state.redirect}/>
-                    </Container>
-                    <div className="image">
-                        {this.state.order.status === OrderStatus.paid ?
-                            <Dimmer active>
-                                已支付
-                            </Dimmer> :
-                            <img
-                                src={getPaymentQrForOrder(this.state.order)}
-                                alt="付款二维码"/>
-                        }
-                        {
-                            this.state.order.paymentMethod === PaymentMethods.bitcoin.method ?
-                                (
-                                    <Segment>
-                                        <Header size="medium">付款信息</Header>
-                                        <Feed>
-                                            <Feed.Event date="URI: "
-                                                        summary="bitcoin:16jag4GRKxoN8RGA5izzFHeVWfdofR5wHL?amount=1.00000000&label=pa-pa-pa&message=pa-pa-pa"
-                                                        style={{wordBreak: 'break-all'}}/>
-                                            <Feed.Event date="地址: " summary="16jag4GRKxoN8RGA5izzFHeVWfdofR5wHL"/>
-                                            <Feed.Event date="金额: " summary="1.00000000 BTC"/>
-                                            <Feed.Event date="标签: " summary="pa-pa-pa"/>
-                                            <Feed.Event date="消息: " summary="pa-pa-pa"/>
-                                        </Feed>
-                                    </Segment>
-                                )
-                                : ('')
-                        }
+        return (<div className="ui container">
+            {(this.state.order.status === OrderStatus.paid || this.state.order.status === OrderStatus.cancelled) && this.state.redirect &&
+                <Redirect redirect={this.state.redirect}/>}
+            <Dimmer active={this.state.loading}>
+                <Loader/>
+            </Dimmer>
+            <div className="ui fluid card">
+                <Container fluid>
+                    <OrderHeader order={this.state.order} redirect={this.state.redirect}/>
+                </Container>
+                <div className="image">
+                    {this.state.order.status === OrderStatus.paid ? <Dimmer active>
+                        已支付
+                    </Dimmer> : <img
+                        src={getPaymentQrForOrder(this.state.order)}
+                        alt="付款二维码"/>}
+                    {this.state.order.paymentMethod === PaymentMethods.bitcoin.method ? (<Segment>
+                        <Header size="medium">付款信息</Header>
+                        <Feed>
+                            <Feed.Event date="URI: "
+                                        summary="bitcoin:16jag4GRKxoN8RGA5izzFHeVWfdofR5wHL?amount=1.00000000&label=pa-pa-pa&message=pa-pa-pa"
+                                        style={{wordBreak: 'break-all'}}/>
+                            <Feed.Event date="地址: " summary="16jag4GRKxoN8RGA5izzFHeVWfdofR5wHL"/>
+                            <Feed.Event date="金额: " summary="1.00000000 BTC"/>
+                            <Feed.Event date="标签: " summary="pa-pa-pa"/>
+                            <Feed.Event date="消息: " summary="pa-pa-pa"/>
+                        </Feed>
+                    </Segment>) : ('')}
+                </div>
+                <div className={"content"}>
+                    <div className={"header"}>订单号：{this.state.order.orderId}</div>
+                    <div>
+                        原价： {this.state.order.cents / 100} 元
                     </div>
-                    <div className={"content"}>
-                        <div className={"header"}>订单号：{this.state.order.orderId}</div>
-                        <div>
-                            原价： {this.state.order.cents / 100} 元
-                        </div>
-                        <div>
-                            随机优惠： {this.state.order.randomDiscountCents / 100}元
-                        </div>
-                        <div>
-                            优惠后价格： {this.state.order.finalCents / 100} 元
-                        </div>
-                        <div className={"meta"}>
-                            状态: {this.state.order.status}
-                            {this.state.order.paymentMethod && PaymentMethods[this.state.order.paymentMethod] ? (
-                                <Icon name={PaymentMethods[this.state.order.paymentMethod].icon}
-                                      color={PaymentMethods[this.state.order.paymentMethod].activeColor}/>) : ''}
-                        </div>
-                        <div className={"description"}>
-                            请长按识别或者扫描以上二维码，完成转账。在审核通过后即可使用所有高级功能！
-                            <br/>
+                    <div>
+                        随机优惠： {this.state.order.randomDiscountCents / 100}元
+                    </div>
+                    <div>
+                        优惠后价格： {this.state.order.finalCents / 100} 元
+                    </div>
+                    <div className={"meta"}>
+                        状态: {this.state.order.status}
+                        {this.state.order.paymentMethod && PaymentMethods[this.state.order.paymentMethod] ? (
+                            <Icon name={PaymentMethods[this.state.order.paymentMethod].icon}
+                                  color={PaymentMethods[this.state.order.paymentMethod].activeColor}/>) : ''}
+                    </div>
+                    <div className={"description"}>
+                        请长按识别或者扫描以上二维码，完成转账。在审核通过后即可使用所有高级功能！
+                        <br/>
 
-                            {
-                                this.state.order.status === OrderStatus.pendingPay
-                                    ? (
-                                        <button className="ui primary button"
-                                                onClick={() => this.claimPaid(this.state.order.orderId)}>我已付款
-                                        </button>
-                                    )
-                                    : (
-                                        this.state.order.status === OrderStatus.paid
-                                            ? (<button className={"ui disabled button"}>审核已通过</button>)
-                                            : (<button className="ui disabled button">等待主人审核中……</button>)
-                                    )
-                            }
-                            {this.state.order.status === OrderStatus.pendingPay ? (
-                                <Button secondary floated="right"
-                                        onClick={() => this.cancelPayment(this.state.order.orderId)}>放弃付款</Button>
-                            ) : ''}
-                        </div>
+                        {this.state.order.status === OrderStatus.pendingPay ? (<button className="ui primary button"
+                                                                                       onClick={() => this.claimPaid(this.state.order.orderId)}>我已付款
+                        </button>) : (this.state.order.status === OrderStatus.paid ? (
+                            <button className={"ui disabled button"}>审核已通过</button>) : (
+                            <button className="ui disabled button">等待主人审核中……</button>))}
+                        {this.state.order.status === OrderStatus.pendingPay ? (<Button secondary floated="right"
+                                                                                       onClick={() => this.cancelPayment(this.state.order.orderId)}>放弃付款</Button>) : ''}
                     </div>
-                    <div className={"extra content"}>
+                </div>
+                <div className={"extra content"}>
                                 <span className={"right floated"}>
                                     {this.state.order.updatedTime}
                                 </span>
-                        <span>
+                    <span>
                                     {this.state.order.createdTime}
                                 </span>
-                    </div>
                 </div>
             </div>
-        );
+        </div>);
     }
 }
 
