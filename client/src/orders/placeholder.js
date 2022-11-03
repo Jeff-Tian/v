@@ -5,6 +5,9 @@ import {browserHistory} from "react-router";
 const createOrder = async () => {
     const response = await fetch('/api/orders', {
         method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
         body: JSON.stringify({type: 'wall-of-fame', paymentMethod: 'wecom-pay'})
     })
 

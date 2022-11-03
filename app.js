@@ -28,6 +28,8 @@ require('./routes')(app, router, render, server);
 
 app.use(serveStatic(config.publicFolder));
 
+app.config = config;
+
 if (!module.parent) {
     var port = process.env.PORT || config.port || 16016;
     server.listen(port);

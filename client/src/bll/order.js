@@ -51,7 +51,7 @@ module.exports = {
 
         const res = await axios.post(`${config.uniOrders.url}/orders`, {
             cents: 100,
-            remark: type || `v-order`,
+            remark: `v-order`,
             type,
             paymentMethod
         })

@@ -1,6 +1,9 @@
 const auth = require('./auth');
+const bodyParser = require('koa-bodyparser');
 const Koa = require('koa');
 const app = new Koa();
+app.use(bodyParser());
+
 const router = require('koa-router')();
 const orderBll = require('../../client/src/bll/order');
 const readFile = require('../../common/readFile');
@@ -95,6 +98,7 @@ router
         let newConfig = Object.assign(config, ctx.request.body);
 
         config.update(newConfig);
+        console.log('newConfig = ', config);
 
         ctx.body = config;
     })

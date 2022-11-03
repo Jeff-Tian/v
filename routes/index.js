@@ -30,12 +30,6 @@ function helper(app, router, render) {
     router
         .get('/healthcheck', healthcheck)
         .post('/healthcheck', healthcheck)
-        .get('/config', function (ctx, next) {
-                ctx.body = {
-                    config: config
-                };
-            }
-        )
 }
 
 function renderIndex() {

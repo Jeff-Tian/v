@@ -15,7 +15,8 @@ let server = app.listen();
 
 describe('admin order features', function () {
     // const scope = nock('https://uni-orders-jeff-tian.cloud.okteto.net').persist()
-    const scope = nock('http://uni-orders:3000').persist()
+    // const scope = nock('http://uni-orders:3000').persist()
+    const scope = nock(app.config.uniOrders.url).persist()
 
     it('requires log on for accessing admin api orders', function* () {
         yield  request(server).get('/admin/api/orders')
@@ -24,6 +25,7 @@ describe('admin order features', function () {
     });
 
     it('lists all orders', async function () {
+        console.log('app.config = ', app.config);
         const fakeOrder = {
             "id": 5,
             "number": "2022-08-02-16294579",
