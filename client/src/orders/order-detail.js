@@ -22,13 +22,25 @@ class OrderDetail extends React.Component {
         };
     }
 
+    async pollOrder() {
+        const order = await Client.fetchOrder(this.props.params.orderId);
+        if (!_.isEmpty(order)) {
+            this.setState({order})
+        }
+
+        if (order.status === OrderStatus.pendingPay) {
+            return this.pollOrder()
+        }
+    }
+
     async componentDidMount() {
         let order = await Client.fetchOrder(this.props.params.orderId);
 
         this.setState({loading: false})
 
         if (_.isEmpty(order)) {
-            return browserHistory.push(`/v/local-image`);
+            this.setState({redirect: '/v/local-image'})
+            return;
         }
 
         if (order.status === OrderStatus.paid && !this.state.redirect) {
@@ -40,6 +52,10 @@ class OrderDetail extends React.Component {
         this.setState({
             order: order
         });
+
+        if (order.status === OrderStatus.pendingPay) {
+            this.pollOrder();
+        }
 
         socket.emit('order-qr-remove', 'order page opened');
 
