@@ -2735,7 +2735,7 @@ express@^4.0.0, express@^4.18.1:
 
 extend-shallow@^2.0.1:
   version "2.0.1"
-  resolved "https://registry.npmjs.org/extend-shallow/-/extend-shallow-2.0.1.tgz"
+  resolved "https://registry.yarnpkg.com/extend-shallow/-/extend-shallow-2.0.1.tgz#51af7d614ad9a9f610ea1bafbb989d6b1c56890f"
   integrity sha512-zCnTtlxNoAiDc3gqY2aYAWFx7XWWiasuF2K8Me5WbN8otHKTUKBwjPtNpRs/rbUZm7KxWAaNj7P1a/p52GbVug==
   dependencies:
     is-extendable "^0.1.0"
@@ -3525,14 +3525,9 @@ is-binary-path@~2.1.0:
   dependencies:
     binary-extensions "^2.0.0"
 
-is-buffer@^1.0.2:
-  version "1.1.4"
-  resolved "https://registry.npmjs.org/is-buffer/-/is-buffer-1.1.4.tgz"
-  integrity sha512-LdKAPZcV+EfT6PvN90Un/Rnn1g8cL1BfzEBdz6d3Y6CUzMyUVWHewXxyuiNFkLwRKgpDMYHrocdqjMsYTDkOow==
-
 is-buffer@^1.1.5:
   version "1.1.6"
-  resolved "https://registry.npmjs.org/is-buffer/-/is-buffer-1.1.6.tgz"
+  resolved "https://registry.yarnpkg.com/is-buffer/-/is-buffer-1.1.6.tgz#efaa2ea9daa0d7ab2ea13a97b2b8ad51fefbe8be"
   integrity sha512-NcdALwpXkTm5Zvvbk7owOUSvVvBKDgKP5/ewfXEznmQFfs4ZRmanOeKBTjRVjka3QFoN6XJ+9F3USqfHqTaU5w==
 
 is-builtin-module@^1.0.0:
@@ -3681,7 +3676,7 @@ is-number@^2.0.2, is-number@^2.1.0:
 
 is-number@^3.0.0:
   version "3.0.0"
-  resolved "https://registry.npmjs.org/is-number/-/is-number-3.0.0.tgz"
+  resolved "https://registry.yarnpkg.com/is-number/-/is-number-3.0.0.tgz#24fd6201a4782cf50561c810276afc7d12d71195"
   integrity sha512-4cboCqIpliH+mAvFNegjZQ4kgKc3ZUhQVr3HvWbSh5q3WH2v82ct+T2Y1hdU5Gdtorx/cLifQjqCbL7bpznLTg==
   dependencies:
     kind-of "^3.0.2"
@@ -4024,16 +4019,9 @@ keygrip@~1.1.0:
   dependencies:
     tsscmp "1.0.6"
 
-kind-of@^3.0.2:
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/kind-of/-/kind-of-3.1.0.tgz"
-  integrity sha512-vPLNVMr7QjxWc6U+pX6I5l9YG3y8cJTrlth+wvi89XhKIBbr7m8V8Q6RoNHA1wwYnO1CnpRSNJN98v4OopGjwg==
-  dependencies:
-    is-buffer "^1.0.2"
-
-kind-of@^3.0.3, kind-of@^3.2.0:
+kind-of@^3.0.2, kind-of@^3.0.3, kind-of@^3.2.0:
   version "3.2.2"
-  resolved "https://registry.npmjs.org/kind-of/-/kind-of-3.2.2.tgz"
+  resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-3.2.2.tgz#31ea21a734bab9bbb0f32466d893aea51e4a3c64"
   integrity sha512-NOW9QQXMoZGg/oqnVNoNTTIFEIid1627WCffUBJEdMxYApq7mNE7CpzucIPc+ZQg25Phej7IJSmX3hO+oblOtQ==
   dependencies:
     is-buffer "^1.1.5"
@@ -6315,7 +6303,7 @@ to-object-path@^0.3.0:
 
 to-regex-range@^2.1.0:
   version "2.1.1"
-  resolved "https://registry.npmjs.org/to-regex-range/-/to-regex-range-2.1.1.tgz"
+  resolved "https://registry.yarnpkg.com/to-regex-range/-/to-regex-range-2.1.1.tgz#7c80c17b9dfebe599e27367e0d4dd5590141db38"
   integrity sha512-ZZWNfCjUokXXDGXFpZehJIkZqq91BcULFq/Pi7M5i4JnxXdhMKAK682z8bCW3o8Hj1wuuzoKcW3DfVzaP6VuNg==
   dependencies:
     is-number "^3.0.0"
