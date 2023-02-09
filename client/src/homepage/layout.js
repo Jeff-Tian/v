@@ -1,20 +1,7 @@
 import React, {Component} from 'react';
-import Homepage from './homepage';
 import '../index.css';
-import {browserHistory, Route, Router} from 'react-router';
-import LoginPage from '../auth/login-page';
-import Orders from '../admin/orders';
-import OrderDetail from '../orders/order-detail';
-import FakeFace from '../fake-face';
-import ImageBase64 from '../tools/image-base64';
-import V from '../v/index';
-import Auth from '../auth/auth';
-import NotFound404 from '../errors/404';
-import Settings from '../admin/settings';
-import Config from '../admin/config';
+import {browserHistory} from 'react-router';
 import {Icon, Menu, Segment, Sidebar} from 'semantic-ui-react';
-import OrderList from "../orders/list";
-import ErrorBoundary from "../error-boundary";
 import ClientRoutes from "../routes";
 
 class Layout extends Component {
@@ -65,6 +52,11 @@ class Layout extends Component {
                         </Icon.Group>
                         <br/>
                         加 v
+                    </Menu.Item>
+                    <Menu.Item name='/tools/sticker' active={activeItem === '/tools/sticker'} onClick={this.handleItemClick}>
+                        <Icon size='huge' name='smile'>
+                            微信表情
+                        </Icon>
                     </Menu.Item>
                     <Menu.Item name="/fake-face" active={activeItem === '/fake-face'} onClick={this.handleItemClick}>
                         <Icon size="huge" name="spy"/>

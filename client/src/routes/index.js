@@ -14,6 +14,7 @@ import NotFound404 from "../errors/404";
 import ErrorBoundary from "../error-boundary";
 import Auth from "../auth/auth";
 import {LoadingProvider} from "../loading-context";
+import Sticker from "../tools/sticker";
 
 function isUserAuthenticated(nextState, replaceState) {
     if (!Auth.isUserAuthenticated()) {
@@ -34,6 +35,7 @@ const ClientRoutes = () => {
                 <Route path="/order/:orderId" component={OrderDetail}/>
                 <Route path="/fake-face" component={FakeFace}/>
                 <Route path="/tools/image-base64" component={ImageBase64}/>
+                <Route path="/tools/sticker" component={Sticker}/>
                 <Route path="/sign-in" component={LoginPage}/>
                 <Route path="/admin/orders" component={Orders} onEnter={isUserAuthenticated}/>
                 <Route path="/admin/settings" component={Settings} onEnter={isUserAuthenticated}/>
