@@ -54,9 +54,8 @@ class Layout extends Component {
                         加 v
                     </Menu.Item>
                     <Menu.Item name='/tools/sticker' active={activeItem === '/tools/sticker'} onClick={this.handleItemClick}>
-                        <Icon size='huge' name='smile'>
-                            微信表情
-                        </Icon>
+                        <Icon size='huge' name='smile'/>
+                        微信表情
                     </Menu.Item>
                     <Menu.Item name="/fake-face" active={activeItem === '/fake-face'} onClick={this.handleItemClick}>
                         <Icon size="huge" name="spy"/>

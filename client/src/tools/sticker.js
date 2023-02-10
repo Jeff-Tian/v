@@ -15,7 +15,6 @@ export default class Sticker extends React.Component {
 
     onPhotoGot(dataURL, exif) {
         this.setState({
-            base64: dataURL,
             imageSrc: dataURL
         });
     }
