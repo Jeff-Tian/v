@@ -28,7 +28,7 @@
     "koa-mount": "4.0.0",
     "koa-router": "11.0.1",
     "koa-static": "5.0.0",
-    "socket.io": "^2.4.0",
+    "socket.io": "^3.0.5",
     "sql.js": "^0.3.2",
     "uuid": "^3.1.0"
   },
